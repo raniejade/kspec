@@ -17,4 +17,5 @@ buildscript {
 
 dependencies {
     compile "com.google.guava:guava"
+    compile "junit:junit"
 }
