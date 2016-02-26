@@ -1,0 +1,33 @@
+apply plugin: "kotlin"
+apply plugin: "jacoco"
+apply plugin: "idea"
+apply plugin: 'org.jetbrains.dokka'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repository.jetbrains.com/all"
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+    testCompile "org.jetbrains.kotlin:kotlin-test"
+    testCompile "org.jetbrains.spek:spek"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+dokka {
+    outputFormat = "markdown"
+}
+
+
+check {
+    dependsOn jacocoTestReport
+}

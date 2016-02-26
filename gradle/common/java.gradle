@@ -1,0 +1,33 @@
+apply plugin: "java"
+apply plugin: "groovy"
+
+apply plugin: "eclipse"
+apply plugin: "idea"
+
+
+sourceCompatibility = "1.8"
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+}
+
+dependencies {
+    compile "com.google.code.findbugs:jsr305"
+
+    // mandatory dependencies for using Spock
+    compile "org.codehaus.groovy:groovy-all"
+    testCompile "org.spockframework:spock-core"
+
+    // optional dependencies for using Spock
+    testCompile "org.hamcrest:hamcrest-core" // only necessary if Hamcrest matchers are used
+    testRuntime "cglib:cglib-nodep"          // allows mocking of classes (in addition to interfaces)
+    testRuntime "org.objenesis:objenesis"    // allows mocking of classes without default constructor (together with CGLIB)
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+}
