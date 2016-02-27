@@ -8,41 +8,22 @@ import org.junit.runners.ParentRunner
 /**
  * @author Ranie Jade Ramiso
  */
-internal class JUnitSpeckRunner<T: Speck>(testClass: Class<T>): ParentRunner<Feature>(testClass) {
-    override fun getChildren(): MutableList<Feature> {
+internal class JUnitSpeckRunner<T: Speck>(testClass: Class<T>): ParentRunner<GivenRunner>(testClass) {
+    override fun getChildren(): List<GivenRunner> {
         val speck = newInstance()
-        speck.walker = FeatureCollector()
-        speck.init(speck)
-        return speck.features
+        val walker = FeatureCollector()
+        speck(walker)
+        return walker.roots.map { GivenRunner(testClass.javaClass, it) }
     }
 
-    override fun describeChild(child: Feature): Description {
-        val given = child.root
-        given.children.forEach { `when` ->
-            given.description.addChild(`when`.description)
-            `when`.children.forEach { then ->
-                `when`.description.addChild(then.description)
-            }
-        }
-        return given.description
+    override fun describeChild(child: GivenRunner): Description {
+        return child.description
     }
 
-    override fun runChild(child: Feature, notifier: RunNotifier) {
-        // TODO: invoke actions
-        val given = child.root
-        given.children.forEach { `when` ->
-            notifier.fireTestStarted(given.description)
-            `when`.children.forEach { then ->
-                notifier.fireTestStarted(`when`.description)
-
-                notifier.fireTestStarted(then.description)
-                notifier.fireTestFinished(then.description)
-
-                notifier.fireTestFinished(`when`.description)
-            }
-            notifier.fireTestFinished(given.description)
-        }
+    override fun runChild(child: GivenRunner, notifier: RunNotifier) {
+        child.run(notifier)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun newInstance():T = testClass.onlyConstructor.newInstance() as T
 }
