@@ -6,6 +6,8 @@ Born out of frustration of Spek and the love for Spock, a simple yet versatile t
 
 #### Sample
 ```
+package io.polymorphicpanda.speck
+
 class TestSpec: Speck({
     Given("a foo") {
         BeforeWhen {
@@ -32,14 +34,17 @@ class TestSpec: Speck({
             println("after when $it")
         }
     }
+
+    Given("a number, a string and a nullable") { a: Int, b: String, c: Any? ->
+        When("i do something") {
+            Then("it will happen") {
+            }
+        }
+    }.Where {
+        row(1, "foo", null)
+        row(2, "bar", null)
+        row(3, "haha", null)
+        row(4, "shit", null)
+    }
 })
-
-```
-
-Output
-```
-before when the bar is full
-after when the bar is full
-before when the bar is not full
-after when the bar is not full
 ```

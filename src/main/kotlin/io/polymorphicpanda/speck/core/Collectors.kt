@@ -6,7 +6,7 @@ import io.polymorphicpanda.speck.dsl.Then
 import io.polymorphicpanda.speck.dsl.When
 import java.util.*
 
-internal abstract class  Action<T> {
+internal abstract class Action<T> {
     abstract fun description(): String
     abstract fun execute(target: T)
     abstract fun before()
@@ -51,7 +51,7 @@ internal abstract class Collector<T> {
     abstract fun getPrefix(): String
 }
 
-internal class GivenCollector: Collector<Given>(), Spec {
+internal class GivenCollector(): DataEngine(), Spec {
     override fun getPrefix(): String = "Given"
     override fun Given(description: String, init: Given.() -> Unit) = collect(description, init)
 
@@ -66,7 +66,7 @@ internal class WhenCollector: Collector<When>(), Given {
     }
 
     override fun getPrefix(): String = "When"
-    override fun When(description: String, init: When.() -> Unit) = collect(description, init)
+    override fun When(description: String, given: When.() -> Unit) = collect(description, given)
 }
 
 internal class ThenCollector: Collector<Then>(), When {

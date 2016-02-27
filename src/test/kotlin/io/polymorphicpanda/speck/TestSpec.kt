@@ -26,4 +26,16 @@ class TestSpec: Speck({
             println("after when $it")
         }
     }
+
+    Given("a number, a string and a nullable") { a: Int, b: String, c: Any? ->
+        When("i do something") {
+            Then("it will happen") {
+            }
+        }
+    }.Where {
+        row(1, "foo", null)
+        row(2, "bar", null)
+        row(3, "haha", null)
+        row(4, "shit", null)
+    }
 })
