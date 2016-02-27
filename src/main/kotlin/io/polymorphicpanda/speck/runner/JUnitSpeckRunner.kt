@@ -33,18 +33,19 @@ fun junitAction(description: Description, notifier: RunNotifier, action: (RunNot
 }
 
 internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
-                                         val action: Action<When>): ParentRunner<Action<Then>>(testClass) {
+                                         val given: Action<Given>,
+                                         val `when`: Action<When>): ParentRunner<Action<Then>>(testClass) {
 
     val _children by lazy(LazyThreadSafetyMode.NONE) {
         val thenCollector = ThenCollector()
-        action.execute(thenCollector)
+        `when`.execute(thenCollector)
         val results: MutableList<Action<Then>> = mutableListOf()
         thenCollector.iterate { results.add(it) }
         results
     }
 
     val _description by lazy(LazyThreadSafetyMode.NONE) {
-        val desc = Description.createSuiteDescription(action.description(), JUnitUniqueId.next())
+        val desc = Description.createSuiteDescription(`when`.description(), JUnitUniqueId.next())
         children.forEach {
             desc.addChild(describeChild(it))
         }
@@ -56,7 +57,7 @@ internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
     override fun getDescription(): Description = _description
     override fun describeChild(child: Action<Then>): Description {
         return childrenDescriptions.getOrPut(child.description(), {
-            Description.createSuiteDescription("${child.description()} (${action.description()})", JUnitUniqueId.next())
+            Description.createSuiteDescription("${child.description()} (${given.description()}.${`when`.description()})", JUnitUniqueId.next())
         })
     }
     override fun getChildren(): MutableList<Action<Then>> = _children
@@ -69,18 +70,18 @@ internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
 }
 
 internal class JUnitGivenRunner<T: Speck>(testClass: Class<T>,
-                                          val action: Action<Given>): ParentRunner<JUnitWhenRunner<T>>(testClass) {
+                                          val given: Action<Given>): ParentRunner<JUnitWhenRunner<T>>(testClass) {
 
     val _children by lazy(LazyThreadSafetyMode.NONE) {
         val whenCollector = WhenCollector()
-        action.execute(whenCollector)
+        given.execute(whenCollector)
         val results: MutableList<JUnitWhenRunner<T>> = mutableListOf()
-        whenCollector.iterate { results.add(JUnitWhenRunner(testClass, it)) }
+        whenCollector.iterate { results.add(JUnitWhenRunner(testClass, given, it)) }
         results
     }
 
     val _description by lazy(LazyThreadSafetyMode.NONE) {
-        val desc = Description.createSuiteDescription(action.description(), JUnitUniqueId.next())
+        val desc = Description.createSuiteDescription(given.description(), JUnitUniqueId.next())
         children.forEach {
             desc.addChild(describeChild(it))
         }
