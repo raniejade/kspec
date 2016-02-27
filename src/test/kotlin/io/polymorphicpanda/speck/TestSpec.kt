@@ -1,10 +1,11 @@
 package io.polymorphicpanda.speck
 
-/**
- * @author Ranie Jade Ramiso
- */
 class TestSpec: Speck({
     Given("a foo") {
+        BeforeWhen {
+            println("before when $it")
+        }
+
         When("the bar is full") {
             Then("foobar") {
             }
@@ -19,6 +20,10 @@ class TestSpec: Speck({
 
             Then("shit") {
             }
+        }
+
+        AfterWhen {
+            println("after when $it")
         }
     }
 })
