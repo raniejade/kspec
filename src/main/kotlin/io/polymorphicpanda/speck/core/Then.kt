@@ -1,8 +1,8 @@
-package io.polymorphicpanda.speck.execution
+package io.polymorphicpanda.speck.core
 
 import io.polymorphicpanda.speck.dsl.Then
 
-internal class ThenExecutor : Then {
+internal class ThenImpl : Then {
     override fun <T> shouldBeEqual(expected: T?, actual: T?) {
         throw UnsupportedOperationException()
     }

@@ -1,27 +1,126 @@
 package io.polymorphicpanda.speck.runner
 
 import io.polymorphicpanda.speck.Speck
+import io.polymorphicpanda.speck.core.*
+import io.polymorphicpanda.speck.dsl.Given
+import io.polymorphicpanda.speck.dsl.Then
+import io.polymorphicpanda.speck.dsl.When
 import org.junit.runner.Description
+import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 import org.junit.runners.ParentRunner
+import java.io.Serializable
 
-/**
- * @author Ranie Jade Ramiso
- */
-internal class JUnitSpeckRunner<T: Speck>(testClass: Class<T>): ParentRunner<GivenRunner>(testClass) {
-    override fun getChildren(): List<GivenRunner> {
-        val speck = newInstance()
-        val walker = FeatureCollector()
-        speck(walker)
-        return walker.roots.map { GivenRunner(testClass.javaClass, it) }
+data class JUnitUniqueId(val id: Int) : Serializable {
+    companion object {
+        var id = 0
+        fun next() = JUnitUniqueId(id++)
+    }
+}
+
+fun junitAction(description: Description, notifier: RunNotifier, action: (RunNotifier) -> Unit) {
+    if (description.isTest) {
+        notifier.fireTestStarted(description)
     }
 
-    override fun describeChild(child: GivenRunner): Description {
+    try {
+        action(notifier)
+    } catch(e: Throwable) {
+        notifier.fireTestFailure(Failure(description, e))
+    } finally {
+        if (description.isTest) notifier.fireTestFinished(description)
+    }
+}
+
+internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
+                                         val action: Action<When>): ParentRunner<Action<Then>>(testClass) {
+
+    val _children by lazy(LazyThreadSafetyMode.NONE) {
+        val thenCollector = ThenCollector()
+        action.execute(thenCollector)
+        val results: MutableList<Action<Then>> = mutableListOf()
+        thenCollector.iterate { results.add(it) }
+        results
+    }
+
+    val _description by lazy(LazyThreadSafetyMode.NONE) {
+        val desc = Description.createSuiteDescription(action.description(), JUnitUniqueId.next())
+        children.forEach {
+            desc.addChild(describeChild(it))
+        }
+        desc
+    }
+
+    val childrenDescriptions = hashMapOf<String, Description>()
+
+    override fun getDescription(): Description = _description
+    override fun describeChild(child: Action<Then>): Description {
+        return childrenDescriptions.getOrPut(child.description(), {
+            Description.createSuiteDescription("${child.description()} (${action.description()})", JUnitUniqueId.next())
+        })
+    }
+    override fun getChildren(): MutableList<Action<Then>> = _children
+
+    override fun runChild(child: Action<Then>, notifier: RunNotifier) {
+        junitAction(describeChild(child), notifier) {
+            child.execute(ThenImpl())
+        }
+    }
+}
+
+internal class JUnitGivenRunner<T: Speck>(testClass: Class<T>,
+                                          val action: Action<Given>): ParentRunner<JUnitWhenRunner<T>>(testClass) {
+
+    val _children by lazy(LazyThreadSafetyMode.NONE) {
+        val whenCollector = WhenCollector()
+        action.execute(whenCollector)
+        val results: MutableList<JUnitWhenRunner<T>> = mutableListOf()
+        whenCollector.iterate { results.add(JUnitWhenRunner(testClass, it)) }
+        results
+    }
+
+    val _description by lazy(LazyThreadSafetyMode.NONE) {
+        val desc = Description.createSuiteDescription(action.description(), JUnitUniqueId.next())
+        children.forEach {
+            desc.addChild(describeChild(it))
+        }
+        desc
+    }
+
+    override fun getDescription(): Description = _description
+    override fun describeChild(child: JUnitWhenRunner<T>): Description = child.description
+    override fun runChild(child: JUnitWhenRunner<T>, notifier: RunNotifier) {
+        junitAction(describeChild(child), notifier) {
+            child.run(it)
+        }
+    }
+
+    override fun getChildren(): List<JUnitWhenRunner<T>> = _children
+}
+
+
+internal class JUnitSpeckRunner<T: Speck>(testClass: Class<T>): ParentRunner<JUnitGivenRunner<T>>(testClass) {
+    val _children by lazy(LazyThreadSafetyMode.NONE) {
+        val speck = newInstance()
+        val givenCollector = GivenCollector()
+        speck(givenCollector)
+        val results: MutableList<JUnitGivenRunner<T>> = mutableListOf()
+        givenCollector.iterate {
+            results.add(JUnitGivenRunner(testClass, it))
+        }
+        results
+    }
+
+    override fun getChildren(): List<JUnitGivenRunner<T>> = _children
+
+    override fun describeChild(child: JUnitGivenRunner<T>): Description {
         return child.description
     }
 
-    override fun runChild(child: GivenRunner, notifier: RunNotifier) {
-        child.run(notifier)
+    override fun runChild(child: JUnitGivenRunner<T>, notifier: RunNotifier) {
+        junitAction(describeChild(child), notifier) {
+            child.run(it)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
