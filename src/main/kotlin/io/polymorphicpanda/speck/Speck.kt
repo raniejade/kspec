@@ -10,6 +10,6 @@ import org.junit.runner.RunWith
 @RunWith(JUnitSpeckRunner::class)
 open class Speck(val init: Root.() -> Unit) {
     internal operator fun invoke(walker: Root) {
-        walker.init()
+        with(walker, init)
     }
 }

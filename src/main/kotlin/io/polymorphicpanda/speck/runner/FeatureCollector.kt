@@ -1,7 +1,7 @@
 package io.polymorphicpanda.speck.runner
 
-import io.polymorphicpanda.speck.dsl.Root
 import io.polymorphicpanda.speck.dsl.Given
+import io.polymorphicpanda.speck.dsl.Root
 import io.polymorphicpanda.speck.dsl.Then
 import io.polymorphicpanda.speck.dsl.When
 
@@ -14,7 +14,7 @@ internal class FeatureCollector: Root {
     class WhenCollector(val root: Parent<Given, Parent<When, Node<Then>>>) : Given {
         override fun When(description: String, init: When.() -> Unit) {
             val node = Parent<When, Node<Then>>(description, init)
-            ThenCollector(node).init()
+            with(ThenCollector(node), init)
             root.children.add(node)
         }
 
@@ -30,7 +30,7 @@ internal class FeatureCollector: Root {
 
     override fun Given(description: String, init: Given.() -> Unit) {
         val root = Parent<Given, Parent<When, Node<Then>>>(description, init)
-        WhenCollector(root).init()
+        with(WhenCollector(root), init)
         roots.add(root)
     }
 }
