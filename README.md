@@ -5,7 +5,7 @@ Born out of frustration of Spek and the love for Spock, a simple yet versatile t
 
 
 #### Sample
-```
+```kotlin
 package io.polymorphicpanda.speck
 
 class TestSpec: Speck({
