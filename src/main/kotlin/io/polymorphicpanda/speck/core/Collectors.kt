@@ -9,32 +9,18 @@ import java.util.*
 internal abstract class Action<T> {
     abstract fun description(): String
     abstract fun execute(target: T)
-    abstract fun before()
-    abstract fun after()
 }
 
 internal abstract class Collector<T> {
-    open var before: ((String) -> Unit)? = null
-    var after: ((String) -> Unit)? = null
     val actions = LinkedList<Action<T>>()
 
     fun collect(description: String, init: T.() -> Unit) {
         actions.add(
                 object: Action<T>() {
-                    override fun before() {
-                        before?.invoke(description)
-                    }
-
-                    override fun after() {
-                        after?.invoke(description)
-                    }
-
                     override fun description(): String = "${getPrefix()} $description"
 
                     override fun execute(target: T) {
-                        before()
                         with(target, init)
-                        after()
                     }
                 }
         )
@@ -56,7 +42,10 @@ internal class GivenCollector(): DataEngine(), Spec {
     override fun Given(description: String, init: Given.() -> Unit) = collect(description, init)
 
 }
+
 internal class WhenCollector: Collector<When>(), Given {
+    var before: ((String) -> Unit)? = null
+    var after: ((String) -> Unit)? = null
     override fun BeforeWhen(action: (String) -> Unit) {
         before = action
     }
@@ -66,7 +55,12 @@ internal class WhenCollector: Collector<When>(), Given {
     }
 
     override fun getPrefix(): String = "When"
-    override fun When(description: String, given: When.() -> Unit) = collect(description, given)
+
+    override fun When(description: String, given: When.() -> Unit) = collect(description, {
+        before?.invoke(description)
+        with(this, given)
+        after?.invoke(description)
+    })
 }
 
 internal class ThenCollector: Collector<Then>(), When {

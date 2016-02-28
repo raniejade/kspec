@@ -5,6 +5,7 @@ package io.polymorphicpanda.speck
  */
 class AssertionsSpec: Speck({
     Given("shouldBeEqual") {
+        BeforeWhen { println("before $it") }
         When("invoked with equal values") {
             Then("it should not throw an assertion error") {
                 try {
@@ -25,6 +26,8 @@ class AssertionsSpec: Speck({
                 }
             }
         }
+
+        AfterWhen { println("after $it") }
     }
 
     Given("shouldNotBeEqual") {
