@@ -37,7 +37,7 @@ internal abstract class Collector<T> {
     abstract fun getPrefix(): String
 }
 
-internal class GivenCollector(): DataEngine(), Spec {
+internal class GivenCollector(): Collector<Given>(), Spec {
     override fun getPrefix(): String = "Given"
     override fun Given(description: String, init: Given.() -> Unit) = collect(description, init)
 
