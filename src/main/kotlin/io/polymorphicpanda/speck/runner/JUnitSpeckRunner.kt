@@ -57,7 +57,7 @@ internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
     override fun getDescription(): Description = _description
     override fun describeChild(child: Action<Then>): Description {
         return childrenDescriptions.getOrPut(child.description(), {
-            Description.createSuiteDescription("${child.description()} (${given.description()}.${`when`.description()})", JUnitUniqueId.next())
+            Description.createSuiteDescription("${child.description()} (${testClass.javaClass.simpleName}.${given.description()}.${`when`.description()})", JUnitUniqueId.next())
         })
     }
     override fun getChildren(): MutableList<Action<Then>> = _children
@@ -123,6 +123,8 @@ internal class JUnitSpeckRunner<T: Speck>(testClass: Class<T>): ParentRunner<JUn
             child.run(it)
         }
     }
+
+    override fun getName(): String = testClass.javaClass.simpleName
 
     @Suppress("UNCHECKED_CAST")
     fun newInstance():T = testClass.onlyConstructor.newInstance() as T
