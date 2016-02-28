@@ -64,7 +64,7 @@ internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
 
     override fun runChild(child: Action<Then>, notifier: RunNotifier) {
         junitAction(describeChild(child), notifier) {
-            child.execute(ThenImpl())
+            child.execute(Assertions(Feature(given, `when`, child)))
         }
     }
 }

@@ -1,5 +1,7 @@
 package io.polymorphicpanda.speck.dsl
 
+import kotlin.reflect.KClass
+
 interface Then {
     fun <T> shouldBeEqual(expected: T?, actual: T?)
     fun <T> shouldNotBeEqual(expected: T?, actual: T?)
@@ -8,5 +10,5 @@ interface Then {
     fun shouldBeTrue(expression: Boolean)
     fun shouldBeFalse(expression: Boolean)
     fun shouldThrow(invoke: () -> Unit)
-    fun shouldThrow(exception: Class<out Exception>, invoke: () -> Unit)
+    fun shouldThrow(expected: KClass<out Throwable>, invoke: () -> Unit)
 }

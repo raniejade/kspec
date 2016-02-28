@@ -8,6 +8,9 @@ class TestSpec: Speck({
 
         When("the bar is full") {
             Then("foobar") {
+                shouldBeEqual(1, 1)
+                shouldNotBeEqual(1, 2)
+                shouldBeTrue(true)
             }
 
             Then("shit") {
