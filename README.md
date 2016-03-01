@@ -35,16 +35,29 @@ class TestSpec: Speck({
         }
     }
 
-    Given("a number, a string and a nullable") { a: Int, b: String, c: Any? ->
-        When("i do something") {
+    Given("a number, a string and a nullable") { 
+        When("i do something") { a: Int, b: String, c: Any? ->
             Then("it will happen") {
             }
+        }.Where {
+            row(1, "foo", null)
+            row(2, "bar", null)
+            row(3, "haha", null)
+            row(4, "shit", null)
         }
-    }.Where {
-        row(1, "foo", null)
-        row(2, "bar", null)
-        row(3, "haha", null)
-        row(4, "shit", null)
     }
 })
+```
+
+#### Human readable failure report
+```
+java.lang.AssertionError: 
+
+     Given two numbers a and b
+       When c = b * a and d = a * b [1, 2]
+         Then c == d
+           * shouldBeEqual(2, 2)
+           * shouldBeTrue(true)
+           * shouldBeFalse(true} // assertion failed here
+
 ```
