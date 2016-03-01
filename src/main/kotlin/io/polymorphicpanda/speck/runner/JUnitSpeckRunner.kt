@@ -33,13 +33,13 @@ fun junitAction(description: Description, notifier: RunNotifier, action: (RunNot
 }
 
 internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
-                                         val given: Action<Given>,
-                                         val `when`: Action<When>): ParentRunner<Action<Then>>(testClass) {
+                                         val given: Clause<Given>,
+                                         val `when`: Clause<When>): ParentRunner<Clause<Then>>(testClass) {
 
     val _children by lazy(LazyThreadSafetyMode.NONE) {
         val thenCollector = ThenCollector()
         `when`.execute(thenCollector)
-        val results: MutableList<Action<Then>> = mutableListOf()
+        val results: MutableList<Clause<Then>> = mutableListOf()
         thenCollector.iterate { results.add(it) }
         results
     }
@@ -55,22 +55,24 @@ internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
     val childrenDescriptions = hashMapOf<String, Description>()
 
     override fun getDescription(): Description = _description
-    override fun describeChild(child: Action<Then>): Description {
+    override fun describeChild(child: Clause<Then>): Description {
         return childrenDescriptions.getOrPut(child.description(), {
             Description.createSuiteDescription("${child.description()} (${testClass.javaClass.simpleName}.${given.description()}.${`when`.description()})", JUnitUniqueId.next())
         })
     }
-    override fun getChildren(): MutableList<Action<Then>> = _children
+    override fun getChildren(): MutableList<Clause<Then>> = _children
 
-    override fun runChild(child: Action<Then>, notifier: RunNotifier) {
+    override fun runChild(child: Clause<Then>, notifier: RunNotifier) {
         junitAction(describeChild(child), notifier) {
+            `when`.before()
             child.execute(Assertions(Feature(given, `when`, child)))
+            `when`.after()
         }
     }
 }
 
 internal class JUnitGivenRunner<T: Speck>(testClass: Class<T>,
-                                          val given: Action<Given>): ParentRunner<JUnitWhenRunner<T>>(testClass) {
+                                          val given: Clause<Given>): ParentRunner<JUnitWhenRunner<T>>(testClass) {
 
     val _children by lazy(LazyThreadSafetyMode.NONE) {
         val whenCollector = WhenCollector()

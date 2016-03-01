@@ -6,17 +6,29 @@ import io.polymorphicpanda.speck.dsl.Then
 import io.polymorphicpanda.speck.dsl.When
 import java.util.*
 
-internal abstract class Action<T> {
+internal abstract class Clause<T> {
     abstract fun description(): String
     abstract fun execute(target: T)
+    abstract fun before();
+    abstract fun after();
 }
 
 internal abstract class Collector<T> {
-    val actions = LinkedList<Action<T>>()
+    val actions = LinkedList<Clause<T>>()
+    var before: ((String) -> Unit)? = null
+    var after: ((String) -> Unit)? = null
 
     fun collect(description: String, init: T.() -> Unit) {
         actions.add(
-                object: Action<T>() {
+                object: Clause<T>() {
+                    override fun before() {
+                        before?.invoke(this.description())
+                    }
+
+                    override fun after() {
+                        after?.invoke(this.description())
+                    }
+
                     override fun description(): String = "${getPrefix()} $description"
 
                     override fun execute(target: T) {
@@ -26,7 +38,7 @@ internal abstract class Collector<T> {
         )
     }
 
-    fun iterate(each: (Action<T>) -> Unit) {
+    fun iterate(each: (Clause<T>) -> Unit) {
         val iterator = actions.iterator()
         while (iterator.hasNext()) {
             each(iterator.next());
@@ -44,8 +56,6 @@ internal class GivenCollector(): Collector<Given>(), Spec {
 }
 
 internal class WhenCollector: Collector<When>(), Given {
-    var before: ((String) -> Unit)? = null
-    var after: ((String) -> Unit)? = null
     override fun BeforeWhen(action: (String) -> Unit) {
         before = action
     }
@@ -56,10 +66,8 @@ internal class WhenCollector: Collector<When>(), Given {
 
     override fun getPrefix(): String = "When"
 
-    override fun When(description: String, given: When.() -> Unit) = collect(description, {
-        before?.invoke(description)
-        with(this, given)
-        after?.invoke(description)
+    override fun When(description: String, clause: When.() -> Unit) = collect(description, {
+        with(this, clause)
     })
 }
 

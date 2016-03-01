@@ -66,9 +66,9 @@ internal class Assertions(val feature: Feature): Then {
     }
 }
 
-internal data class Feature(val given: Action<Given>,
-                            val `when`: Action<When>,
-                            val then: Action<Then>)
+internal data class Feature(val given: Clause<Given>,
+                            val `when`: Clause<When>,
+                            val then: Clause<Then>)
 
 internal abstract class AssertionOperator(val feature: Feature) {
 
