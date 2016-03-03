@@ -7,7 +7,7 @@ import java.io.IOException
  */
 class AssertionsSpec: Speck({
     Given("shouldBeEqual") {
-        BeforeWhen { println("before $it") }
+        Before { println("before $it") }
         When("invoked with equal values") {
             Then("it should not throw an assertion error") {
                 try {
@@ -29,7 +29,7 @@ class AssertionsSpec: Speck({
             }
         }
 
-        AfterWhen { println("after $it") }
+        After { println("after $it") }
     }
 
     Given("shouldNotBeEqual") {

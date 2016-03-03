@@ -2,7 +2,7 @@ package io.polymorphicpanda.speck.dsl
 
 import kotlin.reflect.KClass
 
-interface Then {
+interface Then: SpeckDsl {
     fun <T> shouldBeEqual(expected: T?, actual: T?)
     fun <T> shouldNotBeEqual(expected: T?, actual: T?)
     fun <T> shouldBeSame(expected: T?, actual: T?)

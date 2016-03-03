@@ -1,5 +1,5 @@
 package io.polymorphicpanda.speck.dsl
 
-interface When {
-    fun Then(description: String, init: Then.() -> Unit)
+interface When: SpeckDsl {
+    fun Then(description: String, clause: Then.() -> Unit)
 }

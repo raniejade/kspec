@@ -7,7 +7,7 @@ class BeforeAfterWhenSpec: Speck({
     Given("BeforeWhen") {
         var test = false
 
-        BeforeWhen {
+        Before {
             test = true
         }
 
@@ -33,7 +33,7 @@ class BeforeAfterWhenSpec: Speck({
         }
 
 
-        AfterWhen {
+        After {
             test = true
         }
     }

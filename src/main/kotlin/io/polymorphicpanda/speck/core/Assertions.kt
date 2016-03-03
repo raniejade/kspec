@@ -1,8 +1,6 @@
 package io.polymorphicpanda.speck.core
 
-import io.polymorphicpanda.speck.dsl.Given
 import io.polymorphicpanda.speck.dsl.Then
-import io.polymorphicpanda.speck.dsl.When
 import kotlin.reflect.KClass
 
 
@@ -66,9 +64,7 @@ internal class Assertions(val feature: Feature): Then {
     }
 }
 
-internal data class Feature(val given: Clause<Given>,
-                            val `when`: Clause<When>,
-                            val then: Clause<Then>)
+internal data class Feature(val steps: List<String>)
 
 internal abstract class AssertionOperator(val feature: Feature) {
 
@@ -76,16 +72,20 @@ internal abstract class AssertionOperator(val feature: Feature) {
 
     fun assert() {
         assert(doAssert(), {
-            var str = """
-
-     ${feature.given.description()}
-       ${feature.`when`.description()}
-         ${feature.then.description()}"""
-            collect(this).reversed().forEach {
-                str += """
-           * $it"""
+            var buffer = ""
+            feature.steps.forEachIndexed { index, step ->
+                buffer += "${"\t".repeat(index + 1)}$step\n"
             }
-            str + " // assertion failed here\n"
+            val assertions = collect(this).reversed()
+            assertions.forEachIndexed { index, it ->
+                buffer += "${"\t".repeat(feature.steps.size)}* $it"
+
+                if (index - 1 == assertions.size) {
+                    buffer += " // assertion failed here"
+                }
+
+                buffer += "\n"
+            }
         })
     }
 

@@ -1,15 +1,16 @@
 package io.polymorphicpanda.speck.runner
 
 import io.polymorphicpanda.speck.Speck
-import io.polymorphicpanda.speck.core.*
-import io.polymorphicpanda.speck.dsl.Given
-import io.polymorphicpanda.speck.dsl.Then
-import io.polymorphicpanda.speck.dsl.When
+import io.polymorphicpanda.speck.core.Clause
+import io.polymorphicpanda.speck.core.RootClause
+import io.polymorphicpanda.speck.core.ThenClause
+import io.polymorphicpanda.speck.core.WhenClause
 import org.junit.runner.Description
+import org.junit.runner.Runner
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
-import org.junit.runners.ParentRunner
 import java.io.Serializable
+import java.util.*
 
 data class JUnitUniqueId(val id: Int) : Serializable {
     companion object {
@@ -18,116 +19,91 @@ data class JUnitUniqueId(val id: Int) : Serializable {
     }
 }
 
-fun junitAction(description: Description, notifier: RunNotifier, action: (RunNotifier) -> Unit) {
-    if (description.isTest) {
-        notifier.fireTestStarted(description)
-    }
-
-    try {
-        action(notifier)
-    } catch(e: Throwable) {
-        notifier.fireTestFailure(Failure(description, e))
-    } finally {
-        if (description.isTest) notifier.fireTestFinished(description)
-    }
-}
-
-internal class JUnitWhenRunner<T: Speck>(testClass: Class<T>,
-                                         val given: Clause<Given>,
-                                         val `when`: Clause<When>): ParentRunner<Clause<Then>>(testClass) {
-
-    val _children by lazy(LazyThreadSafetyMode.NONE) {
-        val thenCollector = ThenCollector()
-        `when`.execute(thenCollector)
-        val results: MutableList<Clause<Then>> = mutableListOf()
-        thenCollector.iterate { results.add(it) }
-        results
-    }
+internal class JUnitSpeckRunner<T: Speck>(val speck: Class<T>): Runner() {
 
     val _description by lazy(LazyThreadSafetyMode.NONE) {
-        val desc = Description.createSuiteDescription(`when`.description(), JUnitUniqueId.next())
-        children.forEach {
-            desc.addChild(describeChild(it))
+        val instance = speck.newInstance()
+        val desc = Description.createSuiteDescription(speck)
+
+        RootClause(instance.init, desc.displayName).execute { givenClause ->
+            val givenDesc = describe(givenClause)
+            desc.addChild(givenDesc)
+            rememberAction(givenDesc) {
+                givenClause.execute { clause ->
+                    val clauseDesc = describe(clause)
+                    givenDesc.addChild(clauseDesc)
+                    rememberAction(clauseDesc) {
+                        when (clause) {
+                            is WhenClause -> {
+                                rememberAction(clauseDesc) {
+                                    clause.execute {
+                                        val thenDesc = describe(it)
+                                        clauseDesc.addChild(thenDesc)
+                                        rememberAction(thenDesc, true) {
+                                            it.execute()
+                                        }
+                                    }
+                                }
+                            }
+                            is ThenClause -> {
+                                rememberAction(clauseDesc, true) {
+                                    clause.execute()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+
         desc
     }
 
-    val childrenDescriptions = hashMapOf<String, Description>()
+    val stack = LinkedHashMap<Description, (RunNotifier) -> Unit>()
 
-    override fun getDescription(): Description = _description
-    override fun describeChild(child: Clause<Then>): Description {
-        return childrenDescriptions.getOrPut(child.description(), {
-            Description.createSuiteDescription("${child.description()} (${testClass.javaClass.simpleName}.${given.description()}.${`when`.description()})", JUnitUniqueId.next())
-        })
-    }
-    override fun getChildren(): MutableList<Clause<Then>> = _children
-
-    override fun runChild(child: Clause<Then>, notifier: RunNotifier) {
-        junitAction(describeChild(child), notifier) {
-            `when`.before()
-            child.execute(Assertions(Feature(given, `when`, child)))
-            `when`.after()
-        }
-    }
-}
-
-internal class JUnitGivenRunner<T: Speck>(testClass: Class<T>,
-                                          val given: Clause<Given>): ParentRunner<JUnitWhenRunner<T>>(testClass) {
-
-    val _children by lazy(LazyThreadSafetyMode.NONE) {
-        val whenCollector = WhenCollector()
-        given.execute(whenCollector)
-        val results: MutableList<JUnitWhenRunner<T>> = mutableListOf()
-        whenCollector.iterate { results.add(JUnitWhenRunner(testClass, given, it)) }
-        results
-    }
-
-    val _description by lazy(LazyThreadSafetyMode.NONE) {
-        val desc = Description.createSuiteDescription(given.description(), JUnitUniqueId.next())
-        children.forEach {
-            desc.addChild(describeChild(it))
-        }
-        desc
-    }
-
-    override fun getDescription(): Description = _description
-    override fun describeChild(child: JUnitWhenRunner<T>): Description = child.description
-    override fun runChild(child: JUnitWhenRunner<T>, notifier: RunNotifier) {
-        junitAction(describeChild(child), notifier) {
-            child.run(it)
+    override fun run(notifier: RunNotifier?) {
+        stack.forEach { description, action ->
+            action(notifier!!)
         }
     }
 
-    override fun getChildren(): List<JUnitWhenRunner<T>> = _children
-}
+    override fun getDescription(): Description? = _description
 
-
-internal class JUnitSpeckRunner<T: Speck>(testClass: Class<T>): ParentRunner<JUnitGivenRunner<T>>(testClass) {
-    val _children by lazy(LazyThreadSafetyMode.NONE) {
-        val speck = newInstance()
-        val givenCollector = GivenCollector()
-        speck(givenCollector)
-        val results: MutableList<JUnitGivenRunner<T>> = mutableListOf()
-        givenCollector.iterate {
-            results.add(JUnitGivenRunner(testClass, it))
+    private fun rememberAction(description: Description, terminal: Boolean = false, action: () -> Unit) {
+        when (terminal) {
+            false -> {
+                try {
+                    action()
+                } catch(e: Throwable) {
+                    stack.put(description) {
+                        it.fireTestFailure(Failure(description, e))
+                    }
+                }
+            }
+            else -> {
+                stack.put(description) {
+                    try {
+                        it.fireTestStarted(description)
+                        action()
+                    } catch(e: Throwable) {
+                        it.fireTestFailure(Failure(description, e))
+                    } finally {
+                        it.fireTestFinished(description)
+                    }
+                }
+            }
         }
-        results
+
     }
-
-    override fun getChildren(): List<JUnitGivenRunner<T>> = _children
-
-    override fun describeChild(child: JUnitGivenRunner<T>): Description {
-        return child.description
-    }
-
-    override fun runChild(child: JUnitGivenRunner<T>, notifier: RunNotifier) {
-        junitAction(describeChild(child), notifier) {
-            child.run(it)
+    private fun describe(clause: Clause): Description {
+        return when(clause) {
+            is ThenClause -> {
+                Description.createTestDescription(
+                    "${clause.parent?.parent?.description()}.${clause.parent?.description()}",
+                    clause.description()
+                )
+            }
+            else -> Description.createSuiteDescription(clause.description(), JUnitUniqueId.next())
         }
     }
-
-    override fun getName(): String = testClass.javaClass.simpleName
-
-    @Suppress("UNCHECKED_CAST")
-    fun newInstance():T = testClass.onlyConstructor.newInstance() as T
 }
