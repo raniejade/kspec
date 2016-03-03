@@ -62,7 +62,7 @@ internal class JUnitSpeckRunner<T: Speck>(val speck: Class<T>): Runner() {
     val stack = LinkedHashMap<Description, (RunNotifier) -> Unit>()
 
     override fun run(notifier: RunNotifier?) {
-        stack.forEach { description, action ->
+        stack.forEach { description: Description, action: (RunNotifier) -> Unit ->
             action(notifier!!)
         }
     }
