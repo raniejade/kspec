@@ -13,7 +13,10 @@ fun It.truthy(message: Any? = null) = Equals(true, message)
 fun It.falsy(message: Any? = null) = Equals(false, message)
 
 
-fun It.expect(arg: () -> Unit) = Expect<() -> Unit, BlockMatcher>(arg)
-fun Expect<() -> Unit, BlockMatcher>.toThrow(expected: KClass<out Throwable>) = Throw(expected.java)
-fun It.`throw`(expected: KClass<out Throwable>) = Throw(expected.java)
-fun It.notThrow(expected: KClass<out Throwable>? = null) = NotThrow(expected?.java)
+fun It.thrown(expected: KClass<out Throwable>) = Thrown(expected.java)
+fun It.notThrown(expected: KClass<out Throwable>? = null) = NotThrown(expected?.java)
+
+
+fun <T> It.eq(expected: Collection<T>,
+              strict: Boolean = false, message: Any? = null) = ContentEquals(expected, strict, message)
+fun <T> It.notEq(expected: Collection<T>, message: Any? = null) = ContentNotEquals(expected, message)

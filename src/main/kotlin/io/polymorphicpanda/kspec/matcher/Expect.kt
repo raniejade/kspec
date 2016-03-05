@@ -1,7 +1,7 @@
 package io.polymorphicpanda.kspec.matcher
 
-class Expect<T, K: Matcher<T>>(val arg: T) {
-    fun to(matcher: K) {
+class Expect<T>(val arg: T) {
+    fun <K: Matcher<in T>> toBe(matcher: K) {
         matcher.match(arg)
     }
 }

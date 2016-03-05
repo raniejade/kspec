@@ -3,7 +3,7 @@ package io.polymorphicpanda.kspec.matcher
 import junit.framework.ComparisonFailure
 
 abstract class SimpleMatcher<T>(val expected: T, message: Any?): AbstractMatcher<T>(message) {
-    override fun match(arg: T?) {
+    override fun match(arg: T) {
         test(doAssert(arg, expected)) {
             val desc = if (message != null) {
                 "$message"
@@ -20,5 +20,5 @@ abstract class SimpleMatcher<T>(val expected: T, message: Any?): AbstractMatcher
         }
     }
 
-    protected abstract fun doAssert(actual: T?, expected: T): Boolean
+    protected abstract fun doAssert(actual: T, expected: T): Boolean
 }

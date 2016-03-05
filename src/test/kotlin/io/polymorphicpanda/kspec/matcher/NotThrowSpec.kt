@@ -11,7 +11,7 @@ class NotThrowSpec: KSpec() {
     override fun spec() {
         describe("NotThrow") {
             context("no exception thrown expected") {
-                var matcher = NotThrow(null)
+                var matcher = NotThrown(null)
 
                 describe("match") {
                     context("block throws an exception") {
@@ -36,7 +36,7 @@ class NotThrowSpec: KSpec() {
             }
 
             context("a specific exception not be thrown is expected") {
-                var matcher = NotThrow(IOException::class.java)
+                var matcher = NotThrown(IOException::class.java)
 
                 describe("match") {
                     context("block does not throw any exception") {

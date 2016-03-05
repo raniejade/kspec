@@ -11,7 +11,7 @@ class ThrowSpec: KSpec() {
     override fun spec() {
         describe("Throw") {
             context("any exception expected") {
-                var matcher = Throw(null)
+                var matcher = Thrown(null)
 
                 describe("match") {
                     context("block throws an exception") {
@@ -37,7 +37,7 @@ class ThrowSpec: KSpec() {
             }
 
             context("a specific exception expected") {
-                var matcher = Throw(IOException::class.java)
+                var matcher = Thrown(IOException::class.java)
 
                 describe("match") {
                     context("block throws an exception but not the expected") {

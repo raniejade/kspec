@@ -4,7 +4,7 @@ package io.polymorphicpanda.kspec.matcher
  * @author Ranie Jade Ramiso
  */
 open class BaseBlockMatcher(val clazz: Class<out Throwable>?): BlockMatcher() {
-    override fun match(arg: (() -> Unit)?) {
+    override fun match(arg: () -> Unit) {
         var thrown = false
         try {
             arg!!()

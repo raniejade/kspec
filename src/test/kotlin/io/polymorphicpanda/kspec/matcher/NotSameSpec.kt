@@ -2,8 +2,8 @@ package io.polymorphicpanda.kspec.matcher
 
 import kspec.KSpec
 import kspec.asserts.expect
-import kspec.asserts.notThrow
-import kspec.asserts.toThrow
+import kspec.asserts.notThrown
+import kspec.asserts.thrown
 
 /**
  * @author Ranie Jade Ramiso
@@ -19,7 +19,7 @@ class NotSameSpec: KSpec() {
                     it("should not throw an exception") {
                         expect({
                             matcher.match(listOf(1))
-                        }).to(notThrow())
+                        }).toBe(notThrown())
                     }
                 }
 
@@ -27,7 +27,7 @@ class NotSameSpec: KSpec() {
                     it("should throw an AssertionError") {
                         expect({
                             matcher.match(instance)
-                        }).toThrow(AssertionError::class)
+                        }).toBe(thrown(AssertionError::class))
                     }
                 }
             }
