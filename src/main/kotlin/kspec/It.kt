@@ -1,0 +1,5 @@
+package kspec
+
+interface It {
+
+}
