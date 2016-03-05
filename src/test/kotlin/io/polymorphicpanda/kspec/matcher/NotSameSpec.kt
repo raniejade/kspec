@@ -10,9 +10,9 @@ import kspec.asserts.toThrow
  */
 class NotSameSpec: KSpec() {
     override fun spec() {
-        describe("Same") {
+        describe("NotSame") {
             val instance = listOf(1)
-            val matcher = Same(instance, null)
+            val matcher = NotSame(instance, null)
 
             describe("match") {
                 context("passed argument is not same instance") {

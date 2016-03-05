@@ -5,12 +5,12 @@ import kspec.It
 import kotlin.reflect.KClass
 
 fun <T> It.expect(arg: T) = Expect(arg)
-fun <T> It.eq(expected: T, message: Any?) = Equals(expected, message)
-fun <T> It.notEq(expected: T, message: Any?)= NotEquals(expected, message)
-fun <T> It.same(expected: T, message: Any?) = Same(expected, message)
+fun <T> It.eq(expected: T, message: Any? = null) = Equals(expected, message)
+fun <T> It.notEq(expected: T, message: Any? = null) = NotEquals(expected, message)
+fun <T> It.same(expected: T, message: Any? = null) = Same(expected, message)
 fun <T> It.notSame(expected: T, message: Any?) = NotSame(expected, message)
-fun It.truthy(message: Any?) = Equals(true, message)
-fun It.falsy(message: Any?) = Equals(false, message)
+fun It.truthy(message: Any? = null) = Equals(true, message)
+fun It.falsy(message: Any? = null) = Equals(false, message)
 
 
 fun It.expect(arg: () -> Unit) = Expect<() -> Unit, BlockMatcher>(arg)
