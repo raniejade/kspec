@@ -12,9 +12,11 @@ class Context(var description: String, var action: () -> Unit,
     var beforeEach: (() -> Unit)? = null
     var afterEach: (() -> Unit)? = null
 
-    fun addChild(context: Context) {
-        context.parent = this
-        _children.add(context)
+    fun addChild(vararg context: Context) {
+        context.forEach {
+            it.parent = this
+            _children.add(it)
+        }
     }
 
     fun visit(visitor: ContextVisitor) {
