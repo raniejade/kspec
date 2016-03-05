@@ -8,6 +8,8 @@ open class BaseBlockMatcher(val clazz: Class<out Throwable>?): BlockMatcher() {
         try {
             arg!!()
             noExceptionThrown(clazz)
+        } catch (e: AssertionError) {
+            throw e
         } catch (e: Throwable) {
             exceptionThrown(e, clazz)
         }
