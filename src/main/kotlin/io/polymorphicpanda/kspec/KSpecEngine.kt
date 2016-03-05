@@ -5,7 +5,7 @@ import kspec.It
 import kspec.KSpec
 import kspec.Spec
 
-class KSpecEngine<T: KSpec>(clazz: Class<T>) : Spec {
+class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     val root: Context = Context(clazz.name, {})
     var current = root
 
@@ -23,7 +23,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>) : Spec {
 
     override fun it(description: String, action: It.() -> Unit) {
         enter(Context(format("it", description), {
-            action(object : It {})
+            action(object: It {})
         }, null, true))
         exit()
     }
@@ -57,6 +57,6 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>) : Spec {
     }
 
     private fun exit() {
-        current = current.parent?: current
+        current = current.parent ?: current
     }
 }

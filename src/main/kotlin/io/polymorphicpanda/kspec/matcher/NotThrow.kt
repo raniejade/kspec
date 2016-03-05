@@ -5,8 +5,12 @@ package io.polymorphicpanda.kspec.matcher
  */
 class NotThrow(clazz: Class<out Throwable>?): BaseBlockMatcher(clazz) {
     override fun exceptionThrown(throwable: Throwable, clazz: Class<out Throwable>?) {
-        if (clazz != null && clazz == throwable.javaClass) {
-            fail()
+        if (clazz != null) {
+            if (clazz == throwable.javaClass) {
+                fail("${throwable.javaClass} is not expected, but was thrown")
+            }
+        } else {
+            fail("no exception expected but ${throwable.javaClass} was thrown")
         }
     }
 }

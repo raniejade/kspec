@@ -29,7 +29,8 @@ class ThrowSpec: KSpec() {
                             try {
                                 matcher.match { }
                                 fail()
-                            } catch (e: AssertionError) { }
+                            } catch (e: AssertionError) {
+                            }
                         }
                     }
                 }
@@ -44,7 +45,8 @@ class ThrowSpec: KSpec() {
                             try {
                                 matcher.match { throw RuntimeException() }
                                 fail()
-                            } catch (e: AssertionError) { }
+                            } catch (e: AssertionError) {
+                            }
                         }
                     }
 
@@ -63,7 +65,8 @@ class ThrowSpec: KSpec() {
                             try {
                                 matcher.match { }
                                 fail()
-                            } catch (e: AssertionError) { }
+                            } catch (e: AssertionError) {
+                            }
                         }
                     }
                 }

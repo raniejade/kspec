@@ -64,7 +64,8 @@ class NotThrowSpec: KSpec() {
                             try {
                                 matcher.match { throw IOException() }
                                 fail()
-                            } catch (e: AssertionError) { }
+                            } catch (e: AssertionError) {
+                            }
                         }
                     }
                 }
