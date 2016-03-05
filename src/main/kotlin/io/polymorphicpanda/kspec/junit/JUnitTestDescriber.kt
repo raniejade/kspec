@@ -9,7 +9,14 @@ class JUnitTestDescriber: ContextVisitor {
     val contextDescriptions = LinkedHashMap<Context, Description>()
 
     override fun pre(context: Context) {
-        contextDescriptions.put(context, Description.createSuiteDescription(context.description))
+        if (!context.terminal) {
+            contextDescriptions.put(context, Description.createSuiteDescription(context.description))
+        } else {
+            contextDescriptions.put(
+                    context,
+                    Description.createSuiteDescription("${context.description}(${className(context.parent!!)})")
+            )
+        }
     }
 
     override fun post(context: Context) {
@@ -19,6 +26,19 @@ class JUnitTestDescriber: ContextVisitor {
             val parent = contextDescriptions[context.parent!!]
             parent!!.addChild(current)
         }
+    }
+
+    private fun className(context: Context?): String {
+        if (context == null) {
+            return ""
+        }
+        val parent = className(context.parent)
+
+        if (parent.isEmpty()) {
+            return context.description
+        }
+
+        return "$parent.${context.description}"
     }
 }
 
