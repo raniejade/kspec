@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+dokka {
+    outputFormat = 'html'
+}
+
 dependencies {
     compile "com.google.guava:guava"
     compile "junit:junit"
