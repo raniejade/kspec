@@ -20,7 +20,7 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
         safeRun(context) { context, desc ->
             if (context.terminal) {
                 invokeBeforeEach(context)
-                context.action()
+                context()
                 invokeAfterEach(context)
             }
         }
@@ -53,6 +53,9 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
         val desc = contextDescriptions[context];
         try {
             action(context, desc!!)
+            if (context.failure != null) {
+                notifier.fireTestFailure(Failure(desc, context.failure))
+            }
         } catch (e: Throwable) {
             notifier.fireTestFailure(Failure(desc, e))
         }

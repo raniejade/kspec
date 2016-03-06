@@ -16,7 +16,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun describe(description: String, action: () -> Unit) {
         invokeIfNotDone {
-            enter(Context(format("describe", description), action))
+            enter(Context(format("describe", description), { action() }))
             evaluate()
             exit()
         }
@@ -24,7 +24,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun context(description: String, action: () -> Unit) {
         invokeIfNotDone {
-            enter(Context(format("context", description), action))
+            enter(Context(format("context", description), { action() }))
             evaluate()
             exit()
         }
@@ -33,7 +33,11 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     override fun it(description: String, action: It.() -> Unit) {
         invokeIfNotDone {
             enter(Context(format("it", description), {
-                action(object: It {})
+                action(object: It {
+                    override fun fail(message: String?) {
+                        it.failure = AssertionError(message?: "explicitly marked to fail by user")
+                    }
+                })
             }, null, true))
             exit()
         }

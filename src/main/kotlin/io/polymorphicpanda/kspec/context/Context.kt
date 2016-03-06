@@ -2,9 +2,11 @@ package io.polymorphicpanda.kspec.context
 
 import java.util.*
 
-class Context(var description: String, var action: () -> Unit,
+class Context(var description: String, var action: (Context) -> Unit,
               var parent: Context? = null, val terminal: Boolean = false) {
     private val _children = LinkedList<Context>()
+
+    var failure: Throwable? = null
     var children: List<Context> = _children
     var before: (() -> Unit)? = null
     var after: (() -> Unit)? = null
@@ -24,7 +26,7 @@ class Context(var description: String, var action: () -> Unit,
     }
 
     operator fun invoke() {
-        action()
+        action(this)
     }
 
     companion object {
