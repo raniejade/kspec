@@ -12,6 +12,8 @@ fun <T> It.notSame(expected: T, message: Any?) = NotSame(expected, message)
 fun It.truthy(message: Any? = null) = Equals(true, message)
 fun It.falsy(message: Any? = null) = Equals(false, message)
 
+fun <T> Expect<T?>.toBeNull(message: Any? = null) = Equals<T?>(null, message)
+fun <T> Expect<T?>.toBeNotNull(message: Any? = null) = NotEquals<T?>(null, message)
 
 fun It.thrown(expected: KClass<out Throwable>) = Thrown(expected.java)
 fun It.notThrown(expected: KClass<out Throwable>? = null) = NotThrown(expected?.java)

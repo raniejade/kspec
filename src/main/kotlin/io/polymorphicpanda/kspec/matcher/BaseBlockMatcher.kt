@@ -7,7 +7,7 @@ open class BaseBlockMatcher(val clazz: Class<out Throwable>?): BlockMatcher() {
     override fun match(arg: () -> Unit) {
         var thrown = false
         try {
-            arg!!()
+            arg()
         } catch (e: Throwable) {
             thrown = true
             exceptionThrown(e, clazz)
