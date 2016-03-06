@@ -8,42 +8,67 @@ import kspec.Spec
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     val root: Context = Context(clazz.name, {})
     var current = root
+    internal var disabled = false
+
+    internal fun disable() {
+        disabled = true
+    }
 
     override fun describe(description: String, action: () -> Unit) {
-        enter(Context(format("describe", description), action))
-        evaluate()
-        exit()
+        invokeIfNotDone {
+            enter(Context(format("describe", description), action))
+            evaluate()
+            exit()
+        }
     }
 
     override fun context(description: String, action: () -> Unit) {
-        enter(Context(format("context", description), action))
-        evaluate()
-        exit()
+        invokeIfNotDone {
+            enter(Context(format("context", description), action))
+            evaluate()
+            exit()
+        }
     }
 
     override fun it(description: String, action: It.() -> Unit) {
-        enter(Context(format("it", description), {
-            action(object: It {})
-        }, null, true))
-        exit()
+        invokeIfNotDone {
+            enter(Context(format("it", description), {
+                action(object: It {})
+            }, null, true))
+            exit()
+        }
     }
 
     override fun before(action: () -> Unit) {
-        current.before = action
+        invokeIfNotDone {
+            current.before = action
+        }
     }
 
     override fun after(action: () -> Unit) {
-        current.after = action
+        invokeIfNotDone {
+            current.after = action
+        }
     }
 
     override fun beforeEach(action: () -> Unit) {
-        current.beforeEach = action
+        invokeIfNotDone {
+            current.beforeEach = action
+        }
     }
 
     override fun afterEach(action: () -> Unit) {
-        current.afterEach = action
+        invokeIfNotDone {
+            current.afterEach = action
+        }
     }
 
+    private fun invokeIfNotDone(block: () -> Unit) {
+        if (disabled) {
+            throw CollectionException("You bad bad boy, this is not allowed here.")
+        }
+        block()
+    }
 
     private fun format(prefix: String, description: String): String = "$prefix: $description"
 

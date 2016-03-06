@@ -14,6 +14,7 @@ class KSpecRunner<T: KSpec>(clazz: Class<T>): Runner() {
         spec.engine = engine
         spec.spec()
         engine.root.visit(describer)
+        engine.disable()
         describer.contextDescriptions[engine.root]!!
     }
 
