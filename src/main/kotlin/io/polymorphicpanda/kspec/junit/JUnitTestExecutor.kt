@@ -37,7 +37,7 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
 
     private fun invokeBeforeEach(context: Context) {
         if (context.parent != null) {
-            invokeBeforeEach(context.parent!!)
+            invokeBeforeEach(context.parent)
         }
         context.beforeEach?.invoke()
     }
@@ -45,7 +45,7 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
     private fun invokeAfterEach(context: Context) {
         context.afterEach?.invoke()
         if (context.parent != null) {
-            invokeAfterEach(context.parent!!)
+            invokeAfterEach(context.parent)
         }
     }
 

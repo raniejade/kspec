@@ -6,7 +6,7 @@ import kspec.KSpec
 import kspec.Spec
 
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
-    val root: Context = Context(clazz.name, {})
+    val root: Context = Context(clazz.name, {}, null)
     var current = root
     internal var disabled = false
 
@@ -16,7 +16,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun describe(description: String, action: () -> Unit) {
         invokeIfNotDone {
-            enter(Context(format("describe", description), { action() }))
+            enter(format("describe", description), { action() })
             evaluate()
             exit()
         }
@@ -24,7 +24,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun context(description: String, action: () -> Unit) {
         invokeIfNotDone {
-            enter(Context(format("context", description), { action() }))
+            enter(format("context", description), { action() })
             evaluate()
             exit()
         }
@@ -32,13 +32,13 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun it(description: String, action: It.() -> Unit) {
         invokeIfNotDone {
-            enter(Context(format("it", description), {
+            enter(format("it", description), {
                 action(object: It {
                     override fun fail(message: String?) {
                         it.failure = AssertionError(message?: "explicitly marked to fail by user")
                     }
                 })
-            }, null, true))
+            }, true)
             exit()
         }
     }
@@ -76,8 +76,8 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     private fun format(prefix: String, description: String): String = "$prefix: $description"
 
-    private fun enter(context: Context) {
-        current.addChild(context)
+    private fun enter(description: String, action: (Context) -> Unit, terminal: Boolean = false) {
+        val context = Context(description, action, current, terminal)
         current = context
     }
 

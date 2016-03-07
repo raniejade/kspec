@@ -14,7 +14,7 @@ class JUnitTestDescriber: ContextVisitor {
         } else {
             contextDescriptions.put(
                     context,
-                    Description.createSuiteDescription("${context.description}(${className(context.parent!!)})")
+                    Description.createSuiteDescription("${context.description}(${className(context.parent)})")
             )
         }
     }
@@ -23,7 +23,7 @@ class JUnitTestDescriber: ContextVisitor {
         val current = contextDescriptions[context]
 
         if (context.parent != null) {
-            val parent = contextDescriptions[context.parent!!]
+            val parent = contextDescriptions[context.parent]
             parent!!.addChild(current)
         }
     }

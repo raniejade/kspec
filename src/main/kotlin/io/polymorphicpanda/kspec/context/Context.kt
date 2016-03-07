@@ -3,8 +3,16 @@ package io.polymorphicpanda.kspec.context
 import java.util.*
 
 class Context(var description: String, var action: (Context) -> Unit,
-              var parent: Context? = null, val terminal: Boolean = false) {
+              val parent: Context?, val terminal: Boolean = false) {
+
     private val _children = LinkedList<Context>()
+
+    init {
+        if (parent != null) {
+            parent._children.add(this)
+        }
+    }
+
 
     var failure: Throwable? = null
     var children: List<Context> = _children
@@ -13,13 +21,6 @@ class Context(var description: String, var action: (Context) -> Unit,
 
     var beforeEach: (() -> Unit)? = null
     var afterEach: (() -> Unit)? = null
-
-    fun addChild(vararg context: Context) {
-        context.forEach {
-            it.parent = this
-            _children.add(it)
-        }
-    }
 
     fun visit(visitor: ContextVisitor) {
         doVisit(visitor, this)
