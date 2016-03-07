@@ -3,7 +3,7 @@ package io.polymorphicpanda.kspec.matcher
 /**
  * @author Ranie Jade Ramiso
  */
-class Thrown(clazz: Class<out Throwable>?): BaseBlockMatcher(clazz) {
+class Thrown(clazz: Class<out Throwable>?): BlockMatcher(clazz) {
     override fun exceptionThrown(throwable: Throwable, clazz: Class<out Throwable>?) {
         if (clazz != null && !clazz.isInstance(throwable)) {
             fail("expected $clazz but '${throwable.javaClass}' was thrown")

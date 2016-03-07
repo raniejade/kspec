@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.matcher
 
 import junit.framework.ComparisonFailure
 
-abstract class SimpleMatcher<T>(val expected: T, message: String?): AbstractMatcher<T>(message) {
+abstract class AbstractMatcherBase<T>(val expected: T, message: String?): AbstractMatcher<T>(message) {
     override fun match(arg: T) {
         test(doAssert(arg, expected)) {
             val desc = if (message != null) {
