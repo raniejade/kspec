@@ -17,10 +17,15 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
     }
 
     override fun on(context: Context) {
-        safeRun(context) { context, desc ->
-            if (context.terminal) {
+        if (context.terminal) {
+            safeRun(context) { context, desc ->
                 invokeBeforeEach(context)
-                context()
+
+                // ensures that afterEach is still invoke even if the test fails
+                safeRun(context) { context, desc ->
+                    context()
+                }
+
                 invokeAfterEach(context)
             }
         }
