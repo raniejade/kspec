@@ -8,7 +8,7 @@ fun <T> It.expect(arg: T) = Expect(arg)
 fun <T> It.eq(expected: T, message: String? = null) = Equals(expected, message)
 fun <T> It.notEq(expected: T, message: String? = null) = NotEquals(expected, message)
 fun <T> It.same(expected: T, message: String? = null) = Same(expected, message)
-fun <T> It.notSame(expected: T, message: String?) = NotSame(expected, message)
+fun <T> It.notSame(expected: T, message: String? = null) = NotSame(expected, message)
 fun It.truthy(message: String? = null) = Equals(true, message)
 fun It.falsy(message: String? = null) = Equals(false, message)
 
