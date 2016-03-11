@@ -6,6 +6,10 @@ import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.junit.support.RememberingListener
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
+import kspec.context
+import kspec.describe
+import kspec.it
+import org.junit.Assert
 import org.junit.runner.notification.RunNotifier
 
 /**
@@ -55,7 +59,7 @@ class JUnitTestExecutorSpec: KSpec() {
                                 }
 
                                 it("another failure") {
-                                    fail()
+                                    Assert.fail()
                                 }
                             }
 

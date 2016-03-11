@@ -1,7 +1,6 @@
 package io.polymorphicpanda.kspec
 
 import io.polymorphicpanda.kspec.context.Context
-import kspec.It
 import kspec.KSpec
 import kspec.Spec
 
@@ -14,31 +13,12 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         disabled = true
     }
 
-    override fun describe(description: String, action: () -> Unit) {
+    override fun specBlock(description: String, term: String?, terminal: Boolean, block: () -> Unit) {
         invokeIfNotDone {
-            enter(format("describe", description), { action() })
-            evaluate()
-            exit()
-        }
-    }
-
-    override fun context(description: String, action: () -> Unit) {
-        invokeIfNotDone {
-            enter(format("context", description), { action() })
-            evaluate()
-            exit()
-        }
-    }
-
-    override fun it(description: String, action: It.() -> Unit) {
-        invokeIfNotDone {
-            enter(format("it", description), {
-                action(object: It {
-                    override fun fail(message: String?) {
-                        it.failure = AssertionError(message?: "explicitly marked to fail by user")
-                    }
-                })
-            }, true)
+            enter(format(term, description), { block()}, terminal)
+            if (!terminal) {
+                evaluate()
+            }
             exit()
         }
     }
@@ -74,7 +54,12 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         block()
     }
 
-    private fun format(prefix: String, description: String): String = "$prefix: $description"
+    private fun format(prefix: String?, description: String): String {
+        if (prefix == null) {
+            return description
+        }
+        return "$prefix: $description"
+    }
 
     private fun enter(description: String, action: (Context) -> Unit, terminal: Boolean = false) {
         val context = Context(description, action, current, terminal)

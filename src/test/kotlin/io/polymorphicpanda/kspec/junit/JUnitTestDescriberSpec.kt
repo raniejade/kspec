@@ -5,6 +5,9 @@ import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
+import kspec.context
+import kspec.describe
+import kspec.it
 
 /**
  * @author Ranie Jade Ramiso

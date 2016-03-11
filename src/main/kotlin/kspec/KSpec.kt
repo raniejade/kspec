@@ -9,18 +9,6 @@ abstract class KSpec: Spec {
 
     abstract fun spec()
 
-    override fun describe(description: String, action: () -> Unit) {
-        engine!!.describe(description, action)
-    }
-
-    override fun context(description: String, action: () -> Unit) {
-        engine!!.context(description, action)
-    }
-
-    override fun it(description: String, action: It.() -> Unit) {
-        engine!!.it(description, action)
-    }
-
     override fun before(action: () -> Unit) {
         engine!!.before(action)
     }
@@ -35,5 +23,9 @@ abstract class KSpec: Spec {
 
     override fun afterEach(action: () -> Unit) {
         engine!!.afterEach(action)
+    }
+
+    override fun specBlock(description: String, term: String?, terminal: Boolean, block: () -> Unit) {
+        engine!!.specBlock(description, term, terminal, block)
     }
 }
