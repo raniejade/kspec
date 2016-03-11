@@ -1,10 +1,10 @@
 package io.polymorphicpanda.kspec.junit
 
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
-import kspec.asserts.expect
-import kspec.asserts.truthy
 
 /**
  * @author Ranie Jade Ramiso
@@ -57,34 +57,16 @@ class JUnitTestDescriberSpec: KSpec() {
 
                 it("group context should have the following format: <context-name>: <context-description>") {
 
-                    expect(
-                            containsDescription("describe: description1")
-                    ).toBe(truthy())
-
-                    expect(
-                            containsDescription("context: context1")
-                    ).toBe(truthy())
-
-
-                    expect(
-                            containsDescription("context: context2")
-                    ).toBe(truthy())
-
+                    assertThat(containsDescription("describe: description1"), equalTo(true))
+                    assertThat(containsDescription("context: context1"), equalTo(true))
+                    assertThat(containsDescription("context: context2"), equalTo(true))
 
                 }
 
                 it("terminal context should have the following format: <context-name>: <context-description>(parent(1..n)*.description") {
-                    expect(
-                            containsDescription("it: it1(kspec.KSpec.describe: description1.context: context1)")
-                    ).toBe(truthy())
-
-                    expect(
-                            containsDescription("it: it2(kspec.KSpec.describe: description1)")
-                    ).toBe(truthy())
-
-                    expect(
-                            containsDescription("it: it3(kspec.KSpec)")
-                    ).toBe(truthy())
+                    assertThat(containsDescription("it: it1(kspec.KSpec.describe: description1.context: context1)"), equalTo(true))
+                    assertThat(containsDescription("it: it2(kspec.KSpec.describe: description1)"), equalTo(true))
+                    assertThat(containsDescription("it: it3(kspec.KSpec)"), equalTo(true))
                 }
             }
         }

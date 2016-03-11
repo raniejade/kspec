@@ -1,13 +1,11 @@
 package io.polymorphicpanda.kspec.junit
 
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.junit.support.RememberingListener
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
-import kspec.asserts.eq
-import kspec.asserts.expect
-import kspec.asserts.falsy
-import kspec.asserts.truthy
 import org.junit.runner.notification.RunNotifier
 
 /**
@@ -53,7 +51,7 @@ class JUnitTestExecutorSpec: KSpec() {
                             beforeEach { beforeEachCounter++ }
                             context("this happen") {
                                 it("should fail") {
-                                    expect(1).toBe(eq(0))
+                                    assertThat(true, equalTo(false))
                                 }
 
                                 it("another failure") {
@@ -76,21 +74,21 @@ class JUnitTestExecutorSpec: KSpec() {
 
                 describe("lifecycle notifications") {
                     it("should notify test starts") {
-                        expect(listener!!.isStarted(test1)).toBe(truthy())
-                        expect(listener!!.isStarted(test2)).toBe(truthy())
-                        expect(listener!!.isStarted(test3)).toBe(truthy())
+                        assertThat(listener!!.isStarted(test1), equalTo(true))
+                        assertThat(listener!!.isStarted(test2), equalTo(true))
+                        assertThat(listener!!.isStarted(test3), equalTo(true))
                     }
 
                     it("should notify test finished") {
-                        expect(listener!!.isFinished(test1)).toBe(truthy())
-                        expect(listener!!.isFinished(test2)).toBe(truthy())
-                        expect(listener!!.isFinished(test3)).toBe(truthy())
+                        assertThat(listener!!.isFinished(test1), equalTo(true))
+                        assertThat(listener!!.isFinished(test2), equalTo(true))
+                        assertThat(listener!!.isFinished(test3), equalTo(true))
                     }
 
                     it("should notify failures") {
-                        expect(listener!!.hasFailed(test1)).toBe(truthy())
-                        expect(listener!!.hasFailed(test2)).toBe(truthy())
-                        expect(listener!!.hasFailed(test3)).toBe(falsy())
+                        assertThat(listener!!.hasFailed(test1), equalTo(true))
+                        assertThat(listener!!.hasFailed(test2), equalTo(true))
+                        assertThat(listener!!.hasFailed(test3), equalTo(false))
                     }
 
                 }
@@ -98,25 +96,25 @@ class JUnitTestExecutorSpec: KSpec() {
 
                 describe("beforeEach") {
                     it("should be invoked for each terminal context") {
-                        expect(beforeEachCounter).toBe(eq(testCount))
+                        assertThat(beforeEachCounter, equalTo(testCount))
                     }
                 }
 
                 describe("afterEach") {
                     it("should be invoked for each terminal context") {
-                        expect(afterEachCounter).toBe(eq(testCount))
+                        assertThat(afterEachCounter, equalTo(testCount))
                     }
                 }
 
                 describe("before") {
                     it("should be invoked only once") {
-                        expect(beforeCounter).toBe(eq(1))
+                        assertThat(beforeCounter, equalTo(1))
                     }
                 }
 
                 describe("after") {
                     it("should be invoked only once") {
-                        expect(afterCounter).toBe(eq(1))
+                        assertThat(afterCounter, equalTo(1))
                     }
                 }
             }

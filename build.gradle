@@ -22,6 +22,8 @@ dokka {
 dependencies {
     compile "com.google.guava:guava"
     compile "junit:junit"
+
+    testCompile "com.natpryce:hamkrest"
 }
 
 task wrapper(type: Wrapper) {
