@@ -9,12 +9,12 @@ class JUnitTestDescriber: ContextVisitor {
     val contextDescriptions = LinkedHashMap<Context, Description>()
 
     override fun pre(context: Context) {
-        if (!context.terminal) {
+        if (!context.example) {
             contextDescriptions.put(context, Description.createSuiteDescription(context.description))
         } else {
             contextDescriptions.put(
                     context,
-                    Description.createSuiteDescription("${context.description}(${className(context.parent)})")
+                    Description.createTestDescription(className(context.parent), context.description)
             )
         }
     }

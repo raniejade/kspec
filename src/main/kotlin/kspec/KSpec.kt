@@ -5,27 +5,31 @@ import org.junit.runner.RunWith
 
 @RunWith(KSpecRunner::class)
 abstract class KSpec: Spec {
-    var engine: Spec? = null
+    lateinit var engine: Spec
 
     abstract fun spec()
 
     override fun before(action: () -> Unit) {
-        engine!!.before(action)
+        engine.before(action)
     }
 
     override fun after(action: () -> Unit) {
-        engine!!.after(action)
+        engine.after(action)
     }
 
     override fun beforeEach(action: () -> Unit) {
-        engine!!.beforeEach(action)
+        engine.beforeEach(action)
     }
 
     override fun afterEach(action: () -> Unit) {
-        engine!!.afterEach(action)
+        engine.afterEach(action)
     }
 
-    override fun specBlock(description: String, term: String?, terminal: Boolean, block: () -> Unit) {
-        engine!!.specBlock(description, term, terminal, block)
+    override fun group(description: String, term: String?, block: () -> Unit) {
+        engine.group(description, term, block)
+    }
+
+    override fun example(description: String, term: String?, block: () -> Unit) {
+        engine.example(description, term, block)
     }
 }

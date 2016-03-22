@@ -1,7 +1,8 @@
 package kspec
 
 interface Spec {
-    fun specBlock(description: String, term: String? = null, terminal: Boolean = false, block: () -> Unit)
+    fun group(description: String, term: String? = null, block: () -> Unit)
+    fun example(description: String, term: String? = null, block: () -> Unit)
     fun before(action: () -> Unit)
     fun after(action: () -> Unit)
     fun beforeEach(action: () -> Unit)
@@ -9,14 +10,14 @@ interface Spec {
 }
 
 fun Spec.describe(description: String, action: () -> Unit) {
-    specBlock(description, "describe", false, action)
+    group(description, "describe", action)
 }
 
 fun Spec.context(description: String, action: () -> Unit) {
-    specBlock(description, "context", false, action)
+    group(description, "context", action)
 }
 
 fun Spec.it(description: String, action: () -> Unit) {
-    specBlock(description, "it", true, action)
+    example(description, "it", action)
 }
 

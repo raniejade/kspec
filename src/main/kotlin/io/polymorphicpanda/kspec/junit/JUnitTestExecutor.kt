@@ -9,7 +9,7 @@ import org.junit.runner.notification.RunNotifier
 class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<Context, Description>): ContextVisitor {
     override fun pre(context: Context) {
         safeRun(context) { context, desc ->
-            if (context.terminal) {
+            if (context.example) {
                 notifier.fireTestStarted(desc)
             }
             context.before?.invoke()
@@ -17,7 +17,7 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
     }
 
     override fun on(context: Context) {
-        if (context.terminal) {
+        if (context.example) {
             safeRun(context) { context, desc ->
                 invokeBeforeEach(context)
 
@@ -34,7 +34,7 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
     override fun post(context: Context) {
         safeRun(context) { context, desc ->
             context.after?.invoke()
-            if (context.terminal) {
+            if (context.example) {
                 notifier.fireTestFinished(contextDescriptions[context])
             }
         }

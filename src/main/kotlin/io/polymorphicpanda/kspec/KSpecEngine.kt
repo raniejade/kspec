@@ -13,12 +13,17 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         disabled = true
     }
 
-    override fun specBlock(description: String, term: String?, terminal: Boolean, block: () -> Unit) {
+    override fun group(description: String, term: String?, block: () -> Unit) {
         invokeIfNotDone {
-            enter(format(term, description), { block()}, terminal)
-            if (!terminal) {
-                evaluate()
-            }
+            enter(format(term, description), { block()})
+            evaluate()
+            exit()
+        }
+    }
+
+    override fun example(description: String, term: String?, block: () -> Unit) {
+        invokeIfNotDone {
+            enter(format(term, description), { block()}, true)
             exit()
         }
     }
@@ -61,8 +66,8 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         return "$prefix: $description"
     }
 
-    private fun enter(description: String, action: (Context) -> Unit, terminal: Boolean = false) {
-        val context = Context(description, action, current, terminal)
+    private fun enter(description: String, action: (Context) -> Unit, example: Boolean = false) {
+        val context = Context(description, action, current, example)
         current = context
     }
 
