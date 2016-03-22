@@ -29,11 +29,10 @@ class JUnitTestDescriberSpec: KSpec() {
             }
 
 
-            context("spec description") {
-                var spec: GroupContext?
+            context(GroupContext::class, "spec description") {
 
-                beforeEach {
-                    spec = setupTestSpec {
+                subject {
+                    return@subject setupTestSpec {
                         describe("description1") {
                             context("context1") {
                                 it("it1") {
@@ -54,8 +53,10 @@ class JUnitTestDescriberSpec: KSpec() {
 
                         }
                     }
+                }
 
-                    spec!!.visit(describer)
+                beforeEach {
+                    it().visit(describer)
                 }
 
                 it("group context should have the following format: <context-name>: <context-description>") {

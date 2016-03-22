@@ -21,7 +21,6 @@ class JUnitTestExecutorSpec: KSpec() {
             var listener: RememberingListener? = null
             var notifier: RunNotifier? = null
             var describer: JUnitTestDescriber? = null
-            var root: GroupContext?
             var executor: JUnitTestExecutor?
 
             beforeEach {
@@ -32,7 +31,7 @@ class JUnitTestExecutorSpec: KSpec() {
             }
 
 
-            describe("test execution") {
+            describe(GroupContext::class, "test execution") {
                 val test1 = "it: should fail(kspec.KSpec.describe: a description.context: this happen)"
                 val test2 = "it: another failure(kspec.KSpec.describe: a description.context: this happen)"
                 val test3 = "it: this will not fail(kspec.KSpec.describe: a description)"
@@ -43,13 +42,8 @@ class JUnitTestExecutorSpec: KSpec() {
                 var beforeEachCounter = 0
                 var afterEachCounter = 0
 
-                beforeEach {
-                    beforeCounter = 0
-                    afterCounter = 0
-                    beforeEachCounter = 0
-                    afterEachCounter = 0
-
-                    root = setupTestSpec {
+                subject {
+                    return@subject setupTestSpec {
                         describe("a description") {
                             before { beforeCounter++ }
                             beforeEach { beforeEachCounter++ }
@@ -70,10 +64,19 @@ class JUnitTestExecutorSpec: KSpec() {
                             after { afterCounter++ }
                         }
                     }
-                    root!!.visit(describer!!)
+                }
+
+                beforeEach {
+                    beforeCounter = 0
+                    afterCounter = 0
+                    beforeEachCounter = 0
+                    afterEachCounter = 0
+
+                    val subject = it()
+                    subject.visit(describer!!)
                     executor =JUnitTestExecutor(notifier!!, describer!!.contextDescriptions)
 
-                    root!!.visit(executor!!)
+                    subject.visit(executor!!)
                 }
 
                 describe("lifecycle notifications") {

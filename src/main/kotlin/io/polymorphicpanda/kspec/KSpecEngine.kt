@@ -4,6 +4,7 @@ import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.context.GroupContext
 import kspec.KSpec
 import kspec.Spec
+import kotlin.reflect.KClass
 
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     val root: GroupContext = GroupContext(clazz.name, null)
@@ -50,6 +51,25 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     override fun afterEach(action: () -> Unit) {
         invokeIfNotDone {
             current.afterEach = action
+        }
+    }
+
+    override fun <T: Any> group(subject: KClass<T>, description: String, term: String?, block: (() -> T) -> Unit) {
+        invokeIfNotDone {
+            val context = GroupContext(format(term, description), current) {
+                val constructor =
+                        subject.constructors.firstOrNull { it.parameters.isEmpty()} ?: throw IllegalArgumentException()
+                constructor.call()
+            }
+            current = context
+            block({ context.subject() as T })
+            current = current.parent ?: current
+        }
+    }
+
+    override fun <T> subject(block: () -> T) {
+        invokeIfNotDone {
+            current.subject = block
         }
     }
 

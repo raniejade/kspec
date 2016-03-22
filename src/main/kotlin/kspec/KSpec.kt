@@ -2,6 +2,7 @@ package kspec
 
 import io.polymorphicpanda.kspec.junit.KSpecRunner
 import org.junit.runner.RunWith
+import kotlin.reflect.KClass
 
 @RunWith(KSpecRunner::class)
 abstract class KSpec: Spec {
@@ -31,5 +32,13 @@ abstract class KSpec: Spec {
 
     override fun example(description: String, term: String?, block: () -> Unit) {
         engine.example(description, term, block)
+    }
+
+    override fun <T: Any> group(subject: KClass<T>, description: String, term: String?, block: (() -> T) -> Unit) {
+        engine.group(subject, description, term, block)
+    }
+
+    override fun <T> subject(block: () -> T) {
+        engine.subject(block)
     }
 }

@@ -4,7 +4,8 @@ import java.util.*
 
 open class Context(val description: String)
 
-open class GroupContext(description: String, val parent: GroupContext?): Context(description) {
+open class GroupContext(description: String, val parent: GroupContext?, var subject: () -> Any? = { null })
+    : Context(description) {
     internal val children = LinkedList<Context>()
 
     var before: (() -> Unit)? = null
