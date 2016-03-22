@@ -2,43 +2,54 @@ package io.polymorphicpanda.kspec.context
 
 import java.util.*
 
-class Context(var description: String, var action: (Context) -> Unit,
-              val parent: Context?, val example: Boolean = false) {
+open class Context(val description: String)
 
-    private val _children = LinkedList<Context>()
+open class GroupContext(description: String, val parent: GroupContext?): Context(description) {
+    internal val children = LinkedList<Context>()
 
-    init {
-        if (parent != null) {
-            parent._children.add(this)
-        }
-    }
-
-
-    var failure: Throwable? = null
-    var children: List<Context> = _children
     var before: (() -> Unit)? = null
     var after: (() -> Unit)? = null
 
     var beforeEach: (() -> Unit)? = null
     var afterEach: (() -> Unit)? = null
 
+    init {
+        if (parent != null) {
+            parent.children.add(this)
+        }
+    }
+
     fun visit(visitor: ContextVisitor) {
         doVisit(visitor, this)
     }
 
-    operator fun invoke() {
-        action(this)
-    }
 
     companion object {
         private fun doVisit(visitor: ContextVisitor, context: Context) {
-            visitor.pre(context)
-            visitor.on(context)
-            if (!context.example) {
-                context.children.forEach { doVisit(visitor, it) }
+            when(context) {
+                is GroupContext -> {
+                    visitor.preVisitGroup(context)
+                    visitor.onVisitGroup(context)
+                    context.children.forEach { doVisit(visitor, it) }
+                    visitor.postVisitGroup(context)
+                }
+                is ExampleGroupContext -> {
+                    visitor.preVisitExampleGroup(context)
+                    visitor.onVisitExampleGroup(context)
+                    visitor.postVisitExampleGroup(context)
+                }
             }
-            visitor.post(context)
         }
     }
+}
 
+class ExampleGroupContext(description: String, val parent: GroupContext, val action: () -> Unit)
+    : Context(description) {
+    init {
+        parent.children.add(this)
+    }
+
+    operator fun invoke() {
+        action()
+    }
 }

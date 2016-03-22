@@ -1,12 +1,11 @@
 package io.polymorphicpanda.kspec.context
 
 interface ContextVisitor {
-    fun pre(context: Context) {
-    }
+    fun preVisitGroup(context: GroupContext) {}
+    fun onVisitGroup(context: GroupContext) {}
+    fun postVisitGroup(context: GroupContext) {}
 
-    fun on(context: Context) {
-    }
-
-    fun post(context: Context) {
-    }
+    fun preVisitExampleGroup(context: ExampleGroupContext) {}
+    fun onVisitExampleGroup(context: ExampleGroupContext) {}
+    fun postVisitExampleGroup(context: ExampleGroupContext) {}
 }

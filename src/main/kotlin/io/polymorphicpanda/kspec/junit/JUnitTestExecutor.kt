@@ -2,65 +2,69 @@ package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ContextVisitor
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.GroupContext
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 
 class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<Context, Description>): ContextVisitor {
-    override fun pre(context: Context) {
+    override fun preVisitGroup(context: GroupContext) {
         safeRun(context) { context, desc ->
-            if (context.example) {
-                notifier.fireTestStarted(desc)
-            }
             context.before?.invoke()
         }
     }
 
-    override fun on(context: Context) {
-        if (context.example) {
-            safeRun(context) { context, desc ->
-                invokeBeforeEach(context)
 
-                // ensures that afterEach is still invoke even if the test fails
-                safeRun(context) { context, desc ->
-                    context()
-                }
-
-                invokeAfterEach(context)
-            }
-        }
-    }
-
-    override fun post(context: Context) {
+    override fun postVisitGroup(context: GroupContext) {
         safeRun(context) { context, desc ->
             context.after?.invoke()
-            if (context.example) {
-                notifier.fireTestFinished(contextDescriptions[context])
-            }
         }
     }
 
-    private fun invokeBeforeEach(context: Context) {
+    override fun preVisitExampleGroup(context: ExampleGroupContext) {
+        safeRun(context) { context, desc ->
+            notifier.fireTestStarted(desc)
+        }
+    }
+
+    override fun onVisitExampleGroup(context: ExampleGroupContext) {
+        safeRun(context) { context, desc ->
+            invokeBeforeEach(context.parent)
+
+            // ensures that afterEach is still invoke even if the test fails
+            safeRun(context) { context, desc ->
+                context()
+            }
+
+            invokeAfterEach(context.parent)
+        }
+    }
+
+    override fun postVisitExampleGroup(context: ExampleGroupContext) {
+        safeRun(context) { context, desc ->
+            notifier.fireTestFinished(contextDescriptions[context])
+        }
+    }
+
+    private fun invokeBeforeEach(context: GroupContext) {
         if (context.parent != null) {
             invokeBeforeEach(context.parent)
         }
         context.beforeEach?.invoke()
     }
 
-    private fun invokeAfterEach(context: Context) {
+    private fun invokeAfterEach(context: GroupContext) {
         context.afterEach?.invoke()
         if (context.parent != null) {
             invokeAfterEach(context.parent)
         }
     }
 
-    private fun safeRun(context: Context, action: (Context, Description) -> Unit) {
+    private fun <T: Context>safeRun(context: T, action: (T, Description) -> Unit) {
         val desc = contextDescriptions[context];
         try {
             action(context, desc!!)
-            if (context.failure != null) {
-                notifier.fireTestFailure(Failure(desc, context.failure))
-            }
         } catch (e: Throwable) {
             notifier.fireTestFailure(Failure(desc, e))
         }

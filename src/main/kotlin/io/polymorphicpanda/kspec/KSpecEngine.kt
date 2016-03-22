@@ -1,11 +1,12 @@
 package io.polymorphicpanda.kspec
 
-import io.polymorphicpanda.kspec.context.Context
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.GroupContext
 import kspec.KSpec
 import kspec.Spec
 
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
-    val root: Context = Context(clazz.name, {}, null)
+    val root: GroupContext = GroupContext(clazz.name, null)
     var current = root
     internal var disabled = false
 
@@ -15,16 +16,16 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun group(description: String, term: String?, block: () -> Unit) {
         invokeIfNotDone {
-            enter(format(term, description), { block()})
-            evaluate()
-            exit()
+            val context = GroupContext(format(term, description), current)
+            current = context
+            block()
+            current = current.parent ?: current
         }
     }
 
     override fun example(description: String, term: String?, block: () -> Unit) {
         invokeIfNotDone {
-            enter(format(term, description), { block()}, true)
-            exit()
+            ExampleGroupContext(format(term, description), current, block)
         }
     }
 
@@ -64,18 +65,5 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
             return description
         }
         return "$prefix: $description"
-    }
-
-    private fun enter(description: String, action: (Context) -> Unit, example: Boolean = false) {
-        val context = Context(description, action, current, example)
-        current = context
-    }
-
-    private fun evaluate() {
-        current()
-    }
-
-    private fun exit() {
-        current = current.parent ?: current
     }
 }

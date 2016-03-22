@@ -2,24 +2,44 @@ package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ContextVisitor
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.GroupContext
 import org.junit.runner.Description
 import java.util.*
 
 class JUnitTestDescriber: ContextVisitor {
     val contextDescriptions = LinkedHashMap<Context, Description>()
 
-    override fun pre(context: Context) {
-        if (!context.example) {
-            contextDescriptions.put(context, Description.createSuiteDescription(context.description))
-        } else {
-            contextDescriptions.put(
-                    context,
-                    Description.createTestDescription(className(context.parent), context.description)
-            )
+    private fun className(context: Context?): String {
+        if (context == null) {
+            return ""
         }
+
+        return when(context) {
+            is ExampleGroupContext -> "${className(context.parent)}.${context.description}"
+            is GroupContext -> {
+                val parent = className(context.parent)
+
+                if (parent.isEmpty()) {
+                    return context.description
+                }
+
+                "$parent.${context.description}"
+            }
+            else -> ""
+        }
+
     }
 
-    override fun post(context: Context) {
+    override fun preVisitGroup(context: GroupContext) {
+        contextDescriptions.put(context, Description.createSuiteDescription(context.description))
+    }
+
+    override fun onVisitGroup(context: GroupContext) {
+        super.onVisitGroup(context)
+    }
+
+    override fun postVisitGroup(context: GroupContext) {
         val current = contextDescriptions[context]
 
         if (context.parent != null) {
@@ -28,17 +48,21 @@ class JUnitTestDescriber: ContextVisitor {
         }
     }
 
-    private fun className(context: Context?): String {
-        if (context == null) {
-            return ""
-        }
-        val parent = className(context.parent)
+    override fun preVisitExampleGroup(context: ExampleGroupContext) {
+        contextDescriptions.put(
+                context,
+                Description.createTestDescription(className(context.parent), context.description)
+        )
+    }
 
-        if (parent.isEmpty()) {
-            return context.description
-        }
+    override fun onVisitExampleGroup(context: ExampleGroupContext) {
+        super.onVisitExampleGroup(context)
+    }
 
-        return "$parent.${context.description}"
+    override fun postVisitExampleGroup(context: ExampleGroupContext) {
+        val current = contextDescriptions[context]
+        val parent = contextDescriptions[context.parent]
+        parent!!.addChild(current)
     }
 }
 

@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.junit
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.context.Context
+import io.polymorphicpanda.kspec.context.GroupContext
 import io.polymorphicpanda.kspec.junit.support.RememberingListener
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
@@ -21,7 +21,7 @@ class JUnitTestExecutorSpec: KSpec() {
             var listener: RememberingListener? = null
             var notifier: RunNotifier? = null
             var describer: JUnitTestDescriber? = null
-            var root: Context?
+            var root: GroupContext?
             var executor: JUnitTestExecutor?
 
             beforeEach {
