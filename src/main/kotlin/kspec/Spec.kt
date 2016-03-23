@@ -14,7 +14,7 @@ interface Spec {
 
 interface SubjectSpec<T>: Spec {
     fun subject(block: () -> T)
-    fun subject(): T
+    val subject: T
 }
 
 fun Spec.describe(description: String, action: () -> Unit) {

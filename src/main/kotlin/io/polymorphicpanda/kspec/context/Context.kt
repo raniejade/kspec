@@ -4,9 +4,13 @@ import java.util.*
 
 open class Context(val description: String)
 
-open class GroupContext(description: String, val parent: GroupContext?, var subject: () -> Any? = { null })
+open class GroupContext(description: String,
+                        val parent: GroupContext?,
+                        var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
     : Context(description) {
     internal val children = LinkedList<Context>()
+
+    private var subjectInstance: Any? = null
 
     var before: (() -> Unit)? = null
     var after: (() -> Unit)? = null
@@ -22,6 +26,18 @@ open class GroupContext(description: String, val parent: GroupContext?, var subj
 
     fun visit(visitor: ContextVisitor) {
         doVisit(visitor, this)
+    }
+
+    fun <T> subject(): T {
+        if (subjectInstance == null) {
+            subjectInstance = subjectFactory()
+        }
+        return subjectInstance as T
+    }
+
+    fun reset() {
+        parent?.reset()
+        subjectInstance = null
     }
 
 
@@ -51,6 +67,7 @@ class ExampleGroupContext(description: String, val parent: GroupContext, val act
     }
 
     operator fun invoke() {
+        parent.reset()
         action()
     }
 }

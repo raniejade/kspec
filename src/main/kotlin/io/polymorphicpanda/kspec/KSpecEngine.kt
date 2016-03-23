@@ -85,9 +85,9 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
 class SubjectSpecEngine<T>(engine: KSpecEngine<*>, val context: GroupContext): SubjectSpec<T>, Spec by engine {
     override fun subject(block: () -> T) {
-        context.subject = block
+        context.subjectFactory = block
     }
 
-    override fun subject(): T = context.subject() as T
-
+    override val subject: T
+        get() = context.subject()
 }

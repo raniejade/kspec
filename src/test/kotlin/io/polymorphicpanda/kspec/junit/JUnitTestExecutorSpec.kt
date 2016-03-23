@@ -72,7 +72,6 @@ class JUnitTestExecutorSpec: KSpec() {
                     beforeEachCounter = 0
                     afterEachCounter = 0
 
-                    val subject = subject()
                     subject.visit(describer!!)
                     executor =JUnitTestExecutor(notifier!!, describer!!.contextDescriptions)
 
