@@ -56,7 +56,7 @@ class JUnitTestDescriberSpec: KSpec() {
                 }
 
                 beforeEach {
-                    it().visit(describer)
+                    subject().visit(describer)
                 }
 
                 it("group context should have the following format: <context-name>: <context-description>") {

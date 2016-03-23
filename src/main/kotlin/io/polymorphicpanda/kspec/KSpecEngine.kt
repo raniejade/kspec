@@ -4,6 +4,7 @@ import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.context.GroupContext
 import kspec.KSpec
 import kspec.Spec
+import kspec.SubjectSpec
 import kotlin.reflect.KClass
 
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
@@ -54,7 +55,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         }
     }
 
-    override fun <T: Any> group(subject: KClass<T>, description: String, term: String?, block: (() -> T) -> Unit) {
+    override fun <T: Any> group(subject: KClass<T>, description: String, term: String?, block: SubjectSpec<T>.() -> Unit) {
         invokeIfNotDone {
             val context = GroupContext(format(term, description), current) {
                 val constructor =
@@ -62,14 +63,8 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
                 constructor.call()
             }
             current = context
-            block({ context.subject() as T })
+            SubjectSpecEngine<T>(this, context).apply(block)
             current = current.parent ?: current
-        }
-    }
-
-    override fun <T> subject(block: () -> T) {
-        invokeIfNotDone {
-            current.subject = block
         }
     }
 
@@ -86,4 +81,13 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         }
         return "$prefix: $description"
     }
+}
+
+class SubjectSpecEngine<T>(engine: KSpecEngine<*>, val context: GroupContext): SubjectSpec<T>, Spec by engine {
+    override fun subject(block: () -> T) {
+        context.subject = block
+    }
+
+    override fun subject(): T = context.subject() as T
+
 }
