@@ -1,7 +1,7 @@
 package io.polymorphicpanda.kspec
 
+import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
-import io.polymorphicpanda.kspec.context.GroupContext
 import kspec.KSpec
 import kspec.SharedExample
 import kspec.Spec
@@ -9,7 +9,7 @@ import kspec.SubjectSpec
 import kotlin.reflect.KClass
 
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
-    val root: GroupContext = GroupContext(clazz.name, null)
+    val root: ExampleGroupContext = ExampleGroupContext(clazz.name, null)
     var current = root
     internal var disabled = false
 
@@ -19,7 +19,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun group(description: String, block: () -> Unit) {
         invokeIfNotDone {
-            val context = GroupContext(description, current)
+            val context = ExampleGroupContext(description, current)
             current = context
             block()
             current = current.parent ?: current
@@ -28,7 +28,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun example(description: String, block: () -> Unit) {
         invokeIfNotDone {
-            ExampleGroupContext(description, current, block)
+            ExampleContext(description, current, block)
         }
     }
 
@@ -63,7 +63,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
             } else {
                 description
             }
-            val context = GroupContext(desc, current) {
+            val context = ExampleGroupContext(desc, current) {
                 val constructor =
                         subject.constructors.firstOrNull { it.parameters.isEmpty()} ?: throw IllegalArgumentException()
                 constructor.call()
@@ -83,7 +83,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 }
 
 class SubjectSpecEngine<T: Any>(val engine: KSpecEngine<*>,
-                                val context: GroupContext): SubjectSpec<T>, Spec by engine {
+                                val context: ExampleGroupContext): SubjectSpec<T>, Spec by engine {
     override fun subject(block: () -> T) {
         context.subjectFactory = block
     }

@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.junit
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.context.GroupContext
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
 import kspec.context
@@ -29,7 +29,7 @@ class JUnitTestDescriberSpec: KSpec() {
             }
 
 
-            context(GroupContext::class, "spec description") {
+            context(ExampleGroupContext::class, "spec description") {
 
                 subject {
                     return@subject setupTestSpec {

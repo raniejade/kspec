@@ -2,33 +2,33 @@ package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ContextVisitor
+import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
-import io.polymorphicpanda.kspec.context.GroupContext
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 
 class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<Context, Description>): ContextVisitor {
-    override fun preVisitGroup(context: GroupContext) {
+    override fun preVisitGroup(context: ExampleGroupContext) {
         safeRun(context) { context, desc ->
             context.before?.invoke()
         }
     }
 
 
-    override fun postVisitGroup(context: GroupContext) {
+    override fun postVisitGroup(context: ExampleGroupContext) {
         safeRun(context) { context, desc ->
             context.after?.invoke()
         }
     }
 
-    override fun preVisitExampleGroup(context: ExampleGroupContext) {
+    override fun preVisitExampleGroup(context: ExampleContext) {
         safeRun(context) { context, desc ->
             notifier.fireTestStarted(desc)
         }
     }
 
-    override fun onVisitExampleGroup(context: ExampleGroupContext) {
+    override fun onVisitExampleGroup(context: ExampleContext) {
         safeRun(context) { context, desc ->
             invokeBeforeEach(context.parent)
 
@@ -41,20 +41,20 @@ class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<
         }
     }
 
-    override fun postVisitExampleGroup(context: ExampleGroupContext) {
+    override fun postVisitExampleGroup(context: ExampleContext) {
         safeRun(context) { context, desc ->
             notifier.fireTestFinished(contextDescriptions[context])
         }
     }
 
-    private fun invokeBeforeEach(context: GroupContext) {
+    private fun invokeBeforeEach(context: ExampleGroupContext) {
         if (context.parent != null) {
             invokeBeforeEach(context.parent)
         }
         context.beforeEach?.invoke()
     }
 
-    private fun invokeAfterEach(context: GroupContext) {
+    private fun invokeAfterEach(context: ExampleGroupContext) {
         context.afterEach?.invoke()
         if (context.parent != null) {
             invokeAfterEach(context.parent)

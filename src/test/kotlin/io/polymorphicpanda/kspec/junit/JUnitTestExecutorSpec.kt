@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.junit
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.context.GroupContext
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.junit.support.RememberingListener
 import io.polymorphicpanda.kspec.setupTestSpec
 import kspec.KSpec
@@ -31,7 +31,7 @@ class JUnitTestExecutorSpec: KSpec() {
             }
 
 
-            describe(GroupContext::class, "test execution") {
+            describe(ExampleGroupContext::class, "test execution") {
                 val test1 = "it: should fail(kspec.KSpec.describe: a description.context: this happen)"
                 val test2 = "it: another failure(kspec.KSpec.describe: a description.context: this happen)"
                 val test3 = "it: this will not fail(kspec.KSpec.describe: a description)"

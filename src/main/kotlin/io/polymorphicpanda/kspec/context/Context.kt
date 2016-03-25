@@ -4,9 +4,9 @@ import java.util.*
 
 open class Context(val description: String)
 
-open class GroupContext(description: String,
-                        val parent: GroupContext?,
-                        var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
+open class ExampleGroupContext(description: String,
+                               val parent: ExampleGroupContext?,
+                               var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
     : Context(description) {
     internal val children = LinkedList<Context>()
 
@@ -44,13 +44,13 @@ open class GroupContext(description: String,
     companion object {
         private fun doVisit(visitor: ContextVisitor, context: Context) {
             when(context) {
-                is GroupContext -> {
+                is ExampleGroupContext -> {
                     visitor.preVisitGroup(context)
                     visitor.onVisitGroup(context)
                     context.children.forEach { doVisit(visitor, it) }
                     visitor.postVisitGroup(context)
                 }
-                is ExampleGroupContext -> {
+                is ExampleContext -> {
                     visitor.preVisitExampleGroup(context)
                     visitor.onVisitExampleGroup(context)
                     visitor.postVisitExampleGroup(context)
@@ -60,7 +60,7 @@ open class GroupContext(description: String,
     }
 }
 
-class ExampleGroupContext(description: String, val parent: GroupContext, val action: () -> Unit)
+class ExampleContext(description: String, val parent: ExampleGroupContext, val action: () -> Unit)
     : Context(description) {
     init {
         parent.children.add(this)
