@@ -17,18 +17,18 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         disabled = true
     }
 
-    override fun group(description: String, term: String?, block: () -> Unit) {
+    override fun group(description: String, block: () -> Unit) {
         invokeIfNotDone {
-            val context = GroupContext(format(term, description), current)
+            val context = GroupContext(description, current)
             current = context
             block()
             current = current.parent ?: current
         }
     }
 
-    override fun example(description: String, term: String?, block: () -> Unit) {
+    override fun example(description: String, block: () -> Unit) {
         invokeIfNotDone {
-            ExampleGroupContext(format(term, description), current, block)
+            ExampleGroupContext(description, current, block)
         }
     }
 
@@ -56,14 +56,14 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         }
     }
 
-    override fun <T: Any> group(subject: KClass<T>, description: String, term: String?, block: SubjectSpec<T>.() -> Unit) {
+    override fun <T: Any> group(subject: KClass<T>, description: String, block: SubjectSpec<T>.() -> Unit) {
         invokeIfNotDone {
             val desc = if (description.isNullOrEmpty()) {
                 subject.qualifiedName!!
             } else {
                 description
             }
-            val context = GroupContext(format(term, desc), current) {
+            val context = GroupContext(desc, current) {
                 val constructor =
                         subject.constructors.firstOrNull { it.parameters.isEmpty()} ?: throw IllegalArgumentException()
                 constructor.call()
@@ -79,13 +79,6 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
             throw CollectionException("You bad bad boy, this is not allowed here.")
         }
         block()
-    }
-
-    private fun format(prefix: String?, description: String): String {
-        if (prefix == null) {
-            return description
-        }
-        return "$prefix: $description"
     }
 }
 

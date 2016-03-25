@@ -26,16 +26,16 @@ abstract class KSpec: Spec {
         engine.afterEach(action)
     }
 
-    override fun group(description: String, term: String?, block: () -> Unit) {
-        engine.group(description, term, block)
+    override fun group(description: String, block: () -> Unit) {
+        engine.group(description, block)
     }
 
-    override fun example(description: String, term: String?, block: () -> Unit) {
-        engine.example(description, term, block)
+    override fun example(description: String, block: () -> Unit) {
+        engine.example(description, block)
     }
 
-    override fun <T: Any> group(subject: KClass<T>, description: String, term: String?,
+    override fun <T: Any> group(subject: KClass<T>, description: String,
                                 block: SubjectSpec<T>.() -> Unit) {
-        engine.group(subject, description, term, block)
+        engine.group(subject, description, block)
     }
 }
