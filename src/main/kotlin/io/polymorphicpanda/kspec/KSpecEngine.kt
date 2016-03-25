@@ -3,6 +3,7 @@ package io.polymorphicpanda.kspec
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.context.GroupContext
 import kspec.KSpec
+import kspec.SharedExample
 import kspec.Spec
 import kspec.SubjectSpec
 import kotlin.reflect.KClass
@@ -57,7 +58,12 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 
     override fun <T: Any> group(subject: KClass<T>, description: String, term: String?, block: SubjectSpec<T>.() -> Unit) {
         invokeIfNotDone {
-            val context = GroupContext(format(term, description), current) {
+            val desc = if (description.isNullOrEmpty()) {
+                subject.qualifiedName!!
+            } else {
+                description
+            }
+            val context = GroupContext(format(term, desc), current) {
                 val constructor =
                         subject.constructors.firstOrNull { it.parameters.isEmpty()} ?: throw IllegalArgumentException()
                 constructor.call()
@@ -83,9 +89,14 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     }
 }
 
-class SubjectSpecEngine<T>(engine: KSpecEngine<*>, val context: GroupContext): SubjectSpec<T>, Spec by engine {
+class SubjectSpecEngine<T: Any>(val engine: KSpecEngine<*>,
+                                val context: GroupContext): SubjectSpec<T>, Spec by engine {
     override fun subject(block: () -> T) {
         context.subjectFactory = block
+    }
+
+    override fun behavesLike(sharedExample: SharedExample<in T>) {
+        sharedExample.example().invoke(this)
     }
 
     override val subject: T
