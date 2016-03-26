@@ -2,10 +2,7 @@ package io.polymorphicpanda.kspec.samples
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import kspec.KSpec
-import kspec.describe
-import kspec.it
-import kspec.sharedExample
+import kspec.*
 
 /**
  * @author Ranie Jade Ramiso
@@ -13,13 +10,13 @@ import kspec.sharedExample
 class AdvancedCalculatorSpec: KSpec() {
     override fun spec() {
         describe(AdvancedCalculator::class) {
-            behavesLike(advancedCalculator())
+            itBehavesLike(advancedCalculator())
         }
     }
 
     companion object {
         fun advancedCalculator() = sharedExample<AdvancedCalculator> {
-            behavesLike(CalculatorSpec.calculator())
+            itBehavesLike(CalculatorSpec.calculator())
 
             describe("pow") {
                 it("2 ^ 3 = 8") {

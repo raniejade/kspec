@@ -18,7 +18,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     }
 
     override fun group(description: String, block: () -> Unit) {
-        invokeIfNotDone {
+        invokeIfNotDisabled {
             val context = ExampleGroupContext(description, current)
             current = context
             block()
@@ -27,43 +27,38 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     }
 
     override fun example(description: String, block: () -> Unit) {
-        invokeIfNotDone {
+        invokeIfNotDisabled {
             ExampleContext(description, current, block)
         }
     }
 
     override fun before(action: () -> Unit) {
-        invokeIfNotDone {
+        invokeIfNotDisabled {
             current.before = action
         }
     }
 
     override fun after(action: () -> Unit) {
-        invokeIfNotDone {
+        invokeIfNotDisabled {
             current.after = action
         }
     }
 
     override fun beforeEach(action: () -> Unit) {
-        invokeIfNotDone {
+        invokeIfNotDisabled {
             current.beforeEach = action
         }
     }
 
     override fun afterEach(action: () -> Unit) {
-        invokeIfNotDone {
+        invokeIfNotDisabled {
             current.afterEach = action
         }
     }
 
     override fun <T: Any> group(subject: KClass<T>, description: String, block: SubjectSpec<T>.() -> Unit) {
-        invokeIfNotDone {
-            val desc = if (description.isNullOrEmpty()) {
-                subject.qualifiedName!!
-            } else {
-                description
-            }
-            val context = ExampleGroupContext(desc, current) {
+        invokeIfNotDisabled {
+            val context = ExampleGroupContext(description.format(subject), current) {
                 val constructor =
                         subject.constructors.firstOrNull { it.parameters.isEmpty()} ?: throw IllegalArgumentException()
                 constructor.call()
@@ -74,7 +69,7 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
         }
     }
 
-    private fun invokeIfNotDone(block: () -> Unit) {
+    internal fun invokeIfNotDisabled(block: () -> Unit) {
         if (disabled) {
             throw CollectionException("You bad bad boy, this is not allowed here.")
         }
@@ -85,11 +80,15 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
 class SubjectSpecEngine<T: Any>(val engine: KSpecEngine<*>,
                                 val context: ExampleGroupContext): SubjectSpec<T>, Spec by engine {
     override fun subject(block: () -> T) {
-        context.subjectFactory = block
+        engine.invokeIfNotDisabled {
+            context.subjectFactory = block
+        }
     }
 
-    override fun behavesLike(sharedExample: SharedExample<in T>) {
-        sharedExample.example().invoke(this)
+    override fun include(sharedExample: SharedExample<in T>) {
+        engine.invokeIfNotDisabled {
+            sharedExample.example().invoke(this)
+        }
     }
 
     override val subject: T
