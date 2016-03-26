@@ -1,0 +1,10 @@
+apply from: "$rootDir/gradle/common/dependencies.gradle"
+apply from: "$rootDir/gradle/common/kotlin.gradle"
+
+dokka {
+    outputFormat = 'html'
+}
+
+dependencies {
+    compile "com.google.guava:guava"
+}

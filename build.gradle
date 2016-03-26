@@ -1,7 +1,4 @@
-apply from: "$rootDir/gradle/common/dependencies.gradle"
-apply from: "$rootDir/gradle/common/kotlin.gradle"
-
-// FIXME: remove until https://youtrack.jetbrains.com/issue/KT-11174
+// FIXME: move to buildSrc until https://youtrack.jetbrains.com/issue/KT-11174
 buildscript {
     repositories {
         mavenCentral()
@@ -13,17 +10,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.1"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.7"
     }
-}
-
-dokka {
-    outputFormat = 'html'
-}
-
-dependencies {
-    compile "com.google.guava:guava"
-    compile "junit:junit"
-
-    testCompile "com.natpryce:hamkrest"
 }
 
 task wrapper(type: Wrapper) {
