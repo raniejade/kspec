@@ -34,6 +34,10 @@ abstract class KSpec: Spec {
         engine.example(description, block)
     }
 
+    override fun pendingExample(description: String, reason: String?, block: (() -> Unit)?) {
+        engine.pendingExample(description, reason, block)
+    }
+
     override fun <T: Any> group(subject: KClass<T>, description: String,
                                 block: SubjectSpec<T>.() -> Unit) {
         engine.group(subject, description, block)

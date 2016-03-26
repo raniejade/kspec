@@ -9,41 +9,49 @@ import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 
 class JUnitTestExecutor(val notifier: RunNotifier, val contextDescriptions: Map<Context, Description>): ContextVisitor {
-    override fun preVisitGroup(context: ExampleGroupContext) {
+    override fun preVisitExampleGroup(context: ExampleGroupContext) {
         safeRun(context) { context, desc ->
             context.before?.invoke()
         }
     }
 
 
-    override fun postVisitGroup(context: ExampleGroupContext) {
+    override fun postVisitExampleGroup(context: ExampleGroupContext) {
         safeRun(context) { context, desc ->
             context.after?.invoke()
         }
     }
 
-    override fun preVisitExampleGroup(context: ExampleContext) {
+    override fun preVisitExample(context: ExampleContext) {
         safeRun(context) { context, desc ->
-            notifier.fireTestStarted(desc)
-        }
-    }
-
-    override fun onVisitExampleGroup(context: ExampleContext) {
-        safeRun(context) { context, desc ->
-            invokeBeforeEach(context.parent)
-
-            // ensures that afterEach is still invoke even if the test fails
-            safeRun(context) { context, desc ->
-                context()
+            if (context.pending) {
+                notifier.fireTestIgnored(desc)
+            } else {
+                notifier.fireTestStarted(desc)
             }
-
-            invokeAfterEach(context.parent)
         }
     }
 
-    override fun postVisitExampleGroup(context: ExampleContext) {
-        safeRun(context) { context, desc ->
-            notifier.fireTestFinished(contextDescriptions[context])
+    override fun onVisitExample(context: ExampleContext) {
+        if (!context.pending) {
+            safeRun(context) { context, desc ->
+                invokeBeforeEach(context.parent)
+
+                // ensures that afterEach is still invoke even if the test fails
+                safeRun(context) { context, desc ->
+                    context()
+                }
+
+                invokeAfterEach(context.parent)
+            }
+        }
+    }
+
+    override fun postVisitExample(context: ExampleContext) {
+        if (!context.pending) {
+            safeRun(context) { context, desc ->
+                notifier.fireTestFinished(contextDescriptions[context])
+            }
         }
     }
 

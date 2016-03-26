@@ -31,15 +31,15 @@ class JUnitTestDescriber: ContextVisitor {
 
     }
 
-    override fun preVisitGroup(context: ExampleGroupContext) {
+    override fun preVisitExampleGroup(context: ExampleGroupContext) {
         contextDescriptions.put(context, Description.createSuiteDescription(context.description))
     }
 
-    override fun onVisitGroup(context: ExampleGroupContext) {
-        super.onVisitGroup(context)
+    override fun onVisitExampleGroup(context: ExampleGroupContext) {
+        super.onVisitExampleGroup(context)
     }
 
-    override fun postVisitGroup(context: ExampleGroupContext) {
+    override fun postVisitExampleGroup(context: ExampleGroupContext) {
         val current = contextDescriptions[context]
 
         if (context.parent != null) {
@@ -48,18 +48,18 @@ class JUnitTestDescriber: ContextVisitor {
         }
     }
 
-    override fun preVisitExampleGroup(context: ExampleContext) {
+    override fun preVisitExample(context: ExampleContext) {
         contextDescriptions.put(
                 context,
                 Description.createTestDescription(className(context.parent), context.description)
         )
     }
 
-    override fun onVisitExampleGroup(context: ExampleContext) {
-        super.onVisitExampleGroup(context)
+    override fun onVisitExample(context: ExampleContext) {
+        super.onVisitExample(context)
     }
 
-    override fun postVisitExampleGroup(context: ExampleContext) {
+    override fun postVisitExample(context: ExampleContext) {
         val current = contextDescriptions[context]
         val parent = contextDescriptions[context.parent]
         parent!!.addChild(current)

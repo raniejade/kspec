@@ -6,6 +6,7 @@ interface Spec {
     fun group(description: String, block: () -> Unit)
     fun <T: Any> group(subject: KClass<T>, description: String = "", block: SubjectSpec<T>.() -> Unit)
     fun example(description: String, block: () -> Unit)
+    fun pendingExample(description: String, reason: String? = null, block: (() -> Unit)? = null)
     fun before(action: () -> Unit)
     fun after(action: () -> Unit)
     fun beforeEach(action: () -> Unit)

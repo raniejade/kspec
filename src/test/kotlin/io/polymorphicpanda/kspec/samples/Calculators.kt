@@ -9,4 +9,5 @@ open class Calculator {
 
 class AdvancedCalculator: Calculator() {
     fun pow(a: Double, b: Double): Double = Math.pow(a, b)
+    fun sqrt(a: Double): Double = TODO()
 }

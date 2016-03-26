@@ -45,29 +45,35 @@ open class ExampleGroupContext(description: String,
         private fun doVisit(visitor: ContextVisitor, context: Context) {
             when(context) {
                 is ExampleGroupContext -> {
-                    visitor.preVisitGroup(context)
-                    visitor.onVisitGroup(context)
-                    context.children.forEach { doVisit(visitor, it) }
-                    visitor.postVisitGroup(context)
-                }
-                is ExampleContext -> {
                     visitor.preVisitExampleGroup(context)
                     visitor.onVisitExampleGroup(context)
+                    context.children.forEach { doVisit(visitor, it) }
                     visitor.postVisitExampleGroup(context)
+                }
+                is ExampleContext -> {
+                    visitor.preVisitExample(context)
+                    visitor.onVisitExample(context)
+                    visitor.postVisitExample(context)
                 }
             }
         }
     }
 }
 
-class ExampleContext(description: String, val parent: ExampleGroupContext, val action: () -> Unit)
+class ExampleContext(description: String, val parent: ExampleGroupContext,
+                     val action: (() -> Unit)?, val reason: String = "")
     : Context(description) {
     init {
         parent.children.add(this)
     }
 
+    val pending: Boolean
+        get() = action == null
+
     operator fun invoke() {
-        parent.reset()
-        action()
+        if (!pending) {
+            parent.reset()
+            action!!()
+        }
     }
 }

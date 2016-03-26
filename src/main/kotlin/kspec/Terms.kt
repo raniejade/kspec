@@ -22,6 +22,10 @@ fun Spec.it(description: String, action: () -> Unit) {
     example("it: $description", action)
 }
 
+fun Spec.xit(description: String, reason: String? = null, block: (() -> Unit)? = null) {
+    pendingExample("it: $description", reason, block)
+}
+
 fun <T: Any> SubjectSpec<T>.itBehavesLike(sharedExample: SharedExample<in T>) {
     include(sharedExample)
 }

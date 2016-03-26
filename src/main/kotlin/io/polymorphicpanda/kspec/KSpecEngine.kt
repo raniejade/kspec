@@ -10,13 +10,13 @@ import kotlin.reflect.KClass
 
 class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     val root: ExampleGroupContext = ExampleGroupContext(clazz.name, null)
-    var current = root
-    internal var disabled = false
 
+    var current = root
+
+    internal var disabled = false
     internal fun disable() {
         disabled = true
     }
-
     override fun group(description: String, block: () -> Unit) {
         invokeIfNotDisabled {
             val context = ExampleGroupContext(description, current)
@@ -29,6 +29,12 @@ class KSpecEngine<T: KSpec>(clazz: Class<T>): Spec {
     override fun example(description: String, block: () -> Unit) {
         invokeIfNotDisabled {
             ExampleContext(description, current, block)
+        }
+    }
+
+    override fun pendingExample(description: String, reason: String?, block: (() -> Unit)?) {
+        invokeIfNotDisabled {
+            ExampleContext(description, current, null, reason ?: "No reason given")
         }
     }
 

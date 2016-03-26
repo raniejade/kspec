@@ -23,6 +23,16 @@ class AdvancedCalculatorSpec: KSpec() {
                     assertThat(subject.pow(2.0, 3.0), equalTo(8.0))
                 }
             }
+
+            describe("sqrt") {
+                xit("sqrt(4)", "Not implemented yet") {
+                    assertThat(subject.sqrt(4.0), equalTo(2.0))
+                }
+            }
+
+            describe("tan") {
+                xit("tan(2)",  "TBD")
+            }
         }
     }
 }
