@@ -6,5 +6,6 @@ dokka {
 }
 
 dependencies {
-    compile "com.google.guava:guava"
+    testCompile "junit:junit"
+    testCompile "com.natpryce:hamkrest"
 }
