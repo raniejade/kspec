@@ -40,8 +40,9 @@ class JUnitTestDescriber: ContextVisitor {
 
     }
 
-    override fun preVisitExampleGroup(context: ExampleGroupContext) {
+    override fun preVisitExampleGroup(context: ExampleGroupContext): Boolean {
         contextDescriptions.put(context, Description.createSuiteDescription(context.description, JUnitUniqueId.next()))
+        return true
     }
 
     override fun onVisitExampleGroup(context: ExampleGroupContext) {
@@ -57,11 +58,12 @@ class JUnitTestDescriber: ContextVisitor {
         }
     }
 
-    override fun preVisitExample(context: ExampleContext) {
+    override fun preVisitExample(context: ExampleContext): Boolean {
         contextDescriptions.put(
                 context,
                 Description.createTestDescription(className(context.parent), context.description, JUnitUniqueId.next())
         )
+        return true
     }
 
     override fun onVisitExample(context: ExampleContext) {

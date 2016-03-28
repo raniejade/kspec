@@ -2,6 +2,7 @@ package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.runner.KSpecRunner
 import io.polymorphicpanda.kspec.runner.RunListener
 import org.junit.runner.Description
@@ -25,6 +26,12 @@ class JUnitKSpecRunner<T: KSpec>(clazz: Class<T>): Runner() {
         val runNotifier = io.polymorphicpanda.kspec.runner.RunNotifier()
 
         runNotifier.addListener(object: RunListener {
+            override fun exampleGroupStarted(group: ExampleGroupContext) { }
+
+            override fun exampleGroupFailure(group: ExampleGroupContext, failure: Throwable) { }
+
+            override fun exampleGroupFinished(group: ExampleGroupContext) { }
+
             override fun exampleStarted(example: ExampleContext) {
                 notifier!!.fireTestStarted(describer.contextDescriptions[example])
             }

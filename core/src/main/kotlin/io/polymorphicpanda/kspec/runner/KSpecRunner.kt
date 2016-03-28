@@ -14,8 +14,8 @@ class KSpecRunner(val root: ExampleGroupContext) {
     }
 
     class Runner(val notifier: RunNotifier): ContextVisitor {
-        override fun preVisitExampleGroup(context: ExampleGroupContext) {
-            safeRun(context) { context ->
+        override fun preVisitExampleGroup(context: ExampleGroupContext): Boolean {
+            return safeRun(context) { context ->
                 notifier.notifyExampleGroupStarted(context)
                 context.before?.invoke()
             }
@@ -29,8 +29,8 @@ class KSpecRunner(val root: ExampleGroupContext) {
             }
         }
 
-        override fun preVisitExample(context: ExampleContext) {
-            safeRun(context) { context ->
+        override fun preVisitExample(context: ExampleContext): Boolean {
+            return safeRun(context) { context ->
                 if (context.pending) {
                     notifier.notifyExampleIgnored(context)
                 } else {
@@ -76,15 +76,17 @@ class KSpecRunner(val root: ExampleGroupContext) {
             }
         }
 
-        private fun <T: Context> safeRun(context: T, action: (T) -> Unit) {
+        private fun <T: Context> safeRun(context: T, action: (T) -> Unit): Boolean {
             try {
                 action(context)
+                return true
             } catch (e: Throwable) {
                 when(context) {
                     is ExampleContext -> notifier.notifyExampleFailure(context, e)
                     is ExampleGroupContext -> notifier.notifyExampleGroupFailure(context, e)
                 }
             }
+            return false
         }
     }
 }

@@ -4,7 +4,7 @@ import java.util.*
 
 open class Context(val description: String)
 
-open class ExampleGroupContext(description: String,
+class ExampleGroupContext(description: String,
                                val parent: ExampleGroupContext?,
                                var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
     : Context(description) {
@@ -45,14 +45,17 @@ open class ExampleGroupContext(description: String,
         private fun doVisit(visitor: ContextVisitor, context: Context) {
             when(context) {
                 is ExampleGroupContext -> {
-                    visitor.preVisitExampleGroup(context)
-                    visitor.onVisitExampleGroup(context)
-                    context.children.forEach { doVisit(visitor, it) }
+                    if (visitor.preVisitExampleGroup(context)) {
+                        visitor.onVisitExampleGroup(context)
+                        context.children.forEach { doVisit(visitor, it) }
+                    }
+
                     visitor.postVisitExampleGroup(context)
                 }
                 is ExampleContext -> {
-                    visitor.preVisitExample(context)
-                    visitor.onVisitExample(context)
+                    if (visitor.preVisitExample(context)) {
+                        visitor.onVisitExample(context)
+                    }
                     visitor.postVisitExample(context)
                 }
             }
