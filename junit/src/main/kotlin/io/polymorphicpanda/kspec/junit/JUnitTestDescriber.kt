@@ -46,7 +46,6 @@ class JUnitTestDescriber: ContextVisitor {
     }
 
     override fun onVisitExampleGroup(context: ExampleGroupContext) {
-        super.onVisitExampleGroup(context)
     }
 
     override fun postVisitExampleGroup(context: ExampleGroupContext) {
@@ -67,7 +66,6 @@ class JUnitTestDescriber: ContextVisitor {
     }
 
     override fun onVisitExample(context: ExampleContext) {
-        super.onVisitExample(context)
     }
 
     override fun postVisitExample(context: ExampleContext) {

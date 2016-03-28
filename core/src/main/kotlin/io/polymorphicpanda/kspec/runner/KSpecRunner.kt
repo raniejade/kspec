@@ -21,6 +21,7 @@ class KSpecRunner(val root: ExampleGroupContext) {
             }
         }
 
+        override fun onVisitExampleGroup(context: ExampleGroupContext) { }
 
         override fun postVisitExampleGroup(context: ExampleGroupContext) {
             safeRun(context) { context ->
