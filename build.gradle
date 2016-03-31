@@ -17,3 +17,15 @@ buildscript {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.11'
 }
+
+if (hasProperty("bintray_user")) {
+    ext.bintrayUser = bintray_user
+} else {
+    ext.bintrayUser = ""
+}
+
+if (hasProperty("bintray_api_key")) {
+    ext.bintrayApiKey = bintray_api_key
+} else {
+    ext.bintrayApiKey = ""
+}

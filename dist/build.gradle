@@ -31,8 +31,8 @@ publishing {
 }
 
 bintray {
-    user = "$bintray_user"
-    key = "$bintray_api_key"
+    user = "${rootProject.ext.bintrayUser}"
+    key = "${rootProject.ext.bintrayApiKey}"
     publish = false
 
     pkg {
