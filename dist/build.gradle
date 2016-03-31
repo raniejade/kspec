@@ -1,6 +1,7 @@
 apply plugin: 'base'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: "com.jfrog.artifactory"
 
 evaluationDependsOn ":core"
 evaluationDependsOn ":junit-runner"
@@ -52,4 +53,30 @@ bintray {
     }
 
     publications = ['kspec', 'junitRunner']
+}
+
+artifactory {
+    contextUrl = "https://oss.jfrog.org/artifactory"
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = "${rootProject.ext.bintrayUser}"
+            password = "${rootProject.ext.bintrayApiKey}"
+            maven = true
+
+        }
+
+        defaults {
+            publications ('kspec','junitRunner')
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-release'
+            username = "${rootProject.ext.bintrayUser}"
+            password = "${rootProject.ext.bintrayApiKey}"
+            maven = true
+
+        }
+    }
 }
