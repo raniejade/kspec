@@ -1,0 +1,55 @@
+apply plugin: 'base'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+evaluationDependsOn ":core"
+evaluationDependsOn ":junit-runner"
+
+publishing {
+    publications {
+        kspec(MavenPublication) {
+            groupId = "io.polymorphicpanda.kspec"
+            artifactId = "kspec"
+            version = "${rootProject.version}"
+
+            from project(":core").components.java
+
+            artifact project(":core").tasks['sourceJar']
+        }
+
+
+        junitRunner(MavenPublication) {
+            groupId = "io.polymorphicpanda.kspec"
+            artifactId = "kspec-junit-runner"
+            version = "${rootProject.version}"
+
+            from project(":junit-runner").components.java
+
+            artifact project(":junit-runner").tasks['sourceJar']
+        }
+    }
+}
+
+bintray {
+    user = "$bintray_user"
+    key = "$bintray_api_key"
+    publish = false
+
+    pkg {
+        repo = 'maven'
+        desc = "Specification framework for Kotlin"
+        name = 'kspec'
+        licenses = ['MIT']
+        labels = ['kotlin', 'testing', 'specification-framework']
+        vcsUrl = 'https://github.com/raniejade/kspec.git'
+
+        githubRepo = 'raniejade/kspec'
+
+
+        version {
+            name = rootProject.version
+        }
+    }
+
+    publications = ['kspec', 'junitRunner']
+}

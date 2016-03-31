@@ -9,3 +9,8 @@ dependencies {
     testCompile "junit:junit"
     testCompile "com.natpryce:hamkrest"
 }
+
+task sourceJar(type: Jar) {
+    from project.sourceSets.main.allSource
+    classifier "sources"
+}
