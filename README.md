@@ -64,7 +64,7 @@ class TheMostAmazingAnimalSpec: KSpec() {
 ```
 
 ## Shared Examples
-Sometimes it's convenient to reuse examples - like when testing for a subclass of something.
+Sometimes it's convenient to reuse examples - like when testing a subclass.
 ```kotlin
 class CalculatorSpec: KSpec() {
     override fun spec() {
@@ -76,7 +76,8 @@ class CalculatorSpec: KSpec() {
     companion object {
         fun calculator() = sharedExample<Calculator> {
             describe("add") {
-                it("...") {
+                it("1 + 1 = 2") {
+                    assertThat(subject.add(1, 1), equalTo(2))
                 }
             }
             ...
