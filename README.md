@@ -29,16 +29,16 @@ class TheMostAmazingAnimalSpec: KSpec() {
 KSpec is heavily inspired by [RSpec](http://rspec.info/), `Context` is synonymous to RSpec's scopes.
 
 ### Example
-The test method in JUnit, and created using `it`.
+The test method in JUnit and created using `it`.
 
 ### ExampleGroup
-Groups similar examples together (they might be testing the same `Subject` - more on this later) and is created by using `describe` or `context`. Be careful when placing logic in those They are eagerly evaluated and not a good place to put some initializing logic (use the provided fixtures).
+Groups similar examples together (they might be testing the same `Subject` - more on this later) and is created by using `describe` or `context`. Be careful when placing logic in them, as they are eagerly evaluated and not a good place to put some initializing logic (use the provided fixtures).
 
 ## Fixtures
 KSpec provides `before`, `beforeEach`, `afterEach` and `after` callbacks for each context.
 
 ## Subject
-Just like RSpec, KSpec also support subjects! Using the example above, lets modify it to use the subject feature.
+Just like RSpec, KSpec also support subjects.
 ```kotlin
 class TheMostAmazingAnimalSpec: KSpec() {
     override fun spec() {
