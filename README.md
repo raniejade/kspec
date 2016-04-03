@@ -32,7 +32,7 @@ KSpec is heavily inspired by [RSpec](http://rspec.info/), `Context` is synonymou
 The test method in JUnit and created using `it`.
 
 ### ExampleGroup
-Groups similar examples together (they might be testing the same `Subject` - more on this later) and is created by using `describe` or `context`. Be careful when placing logic in them, as they are eagerly evaluated and not a good place to put some initializing logic (use the provided fixtures).
+Groups similar examples together (they might be testing the same `Subject` - more on this later) and is created by using `describe` or `context`. Be cautious in placing logic code in them as they are eagerly evaluated
 
 ## Fixtures
 KSpec provides `before`, `beforeEach`, `afterEach` and `after` callbacks for each context.
@@ -64,7 +64,7 @@ class TheMostAmazingAnimalSpec: KSpec() {
 ```
 
 ## Shared Examples
-Sometimes it's convenient to reuse examples - like when testing a subclass.
+Sometimes it's convenient to reuse examples - like testing a subclass.
 ```kotlin
 class CalculatorSpec: KSpec() {
     override fun spec() {
@@ -95,7 +95,7 @@ class AdvancedCalculatorSpec: KSpec() {
 ```
 
 ## Runner
-Currently only a JUnit 4 Runner is provided, make sure to annotate your class with `@RunWith(JUnitKSpecRunner)`.
+Currently only a JUnit 4 Runner is provided. Make sure to annotate your class with `@RunWith(JUnitKSpecRunner)`.
 
 ## Maven Coordinates
 Core library: `io.polymorphicpanda.kspec:kspec:<kspec-version>`.   
