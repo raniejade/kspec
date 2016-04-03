@@ -39,7 +39,7 @@ KSpec provides `before`, `beforeEach`, `afterEach` and `after` callbacks for eac
 
 ## Subject
 Just like RSpec, KSpec also support subjects! Using the example above, lets modify it to use the subject feature.
-```
+```kotlin
 class TheMostAmazingAnimalSpec: KSpec() {
     override fun spec() {
         describe("the most amazing animal in the universe") {
@@ -65,7 +65,7 @@ class TheMostAmazingAnimalSpec: KSpec() {
 
 ## Shared Examples
 Sometimes it's convenient to reuse examples - like when testing for a subclass of something.
-```
+```kotlin
 class CalculatorSpec: KSpec() {
     override fun spec() {
         describe(Calculator::class) {
