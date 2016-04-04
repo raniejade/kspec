@@ -3,30 +3,46 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: "com.jfrog.artifactory"
 
-evaluationDependsOn ":core"
-evaluationDependsOn ":junit-runner"
+apply from: "$rootDir/gradle/common/dependencies.gradle"
+
+evaluationDependsOn ":kspec-core"
+evaluationDependsOn ":kspec-junit-runner"
 
 publishing {
     publications {
         kspec(MavenPublication) {
             groupId = "io.polymorphicpanda.kspec"
-            artifactId = "kspec"
-            version = "${project(":core").version}"
+            artifactId = "kspec-core"
+            version = "${project(":kspec-core").version}"
 
-            from project(":core").components.java
+            from project(":kspec-core").components.java
 
-            artifact project(":core").tasks['sourceJar']
+            artifact project(":kspec-core").tasks['sourceJar']
+
+            pom.withXml {
+                asNode().dependencies.dependency.each {
+                    it.scope[0].value = ("compile")
+                }
+
+            }
         }
 
 
         junitRunner(MavenPublication) {
             groupId = "io.polymorphicpanda.kspec"
             artifactId = "kspec-junit-runner"
-            version = "${project(":core").version}"
+            version = "${project(":kspec-junit-runner").version}"
 
-            from project(":junit-runner").components.java
+            from project(":kspec-junit-runner").components.java
 
-            artifact project(":junit-runner").tasks['sourceJar']
+            artifact project(":kspec-junit-runner").tasks['sourceJar']
+
+            pom.withXml {
+                asNode().dependencies.dependency.each {
+                    it.scope[0].value = ("compile")
+                }
+
+            }
         }
     }
 }

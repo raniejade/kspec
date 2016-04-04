@@ -1,4 +1,4 @@
-include 'core'
-include 'junit-runner'
+include 'kspec-core'
+include 'kspec-junit-runner'
 include 'dist'
 include 'samples'

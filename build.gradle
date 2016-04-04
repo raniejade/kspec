@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE"
+        classpath "io.spring.gradle:dependency-management-plugin:0.5.6.RELEASE"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.1"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.7"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
@@ -30,5 +30,6 @@ if (hasProperty("bintray_api_key")) {
 }
 
 allprojects {
+    group = "io.polymorphicpanda.kspec"
     version = "0.2.0-SNAPSHOT"
 }
