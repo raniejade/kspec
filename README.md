@@ -106,7 +106,7 @@ repositories {
 }
 
 dependencies {
-    testCompile "io.polymorphicpanda.kspec:kspec:<kspec-version>"
+    testCompile "io.polymorphicpanda.kspec:kspec-core:<kspec-version>"
     testCompile "io.polymorphicpanda.kspec:kspec-junit-runner:<kspec-version>"
 }
 ```
