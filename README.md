@@ -95,8 +95,20 @@ class AdvancedCalculatorSpec: KSpec() {
 ```
 
 ## Runner
-Currently only a JUnit 4 Runner is provided. Make sure to annotate your class with `@RunWith(JUnitKSpecRunner)`.
+Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner)`.
 
-## Maven Coordinates
-Core library: `io.polymorphicpanda.kspec:kspec:<kspec-version>`.   
-JUnit 4 Runner: `io.polymorphicpanda.kspec:kspec-junit-runner:<kspec-version>`
+
+## Usage
+### Gradle
+```
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile "io.polymorphicpanda.kspec:kspec:<kspec-version>"
+    testCompile "io.polymorphicpanda.kspec:kspec-junit-runner:<kspec-version>"
+}
+```
+
+Snapshot versions are available at http://oss.jfrog.org/artifactory/oss-snapshot-local/
