@@ -1,5 +1,3 @@
-version = "0.1.0-SNAPSHOT"
-// FIXME: move to buildSrc until https://youtrack.jetbrains.com/issue/KT-11174
 buildscript {
     repositories {
         mavenCentral()
@@ -29,4 +27,8 @@ if (hasProperty("bintray_api_key")) {
     ext.bintrayApiKey = bintray_api_key
 } else {
     ext.bintrayApiKey = ""
+}
+
+allprojects {
+    version = "0.1.0-SNAPSHOT"
 }

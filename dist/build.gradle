@@ -11,7 +11,7 @@ publishing {
         kspec(MavenPublication) {
             groupId = "io.polymorphicpanda.kspec"
             artifactId = "kspec"
-            version = "${rootProject.version}"
+            version = "${project(":core").version}"
 
             from project(":core").components.java
 
@@ -22,7 +22,7 @@ publishing {
         junitRunner(MavenPublication) {
             groupId = "io.polymorphicpanda.kspec"
             artifactId = "kspec-junit-runner"
-            version = "${rootProject.version}"
+            version = "${project(":core").version}"
 
             from project(":junit-runner").components.java
 
@@ -48,7 +48,7 @@ bintray {
 
 
         version {
-            name = rootProject.version
+            name = project.version
         }
     }
 
@@ -71,12 +71,6 @@ artifactory {
         }
     }
     resolve {
-        repository {
-            repoKey = 'libs-release'
-            username = "${rootProject.ext.bintrayUser}"
-            password = "${rootProject.ext.bintrayApiKey}"
-            maven = true
-
-        }
+        repoKey = 'jcenter'
     }
 }
