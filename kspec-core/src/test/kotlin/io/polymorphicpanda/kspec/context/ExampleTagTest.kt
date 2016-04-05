@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.context
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.tag.tag
+import io.polymorphicpanda.kspec.tag.Tag
 import org.junit.Test
 
 /**
@@ -11,8 +11,8 @@ import org.junit.Test
 class ExampleTagTest {
     @Test
     fun testExampleTagCheck() {
-        val tags = setOf(tag("focus") {})
-        val example = ExampleContext("example", ExampleGroupContext("group", null), null, "", tags)
+        val tags = setOf(Tag("focus"))
+        val example = ExampleContext("example", ExampleGroupContext("group", null), null, tags)
 
         assertThat(example.contains("focus"), equalTo(true))
         assertThat(example.contains("test"), equalTo(false))

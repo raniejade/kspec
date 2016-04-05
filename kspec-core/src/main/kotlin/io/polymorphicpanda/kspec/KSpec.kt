@@ -1,5 +1,6 @@
 package io.polymorphicpanda.kspec
 
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.tag.Tag
@@ -18,6 +19,8 @@ abstract class KSpec: Spec {
 
     abstract fun spec();
 
+    open fun configure(config: KSpecConfig) {}
+
     override fun group(description: String, block: () -> Unit) {
         invokeIfNotDisabled {
             val context = ExampleGroupContext(description, current)
@@ -29,13 +32,7 @@ abstract class KSpec: Spec {
 
     override fun example(description: String, tags: Set<Tag>, block: () -> Unit) {
         invokeIfNotDisabled {
-            ExampleContext(description, current, block)
-        }
-    }
-
-    override fun pendingExample(description: String, reason: String?, block: (() -> Unit)?) {
-        invokeIfNotDisabled {
-            ExampleContext(description, current, null, reason ?: "No reason given")
+            ExampleContext(description, current, block, tags)
         }
     }
 

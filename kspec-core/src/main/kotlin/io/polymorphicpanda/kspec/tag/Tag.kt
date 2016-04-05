@@ -1,8 +1,15 @@
 package io.polymorphicpanda.kspec.tag
 
-import java.util.*
+class Tag(name: String, val data: Map<String, Any> = mapOf()) {
 
-class Tag(val name: String, val data: Map<String, Any> = mapOf()) {
+    val name = name.toLowerCase()
+
+    init {
+        if (name.isEmpty()) {
+            throw IllegalArgumentException("Tag name can't be empty.")
+        }
+    }
+
     inline operator fun <reified T> get(key: String): T = data[key] as T
 
     override fun equals(other: Any?): Boolean{
@@ -21,14 +28,4 @@ class Tag(val name: String, val data: Map<String, Any> = mapOf()) {
     }
 
 
-}
-
-inline fun tag(name: String, block: MutableMap<String, Any>.() -> Unit): Tag {
-    if (name.isEmpty()) {
-        throw IllegalArgumentException("Tag name can't be empty.")
-    }
-
-    val data = HashMap<String, Any>()
-    block.invoke(data)
-    return Tag(name.toLowerCase(), data);
 }

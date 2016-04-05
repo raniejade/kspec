@@ -10,31 +10,26 @@ import org.junit.Test
 class TagTest {
     @Test(expected = IllegalArgumentException::class)
     fun testTagNameCantBeEmpty() {
-        tag("") {}
+        Tag("")
     }
 
     @Test
     fun testTagEquality() {
-        assertThat(tag("focus") {}, equalTo(tag("focus") {}))
-        assertThat(tag("focus") {}, equalTo(tag("Focus") {}))
-        assertThat(tag("focus") {}, equalTo(tag("FOCUS") {}))
+        assertThat(Tag("focus"), equalTo(Tag("focus")))
+        assertThat(Tag("focus"), equalTo(Tag("Focus")))
+        assertThat(Tag("focus"), equalTo(Tag("FOCUS")))
     }
 
     @Test
     fun testTagFetchData() {
-        val tag = tag("tag") {
-            put("value", true)
-        }
+        val tag = Tag("tag", mapOf("value" to true))
 
         assertThat(tag["value"], equalTo(true))
     }
 
     @Test(expected = ClassCastException::class)
     fun testTagFetchDataInvalidType() {
-        val tag = tag("tag") {
-            put("value", listOf<String>())
-        }
-
+        val tag = Tag("tag", mapOf("value" to listOf<String>()))
         assertThat(tag["value"], equalTo(true))
     }
 }
