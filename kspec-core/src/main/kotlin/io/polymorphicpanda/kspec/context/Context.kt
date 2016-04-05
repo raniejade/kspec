@@ -1,5 +1,6 @@
 package io.polymorphicpanda.kspec.context
 
+import io.polymorphicpanda.kspec.tag.Tag
 import java.util.*
 
 open class Context(val description: String)
@@ -64,7 +65,7 @@ class ExampleGroupContext(description: String,
 }
 
 class ExampleContext(description: String, val parent: ExampleGroupContext,
-                     val action: (() -> Unit)?, val reason: String = "")
+                     val action: (() -> Unit)?, val reason: String = "", val tags: Set<Tag> = setOf<Tag>())
     : Context(description) {
     init {
         parent.children.add(this)
@@ -79,4 +80,6 @@ class ExampleContext(description: String, val parent: ExampleGroupContext,
             action!!()
         }
     }
+
+    fun contains(tag: String): Boolean = tags.any { it.name == tag }
 }
