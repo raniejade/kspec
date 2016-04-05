@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Kspec by raniejade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Kspec</h1>
+      <h2 class="project-tagline">Kotlin Specification Framework</h2>
+      <a href="https://github.com/raniejade/kspec" class="btn">View on GitHub</a>
+      <a href="https://github.com/raniejade/kspec/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/raniejade/kspec/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="kspec" class="anchor" href="#kspec" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KSpec</h1>
+
+<p><a href="https://bintray.com/raniejade/maven/kspec/_latestVersion"><img src="https://img.shields.io/bintray/v/raniejade/maven/kspec.svg" alt="Bintray"></a> <a href="https://travis-ci.org/raniejade/kspec"><img src="https://travis-ci.org/raniejade/kspec.svg?branch=master" alt="Build Status"></a> <a href="https://codecov.io/github/raniejade/kspec?branch=master"><img src="https://codecov.io/github/raniejade/kspec/coverage.svg?branch=master" alt="codecov.io"></a></p>
+
+<p>Specifications for Kotlin.</p>
+
+<h2>
+<a id="basic-structure" class="anchor" href="#basic-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic Structure</h2>
+
+<div class="highlight highlight-source-Kotlin"><pre>class <span class="pl-en">TheMostAmazingAnimalSpec</span><span class="pl-k">:</span> <span class="pl-e">KSpec</span>() {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">spec</span>() {
+        describe(<span class="pl-s"><span class="pl-pds">"</span>the most amazing animal in the universe<span class="pl-pds">"</span></span>) {
+            <span class="pl-k">val</span> <span class="pl-en">animal</span> <span class="pl-k">=</span> GetMostAmazingAnimal()
+            it(<span class="pl-s"><span class="pl-pds">"</span>should be a panda<span class="pl-pds">"</span></span>) {
+                assertThat(animal<span class="pl-k">.</span>type, equalTo(<span class="pl-s"><span class="pl-pds">"</span>panda<span class="pl-pds">"</span></span>))
+            }
+
+            context(<span class="pl-s"><span class="pl-pds">"</span>not a panda<span class="pl-pds">"</span></span>) {
+                it(<span class="pl-s"><span class="pl-pds">"</span>nope, not going to accept it<span class="pl-pds">"</span></span>) {
+                    assertThat({
+                        assertThat(animal<span class="pl-k">.</span>type, not(equalTo(<span class="pl-s"><span class="pl-pds">"</span>panda<span class="pl-pds">"</span></span>)))
+                    }, thrown(EndOfTheWorldException<span class="pl-k">::</span>class))
+                }
+            }
+        }
+    }
+}</pre></div>
+
+<h2>
+<a id="context" class="anchor" href="#context" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Context</h2>
+
+<p>KSpec is heavily inspired by <a href="http://rspec.info/">RSpec</a>, <code>Context</code> is synonymous to RSpec's scopes.</p>
+
+<h3>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h3>
+
+<p>The test method in JUnit and created using <code>it</code>.</p>
+
+<h3>
+<a id="examplegroup" class="anchor" href="#examplegroup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ExampleGroup</h3>
+
+<p>Groups similar examples together (they might be testing the same <code>Subject</code> - more on this later) and is created by using <code>describe</code> or <code>context</code>. Be cautious in placing logic code in them as they are eagerly evaluated</p>
+
+<h2>
+<a id="fixtures" class="anchor" href="#fixtures" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixtures</h2>
+
+<p>KSpec provides <code>before</code>, <code>beforeEach</code>, <code>afterEach</code> and <code>after</code> callbacks for each context.</p>
+
+<h2>
+<a id="subject" class="anchor" href="#subject" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Subject</h2>
+
+<p>Just like RSpec, KSpec also support subjects.</p>
+
+<div class="highlight highlight-source-Kotlin"><pre>class <span class="pl-en">TheMostAmazingAnimalSpec</span><span class="pl-k">:</span> <span class="pl-e">KSpec</span>() {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">spec</span>() {
+        describe(<span class="pl-s"><span class="pl-pds">"</span>the most amazing animal in the universe<span class="pl-pds">"</span></span>) {
+            subject {
+                <span class="pl-k">return</span>@subject GetMostAmazingAnimal();
+            }
+
+            it(<span class="pl-s"><span class="pl-pds">"</span>should be a panda<span class="pl-pds">"</span></span>) {
+                assertThat(subject<span class="pl-k">.</span>type, equalTo(<span class="pl-s"><span class="pl-pds">"</span>panda<span class="pl-pds">"</span></span>))
+            }
+
+            context(<span class="pl-s"><span class="pl-pds">"</span>not a panda<span class="pl-pds">"</span></span>) {
+                it(<span class="pl-s"><span class="pl-pds">"</span>nope, not going to accept it<span class="pl-pds">"</span></span>) {
+                    assertThat({
+                        assertThat(subject<span class="pl-k">.</span>type, not(equalTo(<span class="pl-s"><span class="pl-pds">"</span>panda<span class="pl-pds">"</span></span>)))
+                    }, thrown(EndOfTheWorldException<span class="pl-k">::</span>class))
+                }
+            }
+        }
+    }
+}</pre></div>
+
+<h2>
+<a id="shared-examples" class="anchor" href="#shared-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Shared Examples</h2>
+
+<p>Sometimes it's convenient to reuse examples - like testing a subclass.</p>
+
+<div class="highlight highlight-source-Kotlin"><pre>class <span class="pl-en">CalculatorSpec</span><span class="pl-k">:</span> <span class="pl-e">KSpec</span>() {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">spec</span>() {
+        describe(Calculator<span class="pl-k">::</span>class) {
+            itBehavesLike(calculator())
+        }
+    }
+
+    <span class="pl-k">companion </span>object {
+        <span class="pl-k">fun</span> <span class="pl-en">calculator</span>() <span class="pl-k">=</span> sharedExample&lt;Calculator&gt; {
+            describe(<span class="pl-s"><span class="pl-pds">"</span>add<span class="pl-pds">"</span></span>) {
+                it(<span class="pl-s"><span class="pl-pds">"</span>1 + 1 = 2<span class="pl-pds">"</span></span>) {
+                    assertThat(subject<span class="pl-k">.</span>add(<span class="pl-c1">1</span>, <span class="pl-c1">1</span>), equalTo(<span class="pl-c1">2</span>))
+                }
+            }
+            <span class="pl-k">...</span>
+        }
+    }
+}
+
+class <span class="pl-en">AdvancedCalculatorSpec</span><span class="pl-k">:</span> <span class="pl-e">KSpec</span>() {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">spec</span>() {
+        describe(AdvancedCalculator<span class="pl-k">::</span>class) {
+            itBehavesLike(CalculatorSpec<span class="pl-k">.</span>calculator())
+        }
+    }
+}</pre></div>
+
+<h2>
+<a id="runner" class="anchor" href="#runner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Runner</h2>
+
+<p>Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with <code>@RunWith(JUnitKSpecRunner)</code>.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a id="gradle" class="anchor" href="#gradle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Gradle</h3>
+
+<pre><code>repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile "io.polymorphicpanda.kspec:kspec-core:&lt;kspec-version&gt;"
+    testCompile "io.polymorphicpanda.kspec:kspec-junit-runner:&lt;kspec-version&gt;"
+}
+</code></pre>
+
+<p>Snapshot versions are available at <a href="http://oss.jfrog.org/artifactory/oss-snapshot-local/">http://oss.jfrog.org/artifactory/oss-snapshot-local/</a></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/raniejade/kspec">Kspec</a> is maintained by <a href="https://github.com/raniejade">raniejade</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
