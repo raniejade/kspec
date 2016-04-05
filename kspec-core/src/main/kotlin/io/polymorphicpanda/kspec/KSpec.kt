@@ -2,6 +2,7 @@ package io.polymorphicpanda.kspec
 
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.tag.Tag
 import kotlin.reflect.KClass
 
 abstract class KSpec: Spec {
@@ -26,7 +27,7 @@ abstract class KSpec: Spec {
         }
     }
 
-    override fun example(description: String, block: () -> Unit) {
+    override fun example(description: String, tags: Set<Tag>, block: () -> Unit) {
         invokeIfNotDisabled {
             ExampleContext(description, current, block)
         }
