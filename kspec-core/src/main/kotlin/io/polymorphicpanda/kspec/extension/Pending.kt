@@ -1,12 +1,13 @@
 package io.polymorphicpanda.kspec.extension
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.tag.Tag
 
 /**
  * @author Ranie Jade Ramiso
  */
-internal object Pending {
+internal object Pending: Extension {
     const val TAG_NAME = "pending"
     const val DATA_REASON = "reason"
 
@@ -14,7 +15,7 @@ internal object Pending {
         return Tag(TAG_NAME, mapOf(DATA_REASON to reason))
     }
 
-    fun configure(config: KSpecConfig) {
+    override fun configure(config: KSpecConfig, root: ExampleGroupContext) {
         config.around { example, chain ->
             val tag = example[TAG_NAME];
 
@@ -27,5 +28,3 @@ internal object Pending {
         }
     }
 }
-
-fun pending(reason: String) = Pending.tag(reason)

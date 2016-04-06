@@ -5,7 +5,7 @@ import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ContextVisitor
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
-import io.polymorphicpanda.kspec.extension.Pending
+import io.polymorphicpanda.kspec.extension.CoreExtensions
 import io.polymorphicpanda.kspec.hook.Chain
 
 /**
@@ -15,8 +15,7 @@ class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpec
     fun run(notifier: RunNotifier) {
         val clone = config.clone()
 
-        // pending support
-        Pending.configure(clone)
+        CoreExtensions.configure(clone, root)
 
         root.visit(Runner(notifier, clone))
     }
