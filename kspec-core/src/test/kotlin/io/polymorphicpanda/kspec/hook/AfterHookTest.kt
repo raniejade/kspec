@@ -1,10 +1,12 @@
-package io.polymorphicpanda.kspec.runner
+package io.polymorphicpanda.kspec.hook
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
+import io.polymorphicpanda.kspec.runner.KSpecRunner
+import io.polymorphicpanda.kspec.runner.RunNotifier
 import io.polymorphicpanda.kspec.support.setupSpec
 import io.polymorphicpanda.kspec.tag.Tag
 import org.junit.Test
@@ -12,24 +14,23 @@ import org.junit.Test
 /**
  * @author Ranie Jade Ramiso
  */
-class AroundHookTest {
+class AfterHookTest {
     @Test
-    fun testAroundHookExecutionOrder() {
+    fun testAfterHookExecutionOrder() {
         val builder = StringBuilder()
         val config = KSpecConfig()
 
-        config.around { example, run, ignore ->
-            builder.appendln("begin around")
-            run()
-            builder.appendln("end around")
+        config.after {
+            builder.appendln("after hook")
         }
 
         val root = setupSpec {
             describe("group") {
 
-                beforeEach {
-                    builder.appendln("beforeEach")
+                afterEach {
+                    builder.appendln("afterEach")
                 }
+
                 it("example") {
                     builder.appendln("example")
                 }
@@ -37,10 +38,6 @@ class AroundHookTest {
                 it("another example") {
                     builder.appendln("another example")
                 }
-
-                afterEach {
-                    builder.appendln("afterEach")
-                }
             }
         }
 
@@ -50,47 +47,45 @@ class AroundHookTest {
         runner.run(notifier)
 
         val expected = """
-        begin around
-        beforeEach
         example
         afterEach
-        end around
-        begin around
-        beforeEach
+        after hook
         another example
         afterEach
-        end around
-        """.trimIndent()
+        after hook""".trimIndent()
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }
 
     @Test
-    fun testAroundHookIgnore() {
+    fun testAfterHookFiltering() {
         val builder = StringBuilder()
         val config = KSpecConfig()
 
-        config.around { example, run, ignore ->
-            builder.appendln("begin around")
+        val tag = Tag("test")
 
-            val tag = example["ignored"]
-            if (tag != null) {
-                ignore("no reason given")
-            } else {
-                run()
-            }
-            builder.appendln("end around")
-
+        config.after(tag) {
+            builder.appendln("after hook")
         }
+
 
         val root = setupSpec {
             describe("group") {
-                it("example") {
+
+                afterEach {
+                    builder.appendln("afterEach")
+                }
+
+                it("example", tag) {
                     builder.appendln("example")
                 }
 
-                it("ignored example", Tag("ignored")) {
+                it("ignored example") {
                     builder.appendln("ignored example")
+                }
+
+                it("another example", tag) {
+                    builder.appendln("another example")
                 }
             }
         }
@@ -101,12 +96,14 @@ class AroundHookTest {
         runner.run(notifier)
 
         val expected = """
-        begin around
         example
-        end around
-        begin around
-        end around
-        """.trimIndent()
+        afterEach
+        after hook
+        ignored example
+        afterEach
+        another example
+        afterEach
+        after hook""".trimIndent()
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }

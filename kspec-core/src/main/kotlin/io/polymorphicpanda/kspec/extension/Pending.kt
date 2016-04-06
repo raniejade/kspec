@@ -1,4 +1,4 @@
-package io.polymorphicpanda.kspec.extensions
+package io.polymorphicpanda.kspec.extension
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.tag.Tag
@@ -15,14 +15,14 @@ internal object Pending {
     }
 
     fun configure(config: KSpecConfig) {
-        config.around { example, run, ignore ->
+        config.around { example, chain ->
             val tag = example[TAG_NAME];
 
             if (tag != null) {
                 val reason: String = tag[DATA_REASON];
-                ignore("Pending: $reason")
+                chain.stop("Pending: $reason")
             } else {
-                run()
+                chain.next(example)
             }
         }
     }

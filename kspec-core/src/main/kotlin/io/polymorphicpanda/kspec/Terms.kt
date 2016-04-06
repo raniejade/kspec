@@ -1,6 +1,6 @@
 package io.polymorphicpanda.kspec
 
-import io.polymorphicpanda.kspec.extensions.pending
+import io.polymorphicpanda.kspec.extension.pending
 import io.polymorphicpanda.kspec.tag.Tag
 import kotlin.reflect.KClass
 

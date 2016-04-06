@@ -5,7 +5,8 @@ import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ContextVisitor
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
-import io.polymorphicpanda.kspec.extensions.Pending
+import io.polymorphicpanda.kspec.extension.Pending
+import io.polymorphicpanda.kspec.hook.Chain
 
 /**
  * @author Ranie Jade Ramiso
@@ -23,7 +24,7 @@ class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpec
     internal class Runner(val notifier: RunNotifier, val config: KSpecConfig): ContextVisitor {
 
         init {
-            config.around { example, run, ignore ->
+            config.around { example, chain ->
                 notifier.notifyExampleStarted(example)
 
                 invokeBeforeEach(example.parent)
@@ -55,21 +56,20 @@ class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpec
 
         override fun onVisitExample(context: ExampleContext) {
             safeRun(context) { context ->
-                config.before.forEach { it.invoke(context) }
+                config.before.filter { it.handles(context) }
+                        .forEach { it.execute(context) }
 
-                val block = config.around.reduce { current, next ->
-                    return@reduce { example, run, ignore ->
-                        current.invoke(example, {
-                            next(example, run, ignore)
-                        }, ignore)
+                val aroundHooks = config.around.filter { it.handles(context) }
+                val chain = object: Chain(aroundHooks) {
+                    override fun stop(reason: String) {
+                        notifier.notifyExampleIgnored(context)
                     }
                 }
 
-                block.invoke(context, { }, {
-                    notifier.notifyExampleIgnored(context)
-                })
+                chain.next(context)
 
-                config.after.forEach { it.invoke(context) }
+                config.after.filter { it.handles(context) }
+                        .forEach { it.execute(context) }
             }
         }
 

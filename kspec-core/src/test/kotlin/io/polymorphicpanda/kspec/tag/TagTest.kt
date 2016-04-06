@@ -16,8 +16,8 @@ class TagTest {
     @Test
     fun testTagEquality() {
         assertThat(Tag("focus"), equalTo(Tag("focus")))
-        assertThat(Tag("focus"), equalTo(Tag("Focus")))
-        assertThat(Tag("focus"), equalTo(Tag("FOCUS")))
+        assertThat(Tag("focus"), !equalTo(Tag("Focus")))
+        assertThat(Tag("focus"), !equalTo(Tag("FOCUS")))
     }
 
     @Test

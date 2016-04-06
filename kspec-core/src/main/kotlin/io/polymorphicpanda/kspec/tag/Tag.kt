@@ -1,8 +1,6 @@
 package io.polymorphicpanda.kspec.tag
 
-class Tag(name: String, val data: Map<String, Any> = mapOf()) {
-
-    val name = name.toLowerCase()
+data class Tag(val name: String, val data: Map<String, Any> = mapOf()) {
 
     init {
         if (name.isEmpty()) {
@@ -11,21 +9,4 @@ class Tag(name: String, val data: Map<String, Any> = mapOf()) {
     }
 
     inline operator fun <reified T> get(key: String): T = data[key] as T
-
-    override fun equals(other: Any?): Boolean{
-        if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        other as Tag
-
-        if (name != other.name) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int{
-        return name.hashCode()
-    }
-
-
 }
