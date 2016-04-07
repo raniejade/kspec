@@ -75,7 +75,9 @@ class ExampleContext(description: String, val parent: ExampleGroupContext,
         action!!()
     }
 
-    fun contains(tag: String): Boolean = tags.any { it.name == tag }
+    fun contains(vararg tags: Tag): Boolean = this.tags.any { tags.contains(it) }
+
+    fun contains(tags: Collection<Tag>): Boolean = this.tags.any { tags.contains(it) }
 
     operator fun get(tag: String): Tag? = tags.firstOrNull { it.name == tag }
 }

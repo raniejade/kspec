@@ -1,7 +1,8 @@
-package io.polymorphicpanda.kspec.extension
+package io.polymorphicpanda.kspec.pending
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.extension.Extension
 import io.polymorphicpanda.kspec.tag.Tag
 
 /**

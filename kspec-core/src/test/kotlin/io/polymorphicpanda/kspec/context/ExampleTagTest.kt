@@ -11,10 +11,12 @@ import org.junit.Test
 class ExampleTagTest {
     @Test
     fun testExampleTagCheck() {
-        val tags = setOf(Tag("focus"))
+        val focus = Tag("focus")
+        val test = Tag("test")
+        val tags = setOf(focus)
         val example = ExampleContext("example", ExampleGroupContext("group", null), null, tags)
 
-        assertThat(example.contains("focus"), equalTo(true))
-        assertThat(example.contains("test"), equalTo(false))
+        assertThat(example.contains(focus), equalTo(true))
+        assertThat(example.contains(test), equalTo(false))
     }
 }
