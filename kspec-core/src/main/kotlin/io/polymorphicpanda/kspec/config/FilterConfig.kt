@@ -8,13 +8,13 @@ import java.util.*
  */
 class FilterConfig {
     private val _includes = HashSet<Tag>()
-    val includes: Set<Tag> = _includes
+    internal val includes: Set<Tag> = _includes
 
     private val _excludes = HashSet<Tag>()
-    val excludes: Set<Tag> = _excludes
+    internal val excludes: Set<Tag> = _excludes
 
     private val _match = HashSet<Tag>()
-    val match: Set<Tag> = _match
+    internal val match: Set<Tag> = _match
 
 
     fun include(vararg tags: Tag) {

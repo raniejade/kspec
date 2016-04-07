@@ -12,13 +12,13 @@ import java.util.*
  */
 class KSpecConfig {
     private val _before = LinkedList<SimpleHook>()
-    val before: List<SimpleHook> = _before
+    internal val before: List<SimpleHook> = _before
 
     private val _after = LinkedList<SimpleHook>()
-    val after: List<SimpleHook> = _after
+    internal val after: List<SimpleHook> = _after
 
     private val _around = LinkedList<AroundHook>()
-    val around: List<AroundHook> = _around
+    internal val around: List<AroundHook> = _around
 
     val filter = FilterConfig()
 
