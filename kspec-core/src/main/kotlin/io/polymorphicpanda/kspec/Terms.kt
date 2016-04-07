@@ -1,5 +1,6 @@
 package io.polymorphicpanda.kspec
 
+import io.polymorphicpanda.kspec.tag.pending
 import io.polymorphicpanda.kspec.tag.Tag
 import kotlin.reflect.KClass
 
@@ -24,7 +25,7 @@ fun Spec.it(description: String, vararg tags: Tag, action: () -> Unit) {
 }
 
 fun Spec.xit(description: String, reason: String? = null, block: (() -> Unit)? = null) {
-    pendingExample("it: $description", reason, block)
+    example("it: $description", setOf(pending(reason ?: "No reason provided")), block ?: {})
 }
 
 fun <T: Any> SubjectSpec<T>.itBehavesLike(sharedExample: SharedExample<in T>) {

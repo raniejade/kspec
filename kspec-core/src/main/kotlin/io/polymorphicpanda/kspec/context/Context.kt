@@ -6,8 +6,8 @@ import java.util.*
 open class Context(val description: String)
 
 class ExampleGroupContext(description: String,
-                               val parent: ExampleGroupContext?,
-                               var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
+                          val parent: ExampleGroupContext?,
+                          var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
     : Context(description) {
     internal val children = LinkedList<Context>()
 
@@ -47,17 +47,13 @@ class ExampleGroupContext(description: String,
             when(context) {
                 is ExampleGroupContext -> {
                     if (visitor.preVisitExampleGroup(context)) {
-                        visitor.onVisitExampleGroup(context)
                         context.children.forEach { doVisit(visitor, it) }
                     }
 
                     visitor.postVisitExampleGroup(context)
                 }
                 is ExampleContext -> {
-                    if (visitor.preVisitExample(context)) {
-                        visitor.onVisitExample(context)
-                    }
-                    visitor.postVisitExample(context)
+                    visitor.onVisitExample(context)
                 }
             }
         }
@@ -65,21 +61,21 @@ class ExampleGroupContext(description: String,
 }
 
 class ExampleContext(description: String, val parent: ExampleGroupContext,
-                     val action: (() -> Unit)?, val reason: String = "", val tags: Set<Tag> = setOf<Tag>())
+                     val action: (() -> Unit)?, tags: Set<Tag> = setOf<Tag>())
     : Context(description) {
+
+    val tags = HashSet<Tag>(tags)
+
     init {
         parent.children.add(this)
     }
 
-    val pending: Boolean
-        get() = action == null
-
-    operator fun invoke() {
-        if (!pending) {
-            parent.reset()
-            action!!()
-        }
+    internal operator fun invoke() {
+        parent.reset()
+        action!!()
     }
 
     fun contains(tag: String): Boolean = tags.any { it.name == tag }
+
+    operator fun get(tag: String): Tag? = tags.firstOrNull { it.name == tag }
 }

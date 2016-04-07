@@ -1,27 +1,50 @@
 package io.polymorphicpanda.kspec.runner
 
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ContextVisitor
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.extension.CoreExtensions
+import io.polymorphicpanda.kspec.hook.Chain
 
 /**
  * @author Ranie Jade Ramiso
  */
-class KSpecRunner(val root: ExampleGroupContext) {
+class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpecConfig()) {
     fun run(notifier: RunNotifier) {
-        root.visit(Runner(notifier))
+        val clone = config.clone()
+
+        CoreExtensions.configure(clone, root)
+
+        root.visit(Runner(notifier, clone))
     }
 
-    class Runner(val notifier: RunNotifier): ContextVisitor {
+    internal class Runner(val notifier: RunNotifier, val config: KSpecConfig): ContextVisitor {
+
+        init {
+            config.around { example, chain ->
+                notifier.notifyExampleStarted(example)
+
+                invokeBeforeEach(example.parent)
+
+                // ensures that afterEach is still invoke even if the test fails
+                safeRun(example) { context ->
+                    context()
+                }
+
+                invokeAfterEach(example.parent)
+
+                notifier.notifyExampleFinished(example)
+            }
+        }
+
         override fun preVisitExampleGroup(context: ExampleGroupContext): Boolean {
             return safeRun(context) { context ->
                 notifier.notifyExampleGroupStarted(context)
                 context.before?.invoke()
             }
         }
-
-        override fun onVisitExampleGroup(context: ExampleGroupContext) { }
 
         override fun postVisitExampleGroup(context: ExampleGroupContext) {
             safeRun(context) { context ->
@@ -30,36 +53,22 @@ class KSpecRunner(val root: ExampleGroupContext) {
             }
         }
 
-        override fun preVisitExample(context: ExampleContext): Boolean {
-            return safeRun(context) { context ->
-                if (context.pending) {
-                    notifier.notifyExampleIgnored(context)
-                } else {
-                    notifier.notifyExampleStarted(context)
-                }
-            }
-        }
-
         override fun onVisitExample(context: ExampleContext) {
-            if (!context.pending) {
-                safeRun(context) { context ->
-                    invokeBeforeEach(context.parent)
+            safeRun(context) { context ->
+                config.before.filter { it.handles(context) }
+                        .forEach { it.execute(context) }
 
-                    // ensures that afterEach is still invoke even if the test fails
-                    safeRun(context) { context ->
-                        context()
+                val aroundHooks = config.around.filter { it.handles(context) }
+                val chain = object: Chain(aroundHooks) {
+                    override fun stop(reason: String) {
+                        notifier.notifyExampleIgnored(context)
                     }
-
-                    invokeAfterEach(context.parent)
                 }
-            }
-        }
 
-        override fun postVisitExample(context: ExampleContext) {
-            if (!context.pending) {
-                safeRun(context) { context ->
-                    notifier.notifyExampleFinished(context)
-                }
+                chain.next(context)
+
+                config.after.filter { it.handles(context) }
+                        .forEach { it.execute(context) }
             }
         }
 
