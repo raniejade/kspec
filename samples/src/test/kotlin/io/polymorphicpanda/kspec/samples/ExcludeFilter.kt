@@ -14,20 +14,20 @@ import org.junit.runner.RunWith
  * @author Ranie Jade Ramiso
  */
 @RunWith(JUnitKSpecRunner::class)
-class IncludeFilterSpec: KSpec() {
+class ExcludeFilter: KSpec() {
     val tag = Tag("bar")
 
     override fun configure(config: KSpecConfig) {
-        config.filter.include(tag)
+        config.filter.exclude(tag)
     }
 
     override fun spec() {
         describe("a group") {
-            it("some example", tag) {
+            it("some example") {
                 assertThat(true, equalTo(true))
             }
 
-            it("i should be ignored") {
+            it("i should be ignored", tag) {
                 assertThat(true, equalTo(false))
             }
         }

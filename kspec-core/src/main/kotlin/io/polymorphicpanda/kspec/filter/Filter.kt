@@ -5,6 +5,7 @@ import io.polymorphicpanda.kspec.context.ContextVisitor
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.extension.Extension
+import io.polymorphicpanda.kspec.tag.Ignored
 import io.polymorphicpanda.kspec.tag.Tag
 
 /**
@@ -45,7 +46,12 @@ object Filter: Extension {
                 if (!example.contains(excludes)) {
                     chain.next(example)
                 } else {
-                    chain.stop("Matching exclude filter")
+                    val ignored = example.tags.filterIsInstance(Ignored::class.java).firstOrNull()
+                    if (ignored != null) {
+                        chain.stop(ignored.reason)
+                    } else {
+                        chain.stop("Matching exclude filter")
+                    }
                 }
             }
         }

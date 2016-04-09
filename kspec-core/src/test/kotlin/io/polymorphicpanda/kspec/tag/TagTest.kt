@@ -19,17 +19,4 @@ class TagTest {
         assertThat(Tag("focus"), !equalTo(Tag("Focus")))
         assertThat(Tag("focus"), !equalTo(Tag("FOCUS")))
     }
-
-    @Test
-    fun testTagFetchData() {
-        val tag = Tag("tag", mapOf("value" to true))
-
-        assertThat(tag["value"], equalTo(true))
-    }
-
-    @Test(expected = ClassCastException::class)
-    fun testTagFetchDataInvalidType() {
-        val tag = Tag("tag", mapOf("value" to listOf<String>()))
-        assertThat(tag["value"], equalTo(true))
-    }
 }
