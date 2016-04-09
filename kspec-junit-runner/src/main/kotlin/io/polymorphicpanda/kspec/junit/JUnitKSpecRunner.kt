@@ -1,6 +1,7 @@
 package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.KSpec
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.runner.KSpecRunner
@@ -22,7 +23,10 @@ class JUnitKSpecRunner<T: KSpec>(clazz: Class<T>): Runner() {
     }
 
     override fun run(notifier: RunNotifier?) {
-        val runner = KSpecRunner(spec.root)
+        val config = KSpecConfig()
+        spec.configure(config)
+
+        val runner = KSpecRunner(spec.root, config)
         val runNotifier = io.polymorphicpanda.kspec.runner.RunNotifier()
 
         runNotifier.addListener(object: RunListener {

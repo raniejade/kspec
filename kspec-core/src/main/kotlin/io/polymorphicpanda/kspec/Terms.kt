@@ -1,7 +1,8 @@
 package io.polymorphicpanda.kspec
 
-import io.polymorphicpanda.kspec.tag.pending
 import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.focus
+import io.polymorphicpanda.kspec.tag.pending
 import kotlin.reflect.KClass
 
 fun Spec.describe(description: String, action: () -> Unit) {
@@ -22,6 +23,10 @@ fun <T: Any> Spec.context(subject: KClass<T>, description: String = "%s", action
 
 fun Spec.it(description: String, vararg tags: Tag, action: () -> Unit) {
     example("it: $description", setOf(*tags), action)
+}
+
+fun Spec.fit(description: String, vararg tags: Tag, action: () -> Unit) {
+    example("it: $description", setOf(focus(), *tags), action)
 }
 
 fun Spec.xit(description: String, reason: String? = null, block: (() -> Unit)? = null) {
