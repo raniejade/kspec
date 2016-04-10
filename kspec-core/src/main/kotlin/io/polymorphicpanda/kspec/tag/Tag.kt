@@ -7,7 +7,7 @@ open class Tag(val name: String) {
         }
     }
 
-    final override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
@@ -18,8 +18,7 @@ open class Tag(val name: String) {
         return true
     }
 
-    final override fun hashCode(): Int{
+    override fun hashCode(): Int{
         return name.hashCode()
     }
-
 }
