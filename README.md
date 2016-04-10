@@ -94,13 +94,16 @@ class AdvancedCalculatorSpec: KSpec() {
 }
 ```
 
+## Focused Examples
+By using `fit` instead of `it` you can *focus* an execution on an example. KSpec will only execute focused examples if there are any, otherwise it will execute everything.
+
 ## Runner
 Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner)`.
 
 
 ## Usage
 ### Gradle
-```
+```gradle
 repositories {
     jcenter()
 }
