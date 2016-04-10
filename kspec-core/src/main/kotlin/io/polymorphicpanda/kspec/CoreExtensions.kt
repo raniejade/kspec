@@ -13,8 +13,8 @@ import io.polymorphicpanda.kspec.pending.Pending
 internal object CoreExtensions: Extension {
     val extensions = listOf(
             Focused,
-            Filter,
-            Pending
+            Pending,
+            Filter
     )
 
     override fun configure(config: KSpecConfig, root: ExampleGroupContext) {
