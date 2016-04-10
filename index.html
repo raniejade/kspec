@@ -128,6 +128,11 @@ class <span class="pl-en">AdvancedCalculatorSpec</span><span class="pl-k">:</spa
 }</pre></div>
 
 <h2>
+<a id="focused-examples" class="anchor" href="#focused-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Focused Examples</h2>
+
+<p>By using <code>fit</code> instead of <code>it</code> you can <em>focus</em> an execution on an example. KSpec will only execute focused examples if there are any, otherwise it will execute everything.</p>
+
+<h2>
 <a id="runner" class="anchor" href="#runner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Runner</h2>
 
 <p>Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with <code>@RunWith(JUnitKSpecRunner)</code>.</p>
@@ -138,15 +143,14 @@ class <span class="pl-en">AdvancedCalculatorSpec</span><span class="pl-k">:</spa
 <h3>
 <a id="gradle" class="anchor" href="#gradle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Gradle</h3>
 
-<pre><code>repositories {
+<div class="highlight highlight-source-groovy-gradle"><pre><span class="pl-en">repositories</span> {
     jcenter()
 }
 
-dependencies {
-    testCompile "io.polymorphicpanda.kspec:kspec-core:&lt;kspec-version&gt;"
-    testCompile "io.polymorphicpanda.kspec:kspec-junit-runner:&lt;kspec-version&gt;"
-}
-</code></pre>
+<span class="pl-en">dependencies</span> {
+    testCompile <span class="pl-s"><span class="pl-pds">"</span>io.polymorphicpanda.kspec:kspec-core:&lt;kspec-version&gt;<span class="pl-pds">"</span></span>
+    testCompile <span class="pl-s"><span class="pl-pds">"</span>io.polymorphicpanda.kspec:kspec-junit-runner:&lt;kspec-version&gt;<span class="pl-pds">"</span></span>
+}</pre></div>
 
 <p>Snapshot versions are available at <a href="http://oss.jfrog.org/artifactory/oss-snapshot-local/">http://oss.jfrog.org/artifactory/oss-snapshot-local/</a></p>
 
