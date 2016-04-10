@@ -31,5 +31,5 @@ if (hasProperty("bintray_api_key")) {
 
 allprojects {
     group = "io.polymorphicpanda.kspec"
-    version = "0.2.0"
+    version = "0.3.0-SNAPSHOT"
 }
