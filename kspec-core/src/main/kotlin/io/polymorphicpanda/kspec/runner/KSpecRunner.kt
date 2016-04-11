@@ -39,7 +39,7 @@ class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpec
                 notifier.notifyExampleGroupStarted(context)
                 context.before?.invoke()
             }
-            return if (success) ContextVisitResult.CONTINUE else ContextVisitResult.SKIP
+            return if (success) ContextVisitResult.CONTINUE else ContextVisitResult.SKIP_SUBTREE
         }
 
         override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {

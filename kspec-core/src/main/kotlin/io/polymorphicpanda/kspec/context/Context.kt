@@ -57,7 +57,7 @@ class ExampleGroupContext(description: String,
                     }
 
                     if (result != ContextVisitResult.TERMINATE) {
-                        visitor.postVisitExampleGroup(context)
+                        return visitor.postVisitExampleGroup(context)
                     }
 
                     return result
