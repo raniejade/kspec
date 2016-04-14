@@ -1,8 +1,7 @@
 package io.polymorphicpanda.kspec.context
 
 interface ContextVisitor {
-    fun preVisitExampleGroup(context: ExampleGroupContext): Boolean
-    fun postVisitExampleGroup(context: ExampleGroupContext)
-
-    fun onVisitExample(context: ExampleContext)
+    fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult
+    fun onVisitExample(context: ExampleContext): ContextVisitResult
+    fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult
 }

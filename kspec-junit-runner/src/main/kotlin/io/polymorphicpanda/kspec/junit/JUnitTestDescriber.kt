@@ -1,9 +1,6 @@
 package io.polymorphicpanda.kspec.junit
 
-import io.polymorphicpanda.kspec.context.Context
-import io.polymorphicpanda.kspec.context.ContextVisitor
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.*
 import org.junit.runner.Description
 import java.io.Serializable
 import java.util.*
@@ -40,21 +37,23 @@ class JUnitTestDescriber: ContextVisitor {
 
     }
 
-    override fun preVisitExampleGroup(context: ExampleGroupContext): Boolean {
+    override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
         contextDescriptions.put(context, Description.createSuiteDescription(context.description, JUnitUniqueId.next()))
-        return true
+        return ContextVisitResult.CONTINUE
     }
 
-    override fun postVisitExampleGroup(context: ExampleGroupContext) {
+    override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
         val current = contextDescriptions[context]
 
         if (context.parent != null) {
             val parent = contextDescriptions[context.parent!!]
             parent!!.addChild(current)
         }
+
+        return ContextVisitResult.CONTINUE
     }
 
-    override fun onVisitExample(context: ExampleContext) {
+    override fun onVisitExample(context: ExampleContext): ContextVisitResult {
         val desc = Description.createTestDescription(
                 className(context.parent), context.description, JUnitUniqueId.next()
         )
@@ -65,6 +64,8 @@ class JUnitTestDescriber: ContextVisitor {
 
         val parent = contextDescriptions[context.parent]
         parent!!.addChild(desc)
+
+        return ContextVisitResult.CONTINUE
     }
 
 }

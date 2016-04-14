@@ -43,19 +43,27 @@ class ExampleGroupContext(description: String,
 
 
     companion object {
-        private fun doVisit(visitor: ContextVisitor, context: Context) {
+        private fun doVisit(visitor: ContextVisitor, context: Context): ContextVisitResult {
             when(context) {
                 is ExampleGroupContext -> {
-                    if (visitor.preVisitExampleGroup(context)) {
-                        context.children.forEach { doVisit(visitor, it) }
+                    val result = visitor.preVisitExampleGroup(context)
+
+                    if(result == ContextVisitResult.CONTINUE) {
+                        context.children.forEach {
+                            if (doVisit(visitor, it) == ContextVisitResult.TERMINATE) {
+                                 return ContextVisitResult.TERMINATE
+                            }
+                        }
                     }
 
-                    visitor.postVisitExampleGroup(context)
-                }
-                is ExampleContext -> {
-                    visitor.onVisitExample(context)
+                    if (result != ContextVisitResult.TERMINATE) {
+                        return visitor.postVisitExampleGroup(context)
+                    }
+
+                    return result
                 }
             }
+            return visitor.onVisitExample(context as ExampleContext)
         }
     }
 }

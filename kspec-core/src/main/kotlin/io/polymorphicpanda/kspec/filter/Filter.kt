@@ -1,6 +1,7 @@
 package io.polymorphicpanda.kspec.filter
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
+import io.polymorphicpanda.kspec.context.ContextVisitResult
 import io.polymorphicpanda.kspec.context.ContextVisitor
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
@@ -58,35 +59,30 @@ object Filter: Extension {
 
     }
 
-    class StopProcessingException: RuntimeException()
-
     fun hasMatch(tags: Set<Tag>, root: ExampleGroupContext): Boolean {
-        var match = false
         val check = object: ContextVisitor {
-            override fun preVisitExampleGroup(context: ExampleGroupContext): Boolean {
-                return true
+            var match = false
+            override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+                return ContextVisitResult.CONTINUE
             }
 
-            override fun postVisitExampleGroup(context: ExampleGroupContext) {
-            }
+            override fun postVisitExampleGroup(context: ExampleGroupContext) = ContextVisitResult.CONTINUE
 
-            override fun onVisitExample(context: ExampleContext) {
+            override fun onVisitExample(context: ExampleContext): ContextVisitResult {
                 match = tags.any {
                     context.contains(it)
                 }
 
                 if (match) {
-                    throw StopProcessingException()
+                    return ContextVisitResult.TERMINATE
                 }
+
+                return ContextVisitResult.CONTINUE
             }
         }
 
-        try {
-            root.visit(check)
-        } catch (e: StopProcessingException) {
-            // do nothing - this is valid
-        }
+        root.visit(check)
 
-        return match
+        return check.match
     }
 }

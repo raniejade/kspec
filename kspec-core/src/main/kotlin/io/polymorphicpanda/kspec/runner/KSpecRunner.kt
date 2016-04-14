@@ -1,11 +1,8 @@
 package io.polymorphicpanda.kspec.runner
 
-import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.Context
-import io.polymorphicpanda.kspec.context.ContextVisitor
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.CoreExtensions
+import io.polymorphicpanda.kspec.config.KSpecConfig
+import io.polymorphicpanda.kspec.context.*
 import io.polymorphicpanda.kspec.hook.Chain
 
 /**
@@ -37,21 +34,23 @@ class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpec
             }
         }
 
-        override fun preVisitExampleGroup(context: ExampleGroupContext): Boolean {
-            return safeRun(context) { context ->
+        override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            val success = safeRun(context) { context ->
                 notifier.notifyExampleGroupStarted(context)
                 context.before?.invoke()
             }
+            return if (success) ContextVisitResult.CONTINUE else ContextVisitResult.SKIP_SUBTREE
         }
 
-        override fun postVisitExampleGroup(context: ExampleGroupContext) {
+        override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
             safeRun(context) { context ->
                 context.after?.invoke()
                 notifier.notifyExampleGroupFinished(context)
             }
+            return ContextVisitResult.CONTINUE
         }
 
-        override fun onVisitExample(context: ExampleContext) {
+        override fun onVisitExample(context: ExampleContext): ContextVisitResult {
             safeRun(context) { context ->
                 config.before.filter { it.handles(context) }
                         .forEach { it.execute(context) }
@@ -68,6 +67,8 @@ class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpec
                 config.after.filter { it.handles(context) }
                         .forEach { it.execute(context) }
             }
+
+            return ContextVisitResult.CONTINUE
         }
 
         private fun invokeBeforeEach(context: ExampleGroupContext) {
