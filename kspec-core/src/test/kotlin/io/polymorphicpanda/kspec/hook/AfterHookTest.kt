@@ -2,7 +2,6 @@ package io.polymorphicpanda.kspec.hook
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
 import io.polymorphicpanda.kspec.runner.KSpecRunner
@@ -18,11 +17,6 @@ class AfterHookTest {
     @Test
     fun testAfterHookExecutionOrder() {
         val builder = StringBuilder()
-        val config = KSpecConfig()
-
-        config.after {
-            builder.appendln("after hook> ${it.description}")
-        }
 
         val root = setupSpec {
             describe("group") {
@@ -42,7 +36,11 @@ class AfterHookTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, { config ->
+            config.after {
+                builder.appendln("after hook> ${it.description}")
+            }
+        })
 
         runner.run(notifier)
 
@@ -62,14 +60,7 @@ class AfterHookTest {
     @Test
     fun testAfterHookFiltering() {
         val builder = StringBuilder()
-        val config = KSpecConfig()
-
         val tag = Tag("test")
-
-        config.after(tag) {
-            builder.appendln("after hook")
-        }
-
 
         val root = setupSpec {
             describe("group") {
@@ -93,7 +84,12 @@ class AfterHookTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, { config ->
+            config.after(tag) {
+                builder.appendln("after hook")
+            }
+
+        })
 
         runner.run(notifier)
 

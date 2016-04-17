@@ -24,7 +24,7 @@ class RunnerTest {
             }
         }
 
-        val runner = KSpecRunner(root)
+        val runner = KSpecRunner(root, {})
         val listener = RememberingListener()
         val notifier = RunNotifier()
         notifier.addListener(listener)
@@ -46,7 +46,7 @@ class RunnerTest {
             }
         }
 
-        val runner = KSpecRunner(root)
+        val runner = KSpecRunner(root, {})
         val listener = RememberingListener()
         val notifier = RunNotifier()
         notifier.addListener(listener)
@@ -68,7 +68,7 @@ class RunnerTest {
             }
         }
 
-        val runner = KSpecRunner(root)
+        val runner = KSpecRunner(root, {})
         val listener = RememberingListener()
         val notifier = RunNotifier()
         notifier.addListener(listener)
@@ -90,7 +90,7 @@ class RunnerTest {
             }
         }
 
-        val runner = KSpecRunner(root)
+        val runner = KSpecRunner(root, {})
         val listener = RememberingListener()
         val notifier = RunNotifier()
         notifier.addListener(listener)

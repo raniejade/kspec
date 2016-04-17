@@ -2,7 +2,6 @@ package io.polymorphicpanda.kspec
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.runner.KSpecRunner
 import io.polymorphicpanda.kspec.runner.RunNotifier
 import io.polymorphicpanda.kspec.support.setupSpec
@@ -30,10 +29,8 @@ class PendingExampleTest {
             }
         }
 
-        val config = KSpecConfig()
-
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, {})
 
         runner.run(notifier)
 

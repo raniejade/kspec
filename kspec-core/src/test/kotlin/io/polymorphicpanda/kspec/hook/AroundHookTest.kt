@@ -2,7 +2,6 @@ package io.polymorphicpanda.kspec.hook
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
 import io.polymorphicpanda.kspec.runner.KSpecRunner
@@ -18,13 +17,6 @@ class AroundHookTest {
     @Test
     fun testAroundHookExecutionOrder() {
         val builder = StringBuilder()
-        val config = KSpecConfig()
-
-        config.around { context, chain ->
-            builder.appendln("begin around> ${context.description}")
-            chain.next(context)
-            builder.appendln("end around> ${context.description}")
-        }
 
         val root = setupSpec {
             describe("group") {
@@ -47,7 +39,13 @@ class AroundHookTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, { config ->
+            config.around { context, chain ->
+                builder.appendln("begin around> ${context.description}")
+                chain.next(context)
+                builder.appendln("end around> ${context.description}")
+            }
+        })
 
         runner.run(notifier)
 
@@ -74,18 +72,7 @@ class AroundHookTest {
     @Test
     fun testAroundHookFiltering() {
         val builder = StringBuilder()
-        val config = KSpecConfig()
-
         val tag = Tag("test")
-
-        config.around(tag) { example, chain ->
-            builder.appendln("begin around")
-
-            chain.next(example)
-
-            builder.appendln("end around")
-
-        }
 
         val root = setupSpec {
             describe("group") {
@@ -100,7 +87,16 @@ class AroundHookTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, { config ->
+            config.around(tag) { example, chain ->
+                builder.appendln("begin around")
+
+                chain.next(example)
+
+                builder.appendln("end around")
+
+            }
+        })
 
         runner.run(notifier)
 

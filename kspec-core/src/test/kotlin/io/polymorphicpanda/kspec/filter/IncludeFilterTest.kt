@@ -2,7 +2,6 @@ package io.polymorphicpanda.kspec.filter
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
@@ -34,12 +33,10 @@ class IncludeFilterTest {
             }
         }
 
-        val config = KSpecConfig()
-
-        config.filter.include(tag1)
-
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, { config ->
+            config.filter.include(tag1)
+        })
 
         runner.run(notifier)
 
@@ -74,12 +71,10 @@ class IncludeFilterTest {
                 }
             }
 
-            val config = KSpecConfig()
-
-            config.filter.include(tag1)
-
             val notifier = RunNotifier()
-            val runner = KSpecRunner(root, config)
+            val runner = KSpecRunner(root, { config ->
+                config.filter.include(tag1)
+            })
 
             runner.run(notifier)
 
@@ -119,12 +114,10 @@ class IncludeFilterTest {
             }
         }
 
-        val config = KSpecConfig()
-
-        config.filter.include(tag1, tag2)
-
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, { config ->
+            config.filter.include(tag1, tag2)
+        })
 
         runner.run(notifier)
 

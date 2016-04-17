@@ -46,7 +46,7 @@ class RunListenersTest {
             }
         }
 
-        val runner = KSpecRunner(spec)
+        val runner = KSpecRunner(spec, {})
         val listener = RememberingListener()
         val notifier = RunNotifier()
         notifier.addListener(listener)

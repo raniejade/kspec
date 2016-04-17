@@ -30,7 +30,7 @@ class SharedExampleTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(spec)
+        val runner = KSpecRunner(spec, {})
         runner.run(notifier)
 
         assertThat(subject is RuntimeException, equalTo(true))
