@@ -128,9 +128,81 @@ class <span class="pl-en">AdvancedCalculatorSpec</span><span class="pl-k">:</spa
 }</pre></div>
 
 <h2>
-<a id="focused-examples" class="anchor" href="#focused-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Focused Examples</h2>
+<a id="pending" class="anchor" href="#pending" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pending</h2>
 
-<p>By using <code>fit</code> instead of <code>it</code> you can <em>focus</em> an execution on an example. KSpec will only execute focused examples if there are any, otherwise it will execute everything.</p>
+<p>You can write specs in advance, KSpec will ignore them during execution.</p>
+
+<div class="highlight highlight-source-Kotlin"><pre><span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">spec</span>() {
+    xdescribe(<span class="pl-s"><span class="pl-pds">"</span>a pending group<span class="pl-pds">"</span></span>) {
+        it(<span class="pl-s"><span class="pl-pds">"</span>won't be executed<span class="pl-pds">"</span></span>) { }
+    }
+
+    xcontext(<span class="pl-s"><span class="pl-pds">"</span>another pending group<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>some reason<span class="pl-pds">"</span></span>)
+
+    xit(<span class="pl-s"><span class="pl-pds">"</span>a pending example<span class="pl-pds">"</span></span>) { }
+}</pre></div>
+
+<h2>
+<a id="focused" class="anchor" href="#focused" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Focused</h2>
+
+<p>KSpec supports focusing execution only on several contexts. Use <code>fdescribe</code> and <code>fcontext</code> to create a focused group, and <code>fit</code> to create a focused example. KSpec will only run focused contexts if there are any, othewise it will run everything.</p>
+
+<h2>
+<a id="tagging" class="anchor" href="#tagging" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tagging</h2>
+
+<p>TODO</p>
+
+<h2>
+<a id="filters" class="anchor" href="#filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filters</h2>
+
+<p>This allows to control which contexts to run. It can be configured per spec (by overriding <code>configure</code>) or by using <em>Shared Configurations</em>.</p>
+
+<div class="highlight highlight-source-Kotlin"><pre>class <span class="pl-en">SomeSpec</span><span class="pl-k">:</span> <span class="pl-e">KSpec</span>() {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">configure</span>(<span class="pl-smi">config</span><span class="pl-k">:</span> KSpecConfig) {
+       <span class="pl-c">// config.filter.&lt;filter&gt; = tags</span>
+    }
+}</pre></div>
+
+<h3>
+<a id="include" class="anchor" href="#include" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>include</h3>
+
+<p>Only include contexts having at least one of the <code>tags</code> specified.</p>
+
+<h3>
+<a id="exclude" class="anchor" href="#exclude" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>exclude</h3>
+
+<p>Exclude any contexts having at least one of the <code>tags</code> specified.</p>
+
+<h3>
+<a id="matching" class="anchor" href="#matching" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>matching</h3>
+
+<p>Similar to the <em>include filter</em>, the only difference is that if there is no match run everything.</p>
+
+<h2>
+<a id="shared-configurations" class="anchor" href="#shared-configurations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Shared Configurations</h2>
+
+<p>Declare shared configurations by extending <code>Configuration</code> and apply it to a spec via <code>@Configurations</code>.</p>
+
+<div class="highlight highlight-source-Kotlin"><pre>class <span class="pl-en">SharedConfiguration</span><span class="pl-k">:</span> <span class="pl-e">Configuration</span> {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">apply</span>(<span class="pl-smi">config</span><span class="pl-k">:</span> KSpecConfig) {
+        <span class="pl-k">...</span>
+    }
+}
+
+class <span class="pl-en">AnotherConfiguration</span><span class="pl-k">:</span> <span class="pl-e">Configuration</span> {
+    <span class="pl-k">override</span> <span class="pl-k">fun</span> <span class="pl-en">apply</span>(<span class="pl-smi">config</span><span class="pl-k">:</span> KSpecConfig) {
+        <span class="pl-k">...</span>
+    }
+}
+
+<span class="pl-c">// use it</span>
+@Configurations(
+    SharedConfiguration<span class="pl-k">::</span>class,
+    AnotherConfiguration<span class="pl-k">::</span>class
+)
+class <span class="pl-en">SomeSpec</span><span class="pl-k">:</span> <span class="pl-e">KSpec</span>() {
+    <span class="pl-k">...</span>
+}</pre></div>
 
 <h2>
 <a id="runner" class="anchor" href="#runner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Runner</h2>
