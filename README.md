@@ -93,9 +93,69 @@ class AdvancedCalculatorSpec: KSpec() {
     }
 }
 ```
+## Pending
+You can write specs in advance, KSpec will ignore them during execution.
+```kotlin
+override fun spec() {
+    xdescribe("a pending group") {
+        it("won't be executed") { }
+    }
 
-## Focused Examples
-By using `fit` instead of `it` you can *focus* an execution on an example. KSpec will only execute focused examples if there are any, otherwise it will execute everything.
+    xcontext("another pending group", "some reason")
+
+    xit("a pending example") { }
+}
+```
+
+## Focused
+KSpec supports focusing execution only on several contexts. Use `fdescribe` and `fcontext` to create a focused group, and `fit` to create a focused example. KSpec will only run focused contexts if there are any, othewise it will run everything.
+
+## Tagging
+TODO
+
+## Filters
+This allows to control which contexts to run. It can be configured per spec (by overriding `configure`) or by using *Shared Configurations*.
+```kotlin
+class SomeSpec: KSpec() {
+    override fun configure(config: KSpecConfig) {
+       // config.filter.<filter> = tags
+    }
+}
+```
+
+### include
+Only include contexts having at least one of the `tags` specified.
+
+### exclude
+Exclude any contexts having at least one of the `tags` specified.
+
+### matching
+Similar to the *include filter*, the only difference is that if there is no match run everything.
+
+## Shared Configurations
+Declare shared configurations by extending `Configuration` and apply it to a spec via `@Configurations`.
+```kotlin
+class SharedConfiguration: Configuration {
+    override fun apply(config: KSpecConfig) {
+        ...
+    }
+}
+
+class AnotherConfiguration: Configuration {
+    override fun apply(config: KSpecConfig) {
+        ...
+    }
+}
+
+// use it
+@Configurations(
+    SharedConfiguration::class,
+    AnotherConfiguration::class
+)
+class SomeSpec: KSpec() {
+    ...
+}
+```
 
 ## Runner
 Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner)`.

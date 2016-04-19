@@ -1,7 +1,8 @@
 package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.KSpec
-import io.polymorphicpanda.kspec.config.KSpecConfig
+import io.polymorphicpanda.kspec.Utils
+import io.polymorphicpanda.kspec.annotation.Configurations
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.runner.KSpecRunner
@@ -11,7 +12,7 @@ import org.junit.runner.Runner
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 
-class JUnitKSpecRunner<T: KSpec>(clazz: Class<T>): Runner() {
+class JUnitKSpecRunner<T: KSpec>(val clazz: Class<T>): Runner() {
     val describer = JUnitTestDescriber()
     val spec = clazz.newInstance()
 
@@ -23,10 +24,12 @@ class JUnitKSpecRunner<T: KSpec>(clazz: Class<T>): Runner() {
     }
 
     override fun run(notifier: RunNotifier?) {
-        val config = KSpecConfig()
-        spec.configure(config)
+        val runner = KSpecRunner(spec.root, { config ->
+                spec.configure(config)
+            },
+            Utils.findAnnotation(clazz.kotlin, Configurations::class)
+        )
 
-        val runner = KSpecRunner(spec.root, config)
         val runNotifier = io.polymorphicpanda.kspec.runner.RunNotifier()
 
         runNotifier.addListener(object: RunListener {

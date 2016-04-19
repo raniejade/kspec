@@ -50,7 +50,7 @@ class FixturesTest {
             }
         }
 
-        val runner = KSpecRunner(spec)
+        val runner = KSpecRunner(spec, {})
         val notifier = RunNotifier()
 
         runner.run(notifier)
@@ -96,7 +96,7 @@ class FixturesTest {
             }
         }
 
-        val runner = KSpecRunner(spec)
+        val runner = KSpecRunner(spec, {})
         val notifier = RunNotifier()
 
         runner.run(notifier)
@@ -142,7 +142,7 @@ class FixturesTest {
             }
         }
 
-        val runner = KSpecRunner(spec)
+        val runner = KSpecRunner(spec, {})
         val notifier = RunNotifier()
 
         runner.run(notifier)
@@ -188,7 +188,7 @@ class FixturesTest {
             }
         }
 
-        val runner = KSpecRunner(spec)
+        val runner = KSpecRunner(spec, {})
         val notifier = RunNotifier()
 
         runner.run(notifier)

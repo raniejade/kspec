@@ -33,7 +33,7 @@ class SubjectTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root)
+        val runner = KSpecRunner(root, {})
         runner.run(notifier)
 
         assertThat(subject1, !sameInstance(subject2))
@@ -61,7 +61,7 @@ class SubjectTest {
         }
 
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root)
+        val runner = KSpecRunner(root, {})
         runner.run(notifier)
 
         fun Throwable.isInstantiationException() = this is InstantiationException

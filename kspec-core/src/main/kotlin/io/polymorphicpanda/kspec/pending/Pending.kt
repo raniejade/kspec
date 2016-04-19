@@ -1,22 +1,21 @@
 package io.polymorphicpanda.kspec.pending
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
-import io.polymorphicpanda.kspec.extension.Extension
+import io.polymorphicpanda.kspec.extension.Configuration
 import io.polymorphicpanda.kspec.tag.Ignored
 import io.polymorphicpanda.kspec.tag.Tag
 
 /**
  * @author Ranie Jade Ramiso
  */
-internal object Pending: Extension {
+internal object Pending: Configuration {
     const val TAG_NAME = "pending"
 
     fun tag(reason: String = ""): Tag {
         return Ignored(TAG_NAME, reason)
     }
 
-    override fun configure(config: KSpecConfig, root: ExampleGroupContext) {
+    override fun apply(config: KSpecConfig) {
         config.filter.exclude(tag())
     }
 }

@@ -1,4 +1,4 @@
-package io.polymorphicpanda.kspec.filter
+package io.polymorphicpanda.kspec.samples.configuration
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.extension.Configuration
@@ -7,10 +7,13 @@ import io.polymorphicpanda.kspec.tag.Tag
 /**
  * @author Ranie Jade Ramiso
  */
-object Focused: Configuration {
-    val tag = Tag("focus")
+class SharedConfiguration: Configuration {
 
     override fun apply(config: KSpecConfig) {
-        config.filter.matching(tag)
+        config.filter.matching(TAG)
+    }
+
+    companion object {
+        val TAG = Tag("sample")
     }
 }

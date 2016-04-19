@@ -1,18 +1,53 @@
 package io.polymorphicpanda.kspec.runner
 
-import io.polymorphicpanda.kspec.CoreExtensions
+import io.polymorphicpanda.kspec.Utils
+import io.polymorphicpanda.kspec.annotation.Configurations
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.extension.Configuration
+import io.polymorphicpanda.kspec.filter.Filter
+import io.polymorphicpanda.kspec.filter.Focused
 import io.polymorphicpanda.kspec.hook.Chain
+import io.polymorphicpanda.kspec.pending.Pending
+import java.util.*
 
 /**
  * @author Ranie Jade Ramiso
  */
-class KSpecRunner(val root: ExampleGroupContext, val config: KSpecConfig = KSpecConfig()) {
+class KSpecRunner(val root: ExampleGroupContext,
+                  val configure: (KSpecConfig) -> Unit,
+                  val configurations: Configurations? = null) {
+    val coreConfigurations = setOf(
+            Focused,
+            Pending,
+            Filter
+    )
+
     fun run(notifier: RunNotifier) {
-        CoreExtensions.configure(config, root)
+        val config = KSpecConfig()
+        val extensions = LinkedList<Configuration>()
+
+        extensions.add(object: Configuration {
+            override fun apply(config: KSpecConfig) {
+                configure.invoke(config)
+            }
+
+        })
+
+        // apply shared configurations
+        if (configurations != null) {
+            val configurations = configurations.configurations
+
+            configurations.forEach {
+                extensions.add(Utils.instantiateUsingNoArgConstructor(it))
+            }
+        }
+
+        extensions.addAll(coreConfigurations)
+
+        extensions.forEach { it.apply(config) }
 
         Runner(notifier, config).execute(root)
     }

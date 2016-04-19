@@ -56,9 +56,8 @@ class FocusedTest {
             }
         }
 
-        val config = KSpecConfig()
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, {})
 
         runner.run(notifier)
 
@@ -97,7 +96,7 @@ class FocusedTest {
 
         val config = KSpecConfig()
         val notifier = RunNotifier()
-        val runner = KSpecRunner(root, config)
+        val runner = KSpecRunner(root, {})
 
         runner.run(notifier)
 
