@@ -158,7 +158,7 @@ class SomeSpec: KSpec() {
 ```
 
 ## Runner
-Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner)`.
+Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner::class)`.
 
 
 ## Usage
