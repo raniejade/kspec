@@ -1,0 +1,22 @@
+<configuration>
+    <appender name="ALL" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%highlight(%-5level) - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STATUS" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%boldWhite(%msg)</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="io.polymorphicpanda.kspec.console.info" level="INFO">
+        <appender-ref ref="ALL"/>
+    </logger>
+    <logger name="io.polymorphicpanda.kspec.console.status" level="INFO">
+        <appender-ref ref="STATUS"/>
+    </logger>
+    <root level="OFF"/>
+</configuration>

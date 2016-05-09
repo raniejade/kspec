@@ -3,14 +3,17 @@ package io.polymorphicpanda.kspec.console.reporter
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.launcher.reporter.BaseReporter
-import java.io.PrintStream
+import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * @author Ranie Jade Ramiso
  */
-class ConsoleReporter(val out: PrintStream = System.out,
-                      val err: PrintStream = System.err): BaseReporter() {
+class ConsoleReporter: BaseReporter() {
+
+    private val logger by lazy(LazyThreadSafetyMode.NONE) {
+        LoggerFactory.getLogger("io.polymorphicpanda.kspec.console.status")
+    }
 
     private val counter = AtomicInteger()
 
@@ -47,12 +50,12 @@ class ConsoleReporter(val out: PrintStream = System.out,
 
     override fun executionFinished() {
         super.executionFinished()
-        out.println()
+        logger.info("\n")
     }
 
     private fun updateStatusLine() {
-        val status = "\u001B[1m> ${counter.toInt()} spec(s) completed, " +
+        val status = "> ${counter.toInt()} spec(s) completed, " +
             "${totalFailureCount.toInt()} failed, ${totalIgnoredCount.toInt()} ignored."
-        out.print("\r$status")
+        logger.info("\r$status")
     }
 }

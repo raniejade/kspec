@@ -22,6 +22,10 @@ dependencies {
     compile project(":kspec-launcher")
     compile 'net.sf.jopt-simple:jopt-simple'
     compile "org.jetbrains.kotlin:kotlin-compiler"
+    compile "org.slf4j:slf4j-api"
+
+    runtime "ch.qos.logback:logback-classic"
+
     testCompile "junit:junit"
     testCompile "com.natpryce:hamkrest"
 

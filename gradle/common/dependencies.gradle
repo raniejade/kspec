@@ -8,6 +8,9 @@ dependencyManagement {
 
         dependency "net.sf.jopt-simple:jopt-simple:5.0.1"
 
+        dependency 'org.slf4j:slf4j-api:1.7.21'
+        dependency 'ch.qos.logback:logback-classic:1.1.7'
+
         dependencySet(group: 'org.jetbrains.kotlin', version: '1.0.1-2') {
             entry 'kotlin-stdlib'
             entry 'kotlin-reflect'
