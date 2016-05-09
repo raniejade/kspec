@@ -1,5 +1,6 @@
 package io.polymorphicpanda.kspec.context
 
+import io.polymorphicpanda.kspec.helpers.MemoizedHelper
 import io.polymorphicpanda.kspec.tag.Tag
 import io.polymorphicpanda.kspec.tag.Taggable
 import java.util.*
@@ -9,11 +10,13 @@ open class Context(val description: String, parent: Taggable?, tags: Set<Tag>): 
 class ExampleGroupContext(description: String,
                           val parent: ExampleGroupContext?,
                           tags: Set<Tag> = setOf<Tag>(),
-                          var subjectFactory: () -> Any? = { throw UnsupportedOperationException() })
+                          var subjectFactory: () -> Any = { throw UnsupportedOperationException() })
     : Context(description, parent, tags) {
-    internal val children = LinkedList<Context>()
+    val children = LinkedList<Context>()
 
-    private var subjectInstance: Any? = null
+    private var memoizedSubject = MemoizedHelper(subjectFactory)
+
+    private val subjectInstance by memoizedSubject
 
     var before: (() -> Unit)? = null
     var after: (() -> Unit)? = null
@@ -31,16 +34,12 @@ class ExampleGroupContext(description: String,
         doVisit(visitor, this)
     }
 
-    fun <T> subject(): T {
-        if (subjectInstance == null) {
-            subjectInstance = subjectFactory()
-        }
-        return subjectInstance as T
-    }
 
-    fun reset() {
+    fun <T> subject() = subjectInstance as T
+
+    internal fun reset() {
         parent?.reset()
-        subjectInstance = null
+        memoizedSubject.forget()
     }
 
     companion object {
@@ -50,9 +49,13 @@ class ExampleGroupContext(description: String,
                     val result = visitor.preVisitExampleGroup(context)
 
                     if(result == ContextVisitResult.CONTINUE) {
-                        context.children.forEach {
-                            if (doVisit(visitor, it) == ContextVisitResult.TERMINATE) {
-                                 return ContextVisitResult.TERMINATE
+                        val iterator = context.children.iterator()
+                        while (iterator.hasNext()) {
+                            val visitResult = doVisit(visitor, iterator.next())
+                            if (visitResult == ContextVisitResult.TERMINATE) {
+                                return ContextVisitResult.TERMINATE
+                            } else if (visitResult == ContextVisitResult.REMOVE) {
+                                iterator.remove()
                             }
                         }
                     }
@@ -77,7 +80,7 @@ class ExampleContext(description: String, val parent: ExampleGroupContext,
         parent.children.add(this)
     }
 
-    internal operator fun invoke() {
+    operator fun invoke() {
         parent.reset()
         action!!()
     }

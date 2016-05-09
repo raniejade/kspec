@@ -1,3 +1,4 @@
+apply plugin: 'jacoco'
 buildscript {
     repositories {
         mavenCentral()
@@ -11,6 +12,10 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.1.0"
     }
+}
+
+repositories {
+    mavenCentral()
 }
 
 task wrapper(type: Wrapper) {
@@ -31,5 +36,33 @@ if (hasProperty("bintray_api_key")) {
 
 allprojects {
     group = "io.polymorphicpanda.kspec"
-    version = "0.3.0"
+    version = "0.4.0-SNAPSHOT"
+}
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+}
+
+
+task jacocoTestReport(type: JacocoReport) {
+    sourceDirectories = files()
+    classDirectories = files()
+    subprojects {
+        afterEvaluate {
+            if (plugins.hasPlugin(JavaPlugin)) {
+                dependsOn tasks.getByName("check")
+                executionData tasks.withType(Test)
+                sourceDirectories += sourceSets.main.allSource
+                classDirectories += sourceSets.main.output
+            }
+        }
+    }
+
+    reports {
+        xml.enabled = true
+    }
+}
+
+task check() {
+    dependsOn jacocoTestReport
 }

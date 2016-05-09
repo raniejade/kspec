@@ -6,7 +6,7 @@ dokka {
 }
 
 dependencies {
-    compile project(":kspec-core")
+    compile project(":kspec-engine")
     compile "junit:junit"
 
     testCompile "com.natpryce:hamkrest"

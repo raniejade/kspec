@@ -7,7 +7,7 @@ import io.polymorphicpanda.kspec.tag.Tag
  * @author Ranie Jade Ramiso
  */
 abstract class Hook(val tags: Set<Tag>) {
-    fun handles(context: Context): Boolean {
-        return context.tags.containsAll(tags)
+    open fun handles(context: Context): Boolean {
+        return tags.isEmpty() || context.tags.containsAll(tags)
     }
 }

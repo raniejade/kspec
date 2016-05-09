@@ -1,0 +1,17 @@
+apply from: "$rootDir/gradle/common/dependencies.gradle"
+apply from: "$rootDir/gradle/common/kotlin.gradle"
+
+dokka {
+    outputFormat = 'html'
+}
+
+dependencies {
+    compile project(":kspec-core")
+    testCompile "junit:junit"
+    testCompile "com.natpryce:hamkrest"
+}
+
+task sourceJar(type: Jar) {
+    from project.sourceSets.main.allSource
+    classifier "sources"
+}
