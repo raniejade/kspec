@@ -1,5 +1,6 @@
 package io.polymorphicpanda.kspec.console.reporter
 
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.launcher.reporter.BaseReporter
@@ -11,51 +12,95 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class ConsoleReporter: BaseReporter() {
 
-    private val logger by lazy(LazyThreadSafetyMode.NONE) {
+    private val statusLogger by lazy(LazyThreadSafetyMode.NONE) {
         LoggerFactory.getLogger("io.polymorphicpanda.kspec.console.status")
+    }
+
+    private val errorLogger by lazy(LazyThreadSafetyMode.NONE) {
+        LoggerFactory.getLogger("io.polymorphicpanda.kspec.console.info")
     }
 
     private val counter = AtomicInteger()
 
     override fun exampleGroupSuccess(group: ExampleGroupContext) {
         super.exampleGroupSuccess(group)
-        updateStatusLine()
+        updateConsole {  }
     }
 
     override fun exampleSuccess(example: ExampleContext) {
         super.exampleSuccess(example)
-        updateStatusLine()
         counter.andIncrement
+        updateConsole {  }
     }
 
     override fun exampleGroupFailure(group: ExampleGroupContext, reason: Throwable) {
         super.exampleGroupFailure(group, reason)
-        updateStatusLine()
+        updateConsole {  }
     }
 
     override fun exampleFailure(example: ExampleContext, reason: Throwable) {
         super.exampleFailure(example, reason)
-        updateStatusLine()
+        updateConsole {
+            errorLogger.error(prettify(example, countParent(example)), reason)
+        }
     }
 
     override fun exampleGroupIgnored(group: ExampleGroupContext) {
         super.exampleGroupIgnored(group)
-        updateStatusLine()
+        updateConsole {  }
     }
 
     override fun exampleIgnored(example: ExampleContext) {
         super.exampleIgnored(example)
-        updateStatusLine()
+        updateConsole {  }
     }
 
     override fun executionFinished() {
         super.executionFinished()
-        logger.info("\n")
+        statusLogger.info("\n")
+    }
+
+    private inline  fun updateConsole(block: () -> Unit) {
+        resetStatusLine()
+        block()
+        updateStatusLine()
     }
 
     private fun updateStatusLine() {
         val status = "> ${counter.toInt()} spec(s) completed, " +
             "${totalFailureCount.toInt()} failed, ${totalIgnoredCount.toInt()} ignored."
-        logger.info("\r$status")
+        statusLogger.info("$status")
+    }
+
+    private fun resetStatusLine() {
+        statusLogger.info("\r")
+    }
+
+    private fun prettify(context: Context, depth: Int): String {
+        return when(context) {
+            is ExampleContext -> "${prettify(context.parent, depth - 1)}${" ".repeat(depth * 2)}${context.description}"
+            is ExampleGroupContext -> {
+                return if(context.parent != null) {
+                    "${prettify(context.parent!!, depth - 1)}${" ".repeat(depth * 2)}${context.description}\n"
+                } else {
+                    "${context.description}\n"
+                }
+            }
+            else -> ""
+        }
+    }
+
+    private fun countParent(context: Context): Int {
+        return when(context) {
+            is ExampleContext -> countParent(context.parent)
+            is ExampleGroupContext -> {
+                return if (context.parent != null) {
+                    countParent(context.parent!!) + 1
+                } else {
+                    1
+                }
+            }
+            else -> 0
+        }
     }
 }

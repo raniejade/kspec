@@ -1,9 +1,9 @@
 package io.polymorphicpanda.kspec.console
 
 import com.intellij.openapi.util.Disposer
+import io.polymorphicpanda.kspec.console.reporter.ConsoleReporter
 import io.polymorphicpanda.kspec.launcher.KSpecLauncher
 import io.polymorphicpanda.kspec.launcher.LaunchConfiguration
-import io.polymorphicpanda.kspec.console.reporter.ConsoleReporter
 import joptsimple.OptionException
 import joptsimple.OptionParser
 import joptsimple.OptionSet
@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.addKotlinSourceRoot
 import org.jetbrains.kotlin.utils.KotlinPaths
 import org.jetbrains.kotlin.utils.PathUtil
+import org.slf4j.LoggerFactory
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URLClassLoader
 import java.nio.file.Files
@@ -26,16 +28,23 @@ import java.nio.file.Paths
 
 class ConsoleRunner(val launcher: KSpecLauncher) {
 
+    private val logger by lazy(LazyThreadSafetyMode.NONE) {
+        LoggerFactory.getLogger("io.polymorphicpanda.kspec.console.info")
+    }
+    private val reporter = ConsoleReporter()
+
     init {
-        launcher.addReporter(ConsoleReporter())
+        launcher.addReporter(reporter)
     }
 
     private val parser by lazy(LazyThreadSafetyMode.NONE) {
         OptionParser().apply {
             acceptsAll(listOf("h", "help"), "Prints this message.")
 
+            acceptsAll(listOf("v", "version"), "Prints version info.")
+
             acceptsAll(listOf("s", "specs"), "Single spec (.kt) or a directory containg spec files.")
-                .requiredUnless("help")
+                .requiredUnless("help", "version")
                 .withRequiredArg()
 
             acceptsAll(listOf("classpath", "cp"), "Contains the classes required to run the specs.")
@@ -63,7 +72,9 @@ class ConsoleRunner(val launcher: KSpecLauncher) {
             val optionSet = parser.parse(*args)
 
             if (optionSet.has("help")) {
-                parser.printHelpOn(System.out)
+                printHelpInfo()
+            } else if (optionSet.has("version")) {
+                printVersionInfo()
             } else {
                 val filter = optionSet.getOrDefault("filter", "")
                 val query = optionSet.getOrDefault("query", "")
@@ -83,6 +94,16 @@ class ConsoleRunner(val launcher: KSpecLauncher) {
 
     companion object {
         val CLASSPATH_SEPARATOR = File.pathSeparator
+    }
+
+    private fun printVersionInfo() {
+        logger.trace("KSpec v${Version.KSPEC_VERSION} (Kotlin v${Version.KOTLIN_VERSION})")
+    }
+
+    private fun printHelpInfo() {
+        val buffer = ByteArrayOutputStream()
+        parser.printHelpOn(buffer)
+        logger.trace(buffer.toString(Charsets.UTF_8.name()))
     }
 
     private fun compileSpec(source: Path, classpath: List<Path>): Path {

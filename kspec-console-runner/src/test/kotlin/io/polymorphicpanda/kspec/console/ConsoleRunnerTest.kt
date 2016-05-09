@@ -31,6 +31,26 @@ class ConsoleRunnerTest {
     }
 
     @Test
+    fun testPrintVersion() {
+        val launcher = KSpecLauncher()
+        val runner = ConsoleRunner(launcher)
+
+        runner.run(
+            "--version"
+        )
+    }
+
+    @Test
+    fun testPrintHelp() {
+        val launcher = KSpecLauncher()
+        val runner = ConsoleRunner(launcher)
+
+        runner.run(
+            "--help"
+        )
+    }
+
+    @Test
     fun testRunWithCompile() {
         val launcher = KSpecLauncher()
         val builder = StringBuilder()
