@@ -66,9 +66,8 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
             val filter = Filter(root, config.filter)
             val chain = ExecutorChain().apply {
                 + MatchExecutor(filter, notifier)
-                + ExcludeExecutor(filter, notifier)
                 + HookExecutor(config, notifier)
-                + ActualExecutor()
+                + ActualExecutor(config)
             }
 
 
@@ -79,46 +78,57 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         notifier.notifyExecutionFinished()
     }
 
-    inner class ActualExecutor: Executor {
+    inner class ActualExecutor(val config: KSpecConfig): Executor {
         override fun execute(context: Context, chain: ExecutorChain) {
-            when(context) {
-                is ExampleContext -> {
-                    notifier.notifyExampleStarted(context)
+            if (context.contains(config.filter.ignore)) {
+                notifyContextIgnored(context)
+            } else {
+                when(context) {
+                    is ExampleContext -> {
+                        notifier.notifyExampleStarted(context)
 
-                    try {
-                        invokeBeforeEach(context.parent)
-
-                        // ensures that afterEach is still invoke even if the test fails
                         try {
-                            context()
-                            notifier.notifyExampleFinished(context, ExecutionResult.success(context))
+                            invokeBeforeEach(context.parent)
+
+                            // ensures that afterEach is still invoke even if the test fails
+                            try {
+                                context()
+                                notifier.notifyExampleFinished(context, ExecutionResult.success(context))
+                            } catch (e: Throwable) {
+                                notifier.notifyExampleFinished(context, ExecutionResult.failure(context, e))
+                            }
+
+                            invokeAfterEach(context.parent)
+
                         } catch (e: Throwable) {
                             notifier.notifyExampleFinished(context, ExecutionResult.failure(context, e))
                         }
-
-                        invokeAfterEach(context.parent)
-
-                    } catch (e: Throwable) {
-                        notifier.notifyExampleFinished(context, ExecutionResult.failure(context, e))
                     }
-                }
-                is ExampleGroupContext -> {
-                    try {
-                        context.before?.invoke()
-                        notifier.notifyExampleGroupStarted(context)
+                    is ExampleGroupContext -> {
+                        try {
+                            context.before?.invoke()
+                            notifier.notifyExampleGroupStarted(context)
 
-                        context.children.forEach {
-                            chain.reset()
-                            chain.next(it)
+                            context.children.forEach {
+                                chain.reset()
+                                chain.next(it)
+                            }
+
+                            context.after?.invoke()
+                            notifier.notifyExampleGroupFinished(context, ExecutionResult.success(context))
+
+                        } catch(e: Throwable) {
+                            notifier.notifyExampleGroupFinished(context, ExecutionResult.failure(context, e))
                         }
-
-                        context.after?.invoke()
-                        notifier.notifyExampleGroupFinished(context, ExecutionResult.success(context))
-
-                    } catch(e: Throwable) {
-                        notifier.notifyExampleGroupFinished(context, ExecutionResult.failure(context, e))
                     }
                 }
+            }
+        }
+
+        fun notifyContextIgnored(context: Context) {
+            when(context) {
+                is ExampleGroupContext -> notifier.notifyExampleGroupIgnored(context)
+                is ExampleContext -> notifier.notifyExampleIgnored(context)
             }
         }
 
@@ -127,6 +137,12 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
     private fun applyIncludeFilter(root: ExampleGroupContext, includes: Set<Tag>) {
         root.visit(FilteringVisitor({
             it.contains(includes)
+        }))
+    }
+
+    private fun applyExcludeFilter(root: ExampleGroupContext, excludes: Set<Tag>) {
+        root.visit(FilteringVisitor({
+            !it.contains(excludes)
         }))
     }
 
@@ -160,8 +176,13 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         StandardConfiguration.apply(config)
 
         val filter = config.filter
+
         if (filter.includes.isNotEmpty()) {
             applyIncludeFilter(spec.root, filter.includes)
+        }
+
+        if (filter.excludes.isNotEmpty()) {
+            applyExcludeFilter(spec.root, filter.excludes)
         }
 
         if (discoveryRequest.query != null) {

@@ -7,6 +7,7 @@ import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 import io.polymorphicpanda.kspec.launcher.KSpecLauncher
 import io.polymorphicpanda.kspec.launcher.reporter.BaseReporter
+import org.junit.Ignore
 import org.junit.Test
 import java.nio.file.Paths
 

@@ -13,6 +13,9 @@ class FilterConfig {
     private val _excludes = HashSet<Tag>()
     val excludes: Set<Tag> = _excludes
 
+    private val _ignore = HashSet<Tag>()
+    val ignore: Set<Tag> = _ignore
+
     private val _match = HashSet<Tag>()
     val match: Set<Tag> = _match
 
@@ -23,6 +26,10 @@ class FilterConfig {
 
     fun exclude(vararg tags: Tag) {
         _excludes.addAll(tags)
+    }
+
+    fun ignore(vararg tags: Tag) {
+        _ignore.addAll(tags)
     }
 
     fun matching(vararg tags: Tag) {
