@@ -11,6 +11,7 @@ import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
 import io.polymorphicpanda.kspec.engine.execution.ExecutionRequest
 import io.polymorphicpanda.kspec.tag.Tag
+import org.junit.Ignore
 import org.junit.Test
 import java.util.*
 
@@ -21,6 +22,7 @@ class ConfigurationTest {
     object Order: LinkedList<Any>()
 
     @Test
+    @Ignore
     fun testOrder() {
         val notifier = ExecutionNotifier()
         val engine = KSpecEngine(notifier)

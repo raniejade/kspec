@@ -16,8 +16,9 @@ class FilteringVisitor(val predicate: (Context) -> Boolean): ContextVisitor {
     override fun onVisitExample(context: ExampleContext): ContextVisitResult {
         if (predicate(context)) {
             addRecursive(context)
+            return ContextVisitResult.CONTINUE
         }
-        return ContextVisitResult.CONTINUE
+        return ContextVisitResult.REMOVE
     }
 
     override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {

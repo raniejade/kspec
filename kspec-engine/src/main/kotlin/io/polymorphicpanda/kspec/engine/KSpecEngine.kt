@@ -14,6 +14,7 @@ import io.polymorphicpanda.kspec.engine.discovery.DiscoveryResult
 import io.polymorphicpanda.kspec.engine.execution.*
 import io.polymorphicpanda.kspec.engine.filter.FilteringVisitor
 import io.polymorphicpanda.kspec.engine.query.Query
+import io.polymorphicpanda.kspec.tag.Tag
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -65,7 +66,6 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
             val filter = Filter(root, config.filter)
             val chain = ExecutorChain().apply {
                 + MatchExecutor(filter, notifier)
-                + IncludeExecutor(filter, notifier)
                 + ExcludeExecutor(filter, notifier)
                 + HookExecutor(config, notifier)
                 + ActualExecutor()
@@ -124,18 +124,50 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
     }
 
-    private fun applyQueryFilter(root: ExampleGroupContext, query: Query): ExampleGroupContext {
+    private fun applyIncludeFilter(root: ExampleGroupContext, includes: Set<Tag>) {
+        root.visit(FilteringVisitor({
+            it.contains(includes)
+        }))
+    }
+
+    private fun applyQueryFilter(root: ExampleGroupContext, query: Query) {
         root.visit(FilteringVisitor({
             query.matches(Query.transform(it))
         }))
-        return root
     }
 
     private fun discover(spec: KSpec, discoveryRequest: DiscoveryRequest) {
         spec.spec()
+
+        // apply global configuration
+        val config = KSpecConfig()
+        config.copy(discoveryRequest.config)
+
+        // apply shared configurations
+        val annotation = Utils.findAnnotation(spec.javaClass.kotlin, Configurations::class)
+        if (annotation != null) {
+            val configurations = annotation.configurations
+            configurations.forEach { it: KClass<out Configuration> ->
+                val configuration = Utils.instantiateUsingNoArgConstructor(it)
+                configuration.apply(config)
+            }
+        }
+
+        // apply spec configuration
+        spec.configure(config)
+
+        // built-in configurations
+        StandardConfiguration.apply(config)
+
+        val filter = config.filter
+        if (filter.includes.isNotEmpty()) {
+            applyIncludeFilter(spec.root, filter.includes)
+        }
+
         if (discoveryRequest.query != null) {
             applyQueryFilter(spec.root, discoveryRequest.query)
         }
+
         spec.lock()
     }
 
