@@ -80,7 +80,7 @@ class ExampleContext(description: String, val parent: ExampleGroupContext,
         parent.children.add(this)
     }
 
-    operator fun invoke() {
+    fun execute() {
         parent.reset()
         action!!()
     }

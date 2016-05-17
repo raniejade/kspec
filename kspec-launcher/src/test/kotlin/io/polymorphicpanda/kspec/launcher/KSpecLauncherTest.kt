@@ -97,7 +97,7 @@ class KSpecLauncherTest {
     }
 
     @Test
-    fun testLaunchMatchingPacking() {
+    fun testLaunchMatching() {
         val launcher = KSpecLauncher()
         val builder = StringBuilder()
 

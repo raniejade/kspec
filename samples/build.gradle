@@ -11,3 +11,10 @@ dependencies {
 
     testCompile "com.natpryce:hamkrest"
 }
+
+test {
+    reports {
+        junitXml.enabled = false
+        html.enabled = false
+    }
+}

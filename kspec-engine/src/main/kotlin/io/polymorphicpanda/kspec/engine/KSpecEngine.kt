@@ -11,10 +11,14 @@ import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryResult
-import io.polymorphicpanda.kspec.engine.execution.*
+import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
+import io.polymorphicpanda.kspec.engine.execution.ExecutionRequest
+import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 import io.polymorphicpanda.kspec.engine.filter.FilteringVisitor
 import io.polymorphicpanda.kspec.engine.filter.MatchingVisitor
 import io.polymorphicpanda.kspec.engine.query.Query
+import io.polymorphicpanda.kspec.hook.AroundHook
+import io.polymorphicpanda.kspec.hook.Chain
 import io.polymorphicpanda.kspec.tag.Tag
 import java.util.*
 import kotlin.reflect.KClass
@@ -24,7 +28,7 @@ import kotlin.reflect.KClass
  */
 class KSpecEngine(val notifier: ExecutionNotifier) {
     fun discover(discoveryRequest: DiscoveryRequest): DiscoveryResult {
-        val instances = HashMap<KSpec, KSpecConfig>()
+        val instances = LinkedHashMap<KSpec, KSpecConfig>()
 
         discoveryRequest.specs.forEach {
             val instance = Utils.instantiateUsingNoArgConstructor(it)
@@ -42,27 +46,26 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
     fun execute(executionRequest: ExecutionRequest) {
         notifier.notifyExecutionStarted()
         executionRequest.discoveryResult.instances.forEach {
-            val config = it.value
-            val root = it.key.root
-
-            val chain = ExecutorChain().apply {
-                + HookExecutor(config, notifier)
-                + ActualExecutor(config)
-            }
-
-
-            // start the execution chain
-            chain.next(root)
+            execute(it.value, it.key.root)
         }
 
         notifier.notifyExecutionFinished()
     }
 
-    inner class ActualExecutor(val config: KSpecConfig): Executor {
-        override fun execute(context: Context, chain: ExecutorChain) {
-            if (context.contains(config.filter.ignore)) {
-                notifyContextIgnored(context)
-            } else {
+    private fun execute(config: KSpecConfig, context: Context) {
+        println(context.description)
+        if (context.contains(config.filter.ignore)) {
+            notifyContextIgnored(context)
+        } else {
+            config.before.filter { it.handles(context) }
+                .forEach { it.execute(context) }
+
+            val aroundHooks = LinkedList<AroundHook>(
+                config.around.filter { it.handles(context) }
+            )
+
+            aroundHooks.addLast(AroundHook({ context, chain ->
+
                 when(context) {
                     is ExampleContext -> {
                         notifier.notifyExampleStarted(context)
@@ -72,7 +75,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
                             // ensures that afterEach is still invoke even if the test fails
                             try {
-                                context()
+                                context.execute()
                                 notifier.notifyExampleFinished(context, ExecutionResult.success(context))
                             } catch (e: Throwable) {
                                 notifier.notifyExampleFinished(context, ExecutionResult.failure(context, e))
@@ -90,8 +93,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
                             notifier.notifyExampleGroupStarted(context)
 
                             context.children.forEach {
-                                chain.reset()
-                                chain.next(it)
+                                execute(config, it)
                             }
 
                             context.after?.invoke()
@@ -102,16 +104,23 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
                         }
                     }
                 }
-            }
-        }
+            }, emptySet()))
 
-        fun notifyContextIgnored(context: Context) {
-            when(context) {
-                is ExampleGroupContext -> notifier.notifyExampleGroupIgnored(context)
-                is ExampleContext -> notifier.notifyExampleIgnored(context)
-            }
-        }
+            val exec = Chain(aroundHooks)
 
+            exec.next(context)
+
+
+            config.after.filter { it.handles(context) }
+                .forEach { it.execute(context) }
+        }
+    }
+
+    private fun notifyContextIgnored(context: Context) {
+        when(context) {
+            is ExampleGroupContext -> notifier.notifyExampleGroupIgnored(context)
+            is ExampleContext -> notifier.notifyExampleIgnored(context)
+        }
     }
 
     private fun applyMatchFilter(root: ExampleGroupContext, match: Set<Tag>) {

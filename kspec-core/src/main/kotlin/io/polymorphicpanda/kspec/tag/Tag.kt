@@ -1,6 +1,6 @@
 package io.polymorphicpanda.kspec.tag
 
-open class Tag(val name: String) {
+class Tag(val name: String) {
     init {
         if (name.isEmpty()) {
             throw IllegalArgumentException("Tag name can't be empty.")
