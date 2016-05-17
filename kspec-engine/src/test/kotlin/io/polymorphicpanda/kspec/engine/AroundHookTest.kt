@@ -41,14 +41,14 @@ class AroundHookTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), config))
 
         val expected = """
         context: context
         it: another example
         """.trimIndent()
 
-        engine.execute(ExecutionRequest(config, result))
+        engine.execute(ExecutionRequest(result))
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }
@@ -77,7 +77,7 @@ class AroundHookTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), config))
 
         val expected = """
         ${TestSpec::class.java.name}
@@ -87,7 +87,7 @@ class AroundHookTest {
         it: another example
         """.trimIndent()
 
-        engine.execute(ExecutionRequest(config, result))
+        engine.execute(ExecutionRequest(result))
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }

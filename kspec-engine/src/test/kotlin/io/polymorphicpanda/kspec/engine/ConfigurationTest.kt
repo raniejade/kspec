@@ -79,11 +79,11 @@ class ConfigurationTest {
             override fun spec() { }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), config))
 
-        engine.execute(ExecutionRequest(config, result))
+        engine.execute(ExecutionRequest(result))
 
-        val instance = result.instances[0] as TestSpec
+        val instance = result.instances.keys.first() as TestSpec
 
         assertThat(instance.config, !sameInstance(config))
         assertThat(instance.config.filter.match.contains(match), equalTo(true))

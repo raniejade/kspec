@@ -57,7 +57,7 @@ class QueriedTest {
         it: example
         """.trimIndent()
 
-        engine.execute(ExecutionRequest(KSpecConfig(), result))
+        engine.execute(ExecutionRequest(result))
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }

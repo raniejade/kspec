@@ -23,7 +23,7 @@ class JUnitKSpecRunner<T: KSpec>(val clazz: Class<T>): Runner() {
     }
 
     val _description by lazy(LazyThreadSafetyMode.NONE) {
-        val spec = discoveryResult.instances.first()
+        val spec = discoveryResult.instances.keys.first()
         spec.root.visit(describer)
         describer.contextDescriptions[spec.root]!!
     }

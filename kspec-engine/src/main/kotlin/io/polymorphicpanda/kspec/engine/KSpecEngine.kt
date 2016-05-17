@@ -13,6 +13,7 @@ import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryResult
 import io.polymorphicpanda.kspec.engine.execution.*
 import io.polymorphicpanda.kspec.engine.filter.FilteringVisitor
+import io.polymorphicpanda.kspec.engine.filter.MatchingVisitor
 import io.polymorphicpanda.kspec.engine.query.Query
 import io.polymorphicpanda.kspec.tag.Tag
 import java.util.*
@@ -23,49 +24,28 @@ import kotlin.reflect.KClass
  */
 class KSpecEngine(val notifier: ExecutionNotifier) {
     fun discover(discoveryRequest: DiscoveryRequest): DiscoveryResult {
-        val instances = LinkedList<KSpec>()
+        val instances = HashMap<KSpec, KSpecConfig>()
 
         discoveryRequest.specs.forEach {
             val instance = Utils.instantiateUsingNoArgConstructor(it)
-            discover(instance, discoveryRequest)
-            instances.add(instance)
+            val config = discover(instance, discoveryRequest)
+            instances.put(instance, config)
         }
 
         return DiscoveryResult(instances)
     }
 
     fun execute(discoveryResult: DiscoveryResult) {
-        execute(ExecutionRequest(KSpecConfig(), discoveryResult))
+        execute(ExecutionRequest(discoveryResult))
     }
 
     fun execute(executionRequest: ExecutionRequest) {
         notifier.notifyExecutionStarted()
-        executionRequest.discoveryResult.instances.forEach { spec ->
-            // apply global configuration
-            val config = KSpecConfig()
-            config.copy(executionRequest.config)
+        executionRequest.discoveryResult.instances.forEach {
+            val config = it.value
+            val root = it.key.root
 
-            // apply shared configurations
-            val annotation = Utils.findAnnotation(spec.javaClass.kotlin, Configurations::class)
-            if (annotation != null) {
-                val configurations = annotation.configurations
-                configurations.forEach { it: KClass<out Configuration> ->
-                    val configuration = Utils.instantiateUsingNoArgConstructor(it)
-                    configuration.apply(config)
-                }
-            }
-
-            // apply spec configuration
-            spec.configure(config)
-
-            // built-in configurations
-            StandardConfiguration.apply(config)
-
-            val root = spec.root
-
-            val filter = Filter(root, config.filter)
             val chain = ExecutorChain().apply {
-                + MatchExecutor(filter, notifier)
                 + HookExecutor(config, notifier)
                 + ActualExecutor(config)
             }
@@ -134,6 +114,19 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
     }
 
+    private fun applyMatchFilter(root: ExampleGroupContext, match: Set<Tag>) {
+        val predicate: (Context) -> Boolean = {
+            it.contains(match)
+        }
+
+        val matchingVisitor = MatchingVisitor(predicate)
+        root.visit(matchingVisitor)
+
+        if (matchingVisitor.matches) {
+            root.visit(FilteringVisitor(predicate))
+        }
+    }
+
     private fun applyIncludeFilter(root: ExampleGroupContext, includes: Set<Tag>) {
         root.visit(FilteringVisitor({
             it.contains(includes)
@@ -152,7 +145,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         }))
     }
 
-    private fun discover(spec: KSpec, discoveryRequest: DiscoveryRequest) {
+    private fun discover(spec: KSpec, discoveryRequest: DiscoveryRequest): KSpecConfig {
         spec.spec()
 
         // apply global configuration
@@ -177,6 +170,10 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
         val filter = config.filter
 
+        if (filter.match.isNotEmpty()) {
+            applyMatchFilter(spec.root, filter.match)
+        }
+
         if (filter.includes.isNotEmpty()) {
             applyIncludeFilter(spec.root, filter.includes)
         }
@@ -190,6 +187,8 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         }
 
         spec.lock()
+
+        return config
     }
 
     private fun invokeBeforeEach(context: ExampleGroupContext) {

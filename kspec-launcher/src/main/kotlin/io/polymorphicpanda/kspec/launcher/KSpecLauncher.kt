@@ -109,7 +109,6 @@ class KSpecLauncher {
 
         engine.execute(
             ExecutionRequest(
-                KSpecConfig(),
                 discoveryResult
             )
         )
