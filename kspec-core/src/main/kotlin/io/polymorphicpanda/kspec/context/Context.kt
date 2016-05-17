@@ -60,7 +60,7 @@ class ExampleGroupContext(description: String,
                         }
                     }
 
-                    if (result != ContextVisitResult.TERMINATE) {
+                    if (result == ContextVisitResult.CONTINUE || result == ContextVisitResult.SKIP_SUBTREE) {
                         return visitor.postVisitExampleGroup(context)
                     }
 

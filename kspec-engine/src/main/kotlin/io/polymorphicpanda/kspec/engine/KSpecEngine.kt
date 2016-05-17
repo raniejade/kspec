@@ -6,10 +6,13 @@ import io.polymorphicpanda.kspec.StandardConfiguration
 import io.polymorphicpanda.kspec.Utils
 import io.polymorphicpanda.kspec.annotation.Configurations
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.*
+import io.polymorphicpanda.kspec.context.Context
+import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryResult
 import io.polymorphicpanda.kspec.engine.execution.*
+import io.polymorphicpanda.kspec.engine.filter.FilteringVisitor
 import io.polymorphicpanda.kspec.engine.query.Query
 import java.util.*
 import kotlin.reflect.KClass
@@ -23,7 +26,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
         discoveryRequest.specs.forEach {
             val instance = Utils.instantiateUsingNoArgConstructor(it)
-            discover(instance)
+            discover(instance, discoveryRequest)
             instances.add(instance)
         }
 
@@ -57,11 +60,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
             // built-in configurations
             StandardConfiguration.apply(config)
 
-            var root = spec.root
-
-            if (executionRequest.query != null) {
-                root = filter(root, executionRequest.query)
-            }
+            val root = spec.root
 
             val filter = Filter(root, config.filter)
             val chain = ExecutorChain().apply {
@@ -125,48 +124,18 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
     }
 
-    private fun filter(root: ExampleGroupContext, query: Query): ExampleGroupContext {
-        root.visit(object: ContextVisitor {
-            val matched = HashSet<Context>()
-
-            override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
-                return ContextVisitResult.CONTINUE
-            }
-
-            override fun onVisitExample(context: ExampleContext): ContextVisitResult {
-                if (query.matches(Query.transform(context))) {
-                    addRecursive(context)
-                }
-                return ContextVisitResult.CONTINUE
-            }
-
-            override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
-                if (matched.contains(context) || query.matches(Query.transform(context))) {
-                    return ContextVisitResult.CONTINUE
-                }
-                return ContextVisitResult.REMOVE
-            }
-
-            private fun addRecursive(context: Context) {
-                matched.add(context)
-                when(context) {
-                    is ExampleContext -> {
-                        addRecursive(context.parent)
-                    }
-                    is ExampleGroupContext -> {
-                        if (context.parent != null) {
-                            addRecursive(context.parent!!)
-                        }
-                    }
-                }
-            }
-        })
-
+    private fun applyQueryFilter(root: ExampleGroupContext, query: Query): ExampleGroupContext {
+        root.visit(FilteringVisitor({
+            query.matches(Query.transform(it))
+        }))
         return root
     }
 
-    private fun discover(spec: KSpec) {
+    private fun discover(spec: KSpec, discoveryRequest: DiscoveryRequest) {
         spec.spec()
+        if (discoveryRequest.query != null) {
+            applyQueryFilter(spec.root, discoveryRequest.query)
+        }
         spec.lock()
     }
 

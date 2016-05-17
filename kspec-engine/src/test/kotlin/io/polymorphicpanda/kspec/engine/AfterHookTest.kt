@@ -40,7 +40,7 @@ class AfterHookTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         val expected = """
         context: context
@@ -75,7 +75,7 @@ class AfterHookTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         val expected = """
         it: example

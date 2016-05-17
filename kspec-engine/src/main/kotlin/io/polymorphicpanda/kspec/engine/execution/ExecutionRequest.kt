@@ -8,5 +8,4 @@ import io.polymorphicpanda.kspec.engine.query.Query
  * @author Ranie Jade Ramiso
  */
 class ExecutionRequest(val config: KSpecConfig,
-                       val discoveryResult: DiscoveryResult,
-                       val query: Query? = null)
+                       val discoveryResult: DiscoveryResult)

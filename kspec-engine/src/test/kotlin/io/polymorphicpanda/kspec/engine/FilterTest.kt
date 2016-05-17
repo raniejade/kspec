@@ -45,7 +45,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -86,7 +86,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -124,7 +124,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: example
@@ -165,7 +165,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: example
@@ -203,7 +203,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -244,7 +244,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -285,7 +285,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class), KSpecConfig()))
 
         val expected = """
         it: example
@@ -355,7 +355,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(FilterSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(FilterSpec::class), KSpecConfig()))
 
         val expected = """
         it: included example

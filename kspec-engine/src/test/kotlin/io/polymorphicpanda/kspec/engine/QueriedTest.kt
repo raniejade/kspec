@@ -47,13 +47,17 @@ class QueriedTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(SampleSpec::class)))
+        val result = engine.discover(
+            DiscoveryRequest(listOf(SampleSpec::class),
+                KSpecConfig(),
+                Query.parse("context: a nested group/it: example"))
+        )
 
         val expected = """
         it: example
         """.trimIndent()
 
-        engine.execute(ExecutionRequest(KSpecConfig(), result, Query.parse("context: a nested group/it: example")))
+        engine.execute(ExecutionRequest(KSpecConfig(), result))
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }

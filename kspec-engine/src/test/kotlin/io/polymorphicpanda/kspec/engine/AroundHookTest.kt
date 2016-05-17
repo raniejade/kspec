@@ -41,7 +41,7 @@ class AroundHookTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         val expected = """
         context: context
@@ -77,7 +77,7 @@ class AroundHookTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         val expected = """
         ${TestSpec::class.java.name}

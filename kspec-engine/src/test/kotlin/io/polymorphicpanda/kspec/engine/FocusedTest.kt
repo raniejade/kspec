@@ -3,6 +3,7 @@ package io.polymorphicpanda.kspec.engine
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.*
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -40,7 +41,7 @@ class FocusedTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(FocusedSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(FocusedSpec::class), KSpecConfig()))
 
         val expected = """
         it: focused example
@@ -81,7 +82,7 @@ class FocusedTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(FocusedSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(FocusedSpec::class), KSpecConfig()))
 
         val expected = """
         it: focused example
@@ -123,7 +124,7 @@ class FocusedTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(FocusedSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(FocusedSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: example

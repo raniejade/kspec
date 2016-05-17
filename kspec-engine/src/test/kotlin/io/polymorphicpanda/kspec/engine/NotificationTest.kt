@@ -3,6 +3,7 @@ package io.polymorphicpanda.kspec.engine
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.KSpec
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.describe
@@ -41,7 +42,7 @@ class NotificationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: fail
@@ -75,7 +76,7 @@ class NotificationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: example
@@ -109,7 +110,7 @@ class NotificationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         val expected = """
         it: example
@@ -145,7 +146,7 @@ class NotificationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         val expected = """
         describe: group
@@ -179,7 +180,7 @@ class NotificationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig(), null))
 
         val expected = """
         describe: group
@@ -214,7 +215,7 @@ class NotificationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig(), null))
 
         val expected = """
         execution started

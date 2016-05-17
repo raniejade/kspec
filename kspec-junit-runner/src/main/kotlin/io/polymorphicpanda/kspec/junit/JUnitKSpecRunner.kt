@@ -1,6 +1,7 @@
 package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.KSpec
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.engine.KSpecEngine
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
@@ -18,7 +19,7 @@ class JUnitKSpecRunner<T: KSpec>(val clazz: Class<T>): Runner() {
     val engine = KSpecEngine(executionNotifier)
 
     val discoveryResult by lazy(LazyThreadSafetyMode.NONE) {
-        engine.discover(DiscoveryRequest(listOf(clazz.kotlin)))
+        engine.discover(DiscoveryRequest(listOf(clazz.kotlin), KSpecConfig(), null))
     }
 
     val _description by lazy(LazyThreadSafetyMode.NONE) {

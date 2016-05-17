@@ -99,13 +99,18 @@ class KSpecLauncher {
     }
 
     private fun runSpecs(specs: List<KClass<out KSpec>>, query: String) {
-        var discoveryResult = engine.discover(DiscoveryRequest(specs))
+        val discoveryResult = engine.discover(
+            DiscoveryRequest(
+                specs,
+                KSpecConfig(),
+                if (query.isNotBlank()) Query.parse(query) else null
+            )
+        )
 
         engine.execute(
             ExecutionRequest(
                 KSpecConfig(),
-                discoveryResult,
-                if (query.isNotBlank()) Query.parse(query) else null
+                discoveryResult
             )
         )
     }

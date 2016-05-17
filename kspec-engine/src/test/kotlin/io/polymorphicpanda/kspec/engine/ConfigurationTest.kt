@@ -47,7 +47,7 @@ class ConfigurationTest {
             override fun spec() { }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         engine.execute(result)
 
@@ -77,7 +77,7 @@ class ConfigurationTest {
             override fun spec() { }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), KSpecConfig()))
 
         engine.execute(ExecutionRequest(config, result))
 

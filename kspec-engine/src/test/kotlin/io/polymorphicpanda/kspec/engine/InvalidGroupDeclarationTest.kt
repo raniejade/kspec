@@ -3,6 +3,7 @@ package io.polymorphicpanda.kspec.engine
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.*
+import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.ExampleContext
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -39,7 +40,7 @@ class InvalidGroupDeclarationTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(InvalidSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(InvalidSpec::class), KSpecConfig()))
         engine.execute(result)
 
         assertThat(expected.get() is InvalidSpecException, equalTo(true))
