@@ -1,13 +1,12 @@
 package io.polymorphicpanda.kspec
 
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.tag.Tag
 import kotlin.reflect.KClass
 
 abstract class KSpec: Spec {
-    val root: ExampleGroupContext = ExampleGroupContext(this.javaClass.name, null)
+    val root: Context.ExampleGroup = Context.ExampleGroup(this.javaClass.name, null)
 
     var current = root
 
@@ -23,7 +22,7 @@ abstract class KSpec: Spec {
 
     override fun group(description: String, tags: Set<Tag>, block: () -> Unit) {
         invokeIfNotLocked {
-            val context = ExampleGroupContext(description, current, tags)
+            val context = Context.ExampleGroup(description, current, tags)
             current = context
             block()
             current = current.parent ?: current
@@ -32,7 +31,7 @@ abstract class KSpec: Spec {
 
     override fun example(description: String, tags: Set<Tag>, block: () -> Unit) {
         invokeIfNotLocked {
-            ExampleContext(description, current, block, tags)
+            Context.Example(description, current, block, tags)
         }
     }
 
@@ -63,9 +62,9 @@ abstract class KSpec: Spec {
     override fun <T: Any> group(subject: KClass<T>, description: String, tags: Set<Tag>,
                                 block: SubjectSpec<T>.() -> Unit) {
         invokeIfNotLocked {
-            val context = ExampleGroupContext(description.format(subject), current, tags, {
+            val context = Context.ExampleGroup(description.format(subject), current, tags, {
                 val constructor =
-                        subject.constructors.firstOrNull { it.parameters.isEmpty() } ?: throw InstantiationException()
+                    subject.constructors.firstOrNull { it.parameters.isEmpty() } ?: throw InstantiationException()
                 constructor.call()
             })
             current = context
@@ -83,7 +82,7 @@ abstract class KSpec: Spec {
 }
 
 class SubjectKSpec<T: Any>(val kspec: KSpec,
-                           val context: ExampleGroupContext): SubjectSpec<T>, Spec by kspec {
+                           val context: Context.ExampleGroup): SubjectSpec<T>, Spec by kspec {
     override fun subject(block: () -> T) {
         kspec.invokeIfNotLocked {
             context.subjectFactory = block

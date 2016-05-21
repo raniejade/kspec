@@ -37,7 +37,7 @@ class ContextVisitorTest {
         val builder = StringBuilder()
 
         root.visit(object: ContextVisitor {
-            override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun preVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("pre - ${context.description}")
                 if (context.description == "context: fooo") {
                     return ContextVisitResult.SKIP_SUBTREE
@@ -45,12 +45,12 @@ class ContextVisitorTest {
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun onVisitExample(context: ExampleContext): ContextVisitResult {
+            override fun onVisitExample(context: Context.Example): ContextVisitResult {
                 builder.appendln("on - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun postVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("post - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
@@ -74,7 +74,7 @@ class ContextVisitorTest {
         val builder = StringBuilder()
 
         root.visit(object: ContextVisitor {
-            override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun preVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("pre - ${context.description}")
                 if (context.description == "context: fooo") {
                     return ContextVisitResult.TERMINATE
@@ -82,12 +82,12 @@ class ContextVisitorTest {
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun onVisitExample(context: ExampleContext): ContextVisitResult {
+            override fun onVisitExample(context: Context.Example): ContextVisitResult {
                 builder.appendln("on - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun postVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("post - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
@@ -107,17 +107,17 @@ class ContextVisitorTest {
         val builder = StringBuilder()
 
         root.visit(object: ContextVisitor {
-            override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun preVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("pre - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun onVisitExample(context: ExampleContext): ContextVisitResult {
+            override fun onVisitExample(context: Context.Example): ContextVisitResult {
                 builder.appendln("on - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun postVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("post - ${context.description}")
                 if (context.description == "context: fooo") {
                     return ContextVisitResult.TERMINATE
@@ -145,12 +145,12 @@ class ContextVisitorTest {
         val builder = StringBuilder()
 
         root.visit(object: ContextVisitor {
-            override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun preVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("pre - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun onVisitExample(context: ExampleContext): ContextVisitResult {
+            override fun onVisitExample(context: Context.Example): ContextVisitResult {
                 builder.appendln("on - ${context.description}")
                 if (context.description == "it: bar") {
                     return ContextVisitResult.TERMINATE
@@ -158,7 +158,7 @@ class ContextVisitorTest {
                 return ContextVisitResult.CONTINUE
             }
 
-            override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+            override fun postVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
                 builder.appendln("post - ${context.description}")
                 return ContextVisitResult.CONTINUE
             }

@@ -2,8 +2,7 @@ package io.polymorphicpanda.kspec.launcher
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 import io.polymorphicpanda.kspec.launcher.reporter.BaseReporter
 import org.junit.Test
@@ -20,12 +19,12 @@ class KSpecLauncherTest {
         val builder = StringBuilder()
 
         val reporter: BaseReporter = object: BaseReporter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 super.exampleGroupFinished(group, result)
                 builder.appendln(group.description)
             }
 
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 super.exampleFinished(example, result)
                 builder.appendln(example.description)
             }
@@ -60,12 +59,12 @@ class KSpecLauncherTest {
         val builder = StringBuilder()
 
         val reporter: BaseReporter = object: BaseReporter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 super.exampleGroupFinished(group, result)
                 builder.appendln(group.description)
             }
 
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 super.exampleFinished(example, result)
                 builder.appendln(example.description)
             }
@@ -102,12 +101,12 @@ class KSpecLauncherTest {
         val builder = StringBuilder()
 
         val reporter: BaseReporter = object: BaseReporter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 super.exampleGroupFinished(group, result)
                 builder.appendln(group.description)
             }
 
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 super.exampleFinished(example, result)
                 builder.appendln(example.description)
             }
@@ -144,12 +143,12 @@ class KSpecLauncherTest {
         val builder = StringBuilder()
 
         val reporter: BaseReporter = object: BaseReporter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 super.exampleGroupFinished(group, result)
                 builder.appendln(group.description)
             }
 
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 super.exampleFinished(example, result)
                 if (result is ExecutionResult.Failure) {
                     builder.appendln(example.description)
@@ -185,17 +184,17 @@ class KSpecLauncherTest {
         val builder = StringBuilder()
 
         val reporter: BaseReporter = object: BaseReporter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 super.exampleGroupFinished(group, result)
                 builder.appendln(group.description)
             }
 
-            override fun exampleIgnored(example: ExampleContext) {
+            override fun exampleIgnored(example: Context.Example) {
                 super.exampleIgnored(example)
                 builder.appendln(example.description)
             }
 
-            override fun exampleGroupIgnored(group: ExampleGroupContext) {
+            override fun exampleGroupIgnored(group: Context.ExampleGroup) {
                 super.exampleGroupIgnored(group)
                 builder.appendln(group.description)
             }

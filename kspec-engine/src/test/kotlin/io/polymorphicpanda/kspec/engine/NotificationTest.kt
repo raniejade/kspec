@@ -4,8 +4,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -25,7 +24,7 @@ class NotificationTest {
         val engine = KSpecEngine(notifier)
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     builder.appendln(example.description)
                 }
@@ -60,7 +59,7 @@ class NotificationTest {
         val engine = KSpecEngine(notifier)
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     builder.appendln(example.description)
                 }
@@ -94,7 +93,7 @@ class NotificationTest {
         val engine = KSpecEngine(notifier)
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     builder.appendln(example.description)
                 }
@@ -128,7 +127,7 @@ class NotificationTest {
         val engine = KSpecEngine(notifier)
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     builder.appendln(group.description)
                 }
@@ -164,7 +163,7 @@ class NotificationTest {
         val engine = KSpecEngine(notifier)
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     builder.appendln(group.description)
                 }

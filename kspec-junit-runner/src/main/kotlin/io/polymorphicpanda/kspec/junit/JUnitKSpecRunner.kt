@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.junit
 
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.KSpecEngine
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -32,12 +32,12 @@ class JUnitKSpecRunner<T: KSpec>(val clazz: Class<T>): Runner() {
         executionNotifier.clearListeners()
 
         executionNotifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 notifier.fireTestStarted(describer.contextDescriptions[example])
             }
 
 
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     notifier.fireTestFailure(Failure(describer.contextDescriptions[example], result.cause))
                 } else {
@@ -45,7 +45,7 @@ class JUnitKSpecRunner<T: KSpec>(val clazz: Class<T>): Runner() {
                 }
             }
 
-            override fun exampleIgnored(example: ExampleContext) {
+            override fun exampleIgnored(example: Context.Example) {
                 notifier.fireTestIgnored(describer.contextDescriptions[example])
             }
         })

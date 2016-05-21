@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.*
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
@@ -23,7 +23,7 @@ class InvalidGroupDeclarationTest {
         val expected = AtomicReference<Throwable>()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 if (result is ExecutionResult.Failure) {
                     expected.set(result.cause)
                 }

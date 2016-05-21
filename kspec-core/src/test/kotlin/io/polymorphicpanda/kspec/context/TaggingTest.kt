@@ -15,7 +15,7 @@ class TaggingTest {
         val focus = Tag("focus")
         val test = Tag("test")
         val tags = setOf(focus)
-        val example = ExampleContext("example", ExampleGroupContext("group", null), null, tags)
+        val example = Context.Example("example", Context.ExampleGroup("group", null), null, tags)
 
         assertThat(example.contains(focus), equalTo(true))
         assertThat(example.contains(test), equalTo(false))
@@ -25,9 +25,9 @@ class TaggingTest {
     fun testTagGroup() {
         val focus = Tag("focus")
         val test = Tag("test")
-        val parent = ExampleGroupContext("group", null, setOf(focus))
-        val another = ExampleGroupContext("another", parent)
-        val example = ExampleContext("example", parent, null, setOf(test))
+        val parent = Context.ExampleGroup("group", null, setOf(focus))
+        val another = Context.ExampleGroup("another", parent)
+        val example = Context.Example("example", parent, null, setOf(test))
 
         assertThat(parent.contains(focus), equalTo(true))
         assertThat(another.contains(focus), equalTo(true))
@@ -39,7 +39,7 @@ class TaggingTest {
     fun testGetTagExample() {
         val focus = Tag("focus")
         val tags = setOf(focus)
-        val example = ExampleContext("example", ExampleGroupContext("group", null), null, tags)
+        val example = Context.Example("example", Context.ExampleGroup("group", null), null, tags)
 
         assertThat(example["focus"], present(equalTo(focus)))
     }
@@ -48,9 +48,9 @@ class TaggingTest {
     fun testGetTagGroup() {
         val focus = Tag("focus")
         val test = Tag("test")
-        val parent = ExampleGroupContext("group", null, setOf(focus))
-        val another = ExampleGroupContext("another", parent)
-        val example = ExampleContext("example", parent, null, setOf(test))
+        val parent = Context.ExampleGroup("group", null, setOf(focus))
+        val another = Context.ExampleGroup("another", parent)
+        val example = Context.Example("example", parent, null, setOf(test))
 
         assertThat(parent.contains(focus), equalTo(true))
         assertThat(another.contains(focus), equalTo(true))

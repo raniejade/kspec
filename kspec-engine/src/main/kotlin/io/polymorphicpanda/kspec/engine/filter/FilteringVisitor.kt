@@ -1,6 +1,8 @@
 package io.polymorphicpanda.kspec.engine.filter
 
-import io.polymorphicpanda.kspec.context.*
+import io.polymorphicpanda.kspec.context.Context
+import io.polymorphicpanda.kspec.context.ContextVisitResult
+import io.polymorphicpanda.kspec.context.ContextVisitor
 import java.util.*
 
 /**
@@ -9,11 +11,11 @@ import java.util.*
 class FilteringVisitor(val predicate: (Context) -> Boolean): ContextVisitor {
     val matched = HashSet<Context>()
 
-    override fun preVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+    override fun preVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
         return ContextVisitResult.CONTINUE
     }
 
-    override fun onVisitExample(context: ExampleContext): ContextVisitResult {
+    override fun onVisitExample(context: Context.Example): ContextVisitResult {
         if (predicate(context)) {
             addRecursive(context)
             return ContextVisitResult.CONTINUE
@@ -21,7 +23,7 @@ class FilteringVisitor(val predicate: (Context) -> Boolean): ContextVisitor {
         return ContextVisitResult.REMOVE
     }
 
-    override fun postVisitExampleGroup(context: ExampleGroupContext): ContextVisitResult {
+    override fun postVisitExampleGroup(context: Context.ExampleGroup): ContextVisitResult {
         if (matched.contains(context) || predicate(context)) {
             return ContextVisitResult.CONTINUE
         }
@@ -31,10 +33,10 @@ class FilteringVisitor(val predicate: (Context) -> Boolean): ContextVisitor {
     private fun addRecursive(context: Context) {
         matched.add(context)
         when(context) {
-            is ExampleContext -> {
+            is Context.Example -> {
                 addRecursive(context.parent)
             }
-            is ExampleGroupContext -> {
+            is Context.ExampleGroup -> {
                 if (context.parent != null) {
                     addRecursive(context.parent!!)
                 }

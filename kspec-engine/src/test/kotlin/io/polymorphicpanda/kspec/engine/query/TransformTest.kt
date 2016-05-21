@@ -4,8 +4,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.context
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
 import org.junit.Test
@@ -31,10 +30,10 @@ class TransformTest {
         val spec = SampleSpec()
         spec.spec()
         val root = spec.root
-        val bar = root.children.first { it.description.equals("describe: bar") } as ExampleGroupContext
-        val foo = bar.children.first { it.description.equals("context: foo") } as ExampleGroupContext
-        val foobar = foo.children.first { it.description.equals("it: foobar") } as ExampleContext
-        val barfoo = bar.children.first { it.description.equals("it: barfoo") } as ExampleContext
+        val bar = root.children.first { it.description.equals("describe: bar") } as Context.ExampleGroup
+        val foo = bar.children.first { it.description.equals("context: foo") } as Context.ExampleGroup
+        val foobar = foo.children.first { it.description.equals("it: foobar") } as Context.Example
+        val barfoo = bar.children.first { it.description.equals("it: barfoo") } as Context.Example
 
         val kls = "io.polymorphicpanda.kspec.engine.query.TransformTest\$testTransform\$SampleSpec"
 

@@ -2,8 +2,7 @@ package io.polymorphicpanda.kspec.launcher
 
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.KSpecEngine
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -33,19 +32,19 @@ class KSpecLauncher {
             reporters.forEach { it.executionFinished() }
         }
 
-        override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+        override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
             reporters.forEach { it.exampleFinished(example, result) }
         }
 
-        override fun exampleIgnored(example: ExampleContext) {
+        override fun exampleIgnored(example: Context.Example) {
             reporters.forEach { it.exampleIgnored(example) }
         }
 
-        override fun exampleGroupIgnored(group: ExampleGroupContext) {
+        override fun exampleGroupIgnored(group: Context.ExampleGroup) {
             reporters.forEach { it.exampleGroupIgnored(group) }
         }
 
-        override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+        override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
             reporters.forEach { it.exampleGroupFinished(group, result) }
         }
     }

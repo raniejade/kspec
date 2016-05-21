@@ -7,8 +7,6 @@ import io.polymorphicpanda.kspec.Utils
 import io.polymorphicpanda.kspec.annotation.Configurations
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context.Context
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryResult
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
@@ -67,7 +65,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
             aroundHooks.addLast(AroundHook({ context, chain ->
 
                 when(context) {
-                    is ExampleContext -> {
+                    is Context.Example -> {
                         notifier.notifyExampleStarted(context)
 
                         try {
@@ -87,7 +85,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
                             notifier.notifyExampleFinished(context, ExecutionResult.failure(context, e))
                         }
                     }
-                    is ExampleGroupContext -> {
+                    is Context.ExampleGroup -> {
                         try {
                             context.before?.invoke()
                             notifier.notifyExampleGroupStarted(context)
@@ -118,12 +116,12 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
 
     private fun notifyContextIgnored(context: Context) {
         when(context) {
-            is ExampleGroupContext -> notifier.notifyExampleGroupIgnored(context)
-            is ExampleContext -> notifier.notifyExampleIgnored(context)
+            is Context.ExampleGroup -> notifier.notifyExampleGroupIgnored(context)
+            is Context.Example -> notifier.notifyExampleIgnored(context)
         }
     }
 
-    private fun applyMatchFilter(root: ExampleGroupContext, match: Set<Tag>) {
+    private fun applyMatchFilter(root: Context.ExampleGroup, match: Set<Tag>) {
         val predicate: (Context) -> Boolean = {
             it.contains(match)
         }
@@ -136,19 +134,19 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         }
     }
 
-    private fun applyIncludeFilter(root: ExampleGroupContext, includes: Set<Tag>) {
+    private fun applyIncludeFilter(root: Context.ExampleGroup, includes: Set<Tag>) {
         root.visit(FilteringVisitor({
             it.contains(includes)
         }))
     }
 
-    private fun applyExcludeFilter(root: ExampleGroupContext, excludes: Set<Tag>) {
+    private fun applyExcludeFilter(root: Context.ExampleGroup, excludes: Set<Tag>) {
         root.visit(FilteringVisitor({
             !it.contains(excludes)
         }))
     }
 
-    private fun applyQueryFilter(root: ExampleGroupContext, query: Query) {
+    private fun applyQueryFilter(root: Context.ExampleGroup, query: Query) {
         root.visit(FilteringVisitor({
             query.matches(Query.transform(it))
         }))
@@ -200,14 +198,14 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         return config
     }
 
-    private fun invokeBeforeEach(context: ExampleGroupContext) {
+    private fun invokeBeforeEach(context: Context.ExampleGroup) {
         if (context.parent != null) {
             invokeBeforeEach(context.parent!!)
         }
         context.beforeEach?.invoke()
     }
 
-    private fun invokeAfterEach(context: ExampleGroupContext) {
+    private fun invokeAfterEach(context: Context.ExampleGroup) {
         context.afterEach?.invoke()
         if (context.parent != null) {
             invokeAfterEach(context.parent!!)

@@ -1,7 +1,6 @@
 package io.polymorphicpanda.kspec.engine.execution
 
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import java.util.*
 
 /**
@@ -22,19 +21,19 @@ class ExecutionNotifier {
         listeners.clear()
     }
 
-     fun notifyExampleGroupStarted(group: ExampleGroupContext) {
+     fun notifyExampleGroupStarted(group: Context.ExampleGroup) {
         listeners.forEach { it.exampleGroupStarted(group) }
     }
 
-     fun notifyExampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+     fun notifyExampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
         listeners.forEach { it.exampleGroupFinished(group, result) }
     }
 
-     fun notifyExampleStarted(example: ExampleContext) {
+     fun notifyExampleStarted(example: Context.Example) {
         listeners.forEach { it.exampleStarted(example) }
     }
 
-     fun notifyExampleFinished(example: ExampleContext, result: ExecutionResult) {
+     fun notifyExampleFinished(example: Context.Example, result: ExecutionResult) {
         listeners.forEach { it.exampleFinished(example, result) }
     }
 
@@ -46,11 +45,11 @@ class ExecutionNotifier {
         listeners.forEach { it.executionFinished() }
     }
 
-     fun notifyExampleGroupIgnored(group: ExampleGroupContext) {
+     fun notifyExampleGroupIgnored(group: Context.ExampleGroup) {
         listeners.forEach { it.exampleGroupIgnored(group) }
     }
 
-     fun notifyExampleIgnored(example: ExampleContext) {
+     fun notifyExampleIgnored(example: Context.Example) {
         listeners.forEach { it.exampleIgnored(example) }
     }
 

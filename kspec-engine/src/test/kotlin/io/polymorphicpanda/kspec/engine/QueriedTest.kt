@@ -5,7 +5,7 @@ import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context
-import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -25,7 +25,7 @@ class QueriedTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
