@@ -96,14 +96,16 @@ class AdvancedCalculatorSpec: KSpec() {
 ## Pending
 You can write specs in advance, KSpec will ignore them during execution.
 ```kotlin
-override fun spec() {
-    xdescribe("a pending group") {
-        it("won't be executed") { }
+class SomeSpec: KSpec() {
+    override fun spec() {
+        xdescribe("a pending group") {
+            it("won't be executed") { }
+        }
+
+        xcontext("another pending group", "some reason")
+
+        xit("a pending example") { }
     }
-
-    xcontext("another pending group", "some reason")
-
-    xit("a pending example") { }
 }
 ```
 
@@ -157,12 +159,11 @@ class SomeSpec: KSpec() {
 }
 ```
 
-## Runner
-Currently only a JUnit 4 Runner is provided. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner::class)`.
-
-
 ## Usage
+### Console Runner
+TODO
 ### Gradle
+Currently you need to use a `JUnit4 Runner` to be able to run specs with gradle. Make sure to annotate your test classes with `@RunWith(JUnitKSpecRunner::class)`.
 ```gradle
 repositories {
     jcenter()
@@ -174,4 +175,12 @@ dependencies {
 }
 ```
 
-Snapshot versions are available at http://oss.jfrog.org/artifactory/oss-snapshot-local/
+## Development version
+### Gradle
+```gradle
+repositories {
+    maven {
+        url "http://oss.jfrog.org/artifactory/oss-snapshot-local/"
+    }
+}
+```
