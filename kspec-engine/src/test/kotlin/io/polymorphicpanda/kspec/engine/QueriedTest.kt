@@ -5,7 +5,7 @@ import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context
-import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -25,7 +25,7 @@ class QueriedTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -47,13 +47,17 @@ class QueriedTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(SampleSpec::class)))
+        val result = engine.discover(
+            DiscoveryRequest(listOf(SampleSpec::class),
+                KSpecConfig(),
+                Query.parse("context: a nested group/it: example"))
+        )
 
         val expected = """
         it: example
         """.trimIndent()
 
-        engine.execute(ExecutionRequest(KSpecConfig(), result, Query.parse("context: a nested group/it: example")))
+        engine.execute(ExecutionRequest(result))
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }

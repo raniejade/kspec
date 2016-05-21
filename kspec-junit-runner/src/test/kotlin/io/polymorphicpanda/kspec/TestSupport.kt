@@ -1,6 +1,6 @@
 package io.polymorphicpanda.kspec
 
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 
 class TestSpec: KSpec() {
     override fun spec() {
@@ -9,7 +9,7 @@ class TestSpec: KSpec() {
 
 }
 
-fun setupTestSpec(block: Spec.() -> Unit): ExampleGroupContext {
+fun setupTestSpec(block: Spec.() -> Unit): Context.ExampleGroup {
     val spec: KSpec = TestSpec()
     with(spec, block)
     return spec.root

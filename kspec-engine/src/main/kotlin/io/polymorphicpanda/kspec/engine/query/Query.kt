@@ -1,8 +1,6 @@
 package io.polymorphicpanda.kspec.engine.query
 
 import io.polymorphicpanda.kspec.context.Context
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
 
 /**
  * @author Ranie Jade Ramiso
@@ -46,10 +44,10 @@ class Query private constructor(private val nodes: List<Node>) {
 
         fun transform(context: Context): String {
             return when(context) {
-                is ExampleContext -> {
+                is Context.Example -> {
                     return "${transform(context.parent)}/${context.description}"
                 }
-                is ExampleGroupContext -> {
+                is Context.ExampleGroup -> {
                     return if(context.parent != null) {
                         "${transform(context.parent!!)}/${context.description}"
                     } else {

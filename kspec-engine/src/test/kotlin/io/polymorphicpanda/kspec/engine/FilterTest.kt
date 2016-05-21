@@ -5,7 +5,7 @@ import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.KSpec
 import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.context
-import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
@@ -24,7 +24,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -45,7 +45,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -62,7 +62,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -86,7 +86,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(IncludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -103,7 +103,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -124,7 +124,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: example
@@ -141,7 +141,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -165,7 +165,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(ExcludeSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: example
@@ -182,7 +182,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -203,7 +203,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -220,7 +220,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -244,7 +244,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class), KSpecConfig(), null))
 
         val expected = """
         it: included example
@@ -261,7 +261,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -285,7 +285,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(MatchSpec::class), KSpecConfig()))
 
         val expected = """
         it: example
@@ -310,7 +310,7 @@ class FilterTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -355,7 +355,7 @@ class FilterTest {
 
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(FilterSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(FilterSpec::class), KSpecConfig()))
 
         val expected = """
         it: included example

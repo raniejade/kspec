@@ -12,6 +12,6 @@ object StandardConfiguration: Configuration {
 
     override fun apply(config: KSpecConfig) {
         config.filter.matching(focus)
-        config.filter.exclude(pending)
+        config.filter.ignore(pending)
     }
 }

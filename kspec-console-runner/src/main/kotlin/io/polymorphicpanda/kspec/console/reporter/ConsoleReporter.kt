@@ -1,8 +1,6 @@
 package io.polymorphicpanda.kspec.console.reporter
 
 import io.polymorphicpanda.kspec.context.Context
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
 import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 import io.polymorphicpanda.kspec.launcher.reporter.BaseReporter
 import org.slf4j.LoggerFactory
@@ -23,12 +21,12 @@ class ConsoleReporter: BaseReporter() {
 
     private val counter = AtomicInteger()
 
-    override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+    override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
         super.exampleGroupFinished(group, result)
         updateConsole {  }
     }
 
-    override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+    override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
         super.exampleFinished(example, result)
         counter.andIncrement
         updateConsole {
@@ -38,12 +36,12 @@ class ConsoleReporter: BaseReporter() {
         }
     }
 
-    override fun exampleGroupIgnored(group: ExampleGroupContext) {
+    override fun exampleGroupIgnored(group: Context.ExampleGroup) {
         super.exampleGroupIgnored(group)
         updateConsole {  }
     }
 
-    override fun exampleIgnored(example: ExampleContext) {
+    override fun exampleIgnored(example: Context.Example) {
         super.exampleIgnored(example)
         updateConsole {  }
     }
@@ -71,8 +69,8 @@ class ConsoleReporter: BaseReporter() {
 
     private fun prettify(context: Context, depth: Int): String {
         return when(context) {
-            is ExampleContext -> "${prettify(context.parent, depth - 1)}${" ".repeat(depth * 2)}${context.description}"
-            is ExampleGroupContext -> {
+            is Context.Example -> "${prettify(context.parent, depth - 1)}${" ".repeat(depth * 2)}${context.description}"
+            is Context.ExampleGroup -> {
                 return if(context.parent != null) {
                     "${prettify(context.parent!!, depth - 1)}${" ".repeat(depth * 2)}${context.description}\n"
                 } else {
@@ -85,8 +83,8 @@ class ConsoleReporter: BaseReporter() {
 
     private fun countParent(context: Context): Int {
         return when(context) {
-            is ExampleContext -> countParent(context.parent)
-            is ExampleGroupContext -> {
+            is Context.Example -> countParent(context.parent)
+            is Context.ExampleGroup -> {
                 return if (context.parent != null) {
                     countParent(context.parent!!) + 1
                 } else {

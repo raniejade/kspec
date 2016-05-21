@@ -3,7 +3,8 @@ package io.polymorphicpanda.kspec.engine
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import io.polymorphicpanda.kspec.*
-import io.polymorphicpanda.kspec.context.ExampleContext
+import io.polymorphicpanda.kspec.config.KSpecConfig
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
@@ -19,7 +20,7 @@ class PendingTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -38,7 +39,7 @@ class PendingTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(PendingSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(PendingSpec::class), KSpecConfig()))
 
         val expected = """
         it: not a pending example
@@ -55,7 +56,7 @@ class PendingTest {
         val notifier = ExecutionNotifier()
 
         notifier.addListener(object: ExecutionListenerAdapter() {
-            override fun exampleStarted(example: ExampleContext) {
+            override fun exampleStarted(example: Context.Example) {
                 builder.appendln(example.description)
             }
         })
@@ -101,7 +102,7 @@ class PendingTest {
             }
         }
 
-        val result = engine.discover(DiscoveryRequest(listOf(PendingSpec::class)))
+        val result = engine.discover(DiscoveryRequest(listOf(PendingSpec::class), KSpecConfig()))
 
         val expected = """
         it: not a pending example

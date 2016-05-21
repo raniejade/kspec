@@ -2,8 +2,7 @@ package io.polymorphicpanda.kspec.console
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 import io.polymorphicpanda.kspec.launcher.KSpecLauncher
 import io.polymorphicpanda.kspec.launcher.reporter.BaseReporter
@@ -57,12 +56,12 @@ class ConsoleRunnerTest {
         val builder = StringBuilder()
 
         val reporter: BaseReporter = object: BaseReporter() {
-            override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+            override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
                 super.exampleGroupFinished(group, result)
                 builder.appendln(group.description)
             }
 
-            override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+            override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
                 super.exampleFinished(example, result)
                 builder.appendln(example.description)
             }

@@ -1,7 +1,6 @@
 package io.polymorphicpanda.kspec.launcher.reporter
 
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 
 /**
@@ -12,11 +11,11 @@ open class ReporterAdapter: Reporter {
 
     override fun executionFinished() { }
 
-    override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) { }
+    override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) { }
 
-    override fun exampleFinished(example: ExampleContext, result: ExecutionResult) { }
+    override fun exampleFinished(example: Context.Example, result: ExecutionResult) { }
 
-    override fun exampleGroupIgnored(group: ExampleGroupContext) { }
+    override fun exampleGroupIgnored(group: Context.ExampleGroup) { }
 
-    override fun exampleIgnored(example: ExampleContext) { }
+    override fun exampleIgnored(example: Context.Example) { }
 }

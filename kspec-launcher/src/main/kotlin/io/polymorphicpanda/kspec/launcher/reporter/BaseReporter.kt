@@ -1,7 +1,6 @@
 package io.polymorphicpanda.kspec.launcher.reporter
 
-import io.polymorphicpanda.kspec.context.ExampleContext
-import io.polymorphicpanda.kspec.context.ExampleGroupContext
+import io.polymorphicpanda.kspec.context.Context
 import io.polymorphicpanda.kspec.engine.execution.ExecutionResult
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -46,7 +45,7 @@ open class BaseReporter: ReporterAdapter() {
         get() = exampleGroupIgnoredCount + exampleIgnoredCount
 
 
-    override fun exampleGroupFinished(group: ExampleGroupContext, result: ExecutionResult) {
+    override fun exampleGroupFinished(group: Context.ExampleGroup, result: ExecutionResult) {
         super.exampleGroupFinished(group, result)
         if (result is ExecutionResult.Failure) {
             exampleGroupFailureCounter.andIncrement
@@ -55,7 +54,7 @@ open class BaseReporter: ReporterAdapter() {
         }
     }
 
-    override fun exampleFinished(example: ExampleContext, result: ExecutionResult) {
+    override fun exampleFinished(example: Context.Example, result: ExecutionResult) {
         super.exampleFinished(example, result)
         if (result is ExecutionResult.Failure) {
             exampleFailureCounter.andIncrement
@@ -64,12 +63,12 @@ open class BaseReporter: ReporterAdapter() {
         }
     }
 
-    override fun exampleGroupIgnored(group: ExampleGroupContext) {
+    override fun exampleGroupIgnored(group: Context.ExampleGroup) {
         super.exampleGroupIgnored(group)
         exampleGroupIgnoredCounter.andIncrement
     }
 
-    override fun exampleIgnored(example: ExampleContext) {
+    override fun exampleIgnored(example: Context.Example) {
         super.exampleIgnored(example)
         exampleIgnoredCounter.andIncrement
     }

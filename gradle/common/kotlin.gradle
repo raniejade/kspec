@@ -20,14 +20,6 @@ jacoco {
     toolVersion = "0.7.6.201602180812"
 }
 
-
-test {
-    reports {
-        junitXml.enabled = false
-        html.enabled = false
-    }
-}
-
 dokka {
     outputFormat = "markdown"
 }
