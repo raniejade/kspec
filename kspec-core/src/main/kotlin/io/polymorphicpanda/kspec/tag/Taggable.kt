@@ -1,26 +1,44 @@
 package io.polymorphicpanda.kspec.tag
 
-import java.util.*
+import kotlin.reflect.KClass
 
 /**
  * @author Ranie Jade Ramiso
  */
-open class Taggable(private val parent: Taggable?, tags: Set<Tag>) {
-    val tags = HashSet<Tag>(tags)
+abstract class Taggable(tags: Set<Tag<*>>) {
+    abstract val parent: Taggable?
 
-    fun contains(tags: Collection<Tag>): Boolean {
-        return this.tags.any { tags.contains(it) }
-                || parent?.contains(tags) ?: false
+    val tags: Map<KClass<*>, Tag<*>> = tags.groupBy {
+        it.javaClass.kotlin as KClass<*>
+    }.mapValues { it.value.first() }
+
+    fun <T: KClass<out Tag<*>>> contains(tags: Collection<T>): Boolean {
+        return this.tags.any { tags.contains(it.key) }
+            || parent?.contains(tags) ?: false
     }
 
-    fun contains(vararg tags: Tag) = contains(setOf(*tags))
-
-    operator fun get(tag: String): Tag? {
-        var result = tags.firstOrNull { it.name == tag }
-
-        if (result == null) {
-            result = parent?.get(tag)
+    fun <T: KClass<out Tag<*>>> containsAll(tags: Collection<T>): Boolean {
+        var result = false
+        if (this.tags.isNotEmpty()) {
+            result = this.tags.all { tags.contains(it.key) }
         }
+
+        if (!result) {
+            result = parent?.containsAll(tags) ?: false
+        }
+
         return result
+    }
+
+    fun <T: KClass<out Tag<*>>> contains(vararg tags: T) = contains(setOf(*tags))
+
+    inline fun <reified T: Tag<*>> get(): T? {
+        if (tags.containsKey(T::class)) {
+            return tags[T::class] as T
+        } else if (parent != null && parent!!.tags.containsKey(T::class)) {
+            return parent!!.tags[T::class] as T
+        }
+
+        return null
     }
 }

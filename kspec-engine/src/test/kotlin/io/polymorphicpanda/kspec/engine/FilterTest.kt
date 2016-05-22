@@ -11,13 +11,18 @@ import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionListenerAdapter
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
 import io.polymorphicpanda.kspec.it
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 import org.junit.Test
 
 /**
  * @author Ranie Jade Ramiso
  */
 class FilterTest {
+    object Tag1: SimpleTag()
+    object Tag2: SimpleTag()
+    object Tag3: SimpleTag()
+
+
     @Test
     fun testIncludeExample() {
         val builder = StringBuilder()
@@ -33,13 +38,13 @@ class FilterTest {
 
         class IncludeSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.include(tag1)
+                config.filter.include(Tag1::class)
             }
 
             override fun spec() {
                 describe("group") {
                     it("example") { }
-                    it("included example", tag1) { }
+                    it("included example", Tag1) { }
                 }
             }
 
@@ -71,14 +76,14 @@ class FilterTest {
 
         class IncludeSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.include(tag1)
+                config.filter.include(Tag1::class)
             }
 
             override fun spec() {
                 describe("group") {
                     it("example") { }
 
-                    context("context", tag1) {
+                    context("context", Tag1) {
                         it("included example") { }
                     }
                 }
@@ -112,13 +117,13 @@ class FilterTest {
 
         class ExcludeSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.exclude(tag1)
+                config.filter.exclude(Tag1::class)
             }
 
             override fun spec() {
                 describe("group") {
                     it("example") { }
-                    it("included example", tag1) { }
+                    it("included example", Tag1) { }
                 }
             }
 
@@ -150,14 +155,14 @@ class FilterTest {
 
         class ExcludeSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.exclude(tag1)
+                config.filter.exclude(Tag1::class)
             }
 
             override fun spec() {
                 describe("group") {
                     it("example") { }
 
-                    context("context", tag1) {
+                    context("context", Tag1) {
                         it("included example") { }
                     }
                 }
@@ -191,13 +196,13 @@ class FilterTest {
 
         class MatchSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.matching(tag1)
+                config.filter.matching(Tag1::class)
             }
 
             override fun spec() {
                 describe("group") {
                     it("example") { }
-                    it("included example", tag1) { }
+                    it("included example", Tag1) { }
                 }
             }
 
@@ -229,14 +234,14 @@ class FilterTest {
 
         class MatchSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.matching(tag1)
+                config.filter.matching(Tag1::class)
             }
 
             override fun spec() {
                 describe("group") {
                     it("example") { }
 
-                    context("context", tag1) {
+                    context("context", Tag1) {
                         it("included example") { }
                     }
                 }
@@ -254,7 +259,6 @@ class FilterTest {
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }
-
     @Test
     fun testNoMatch() {
         val builder = StringBuilder()
@@ -270,7 +274,7 @@ class FilterTest {
 
         class MatchSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.matching(tag1)
+                config.filter.matching(Tag1::class)
             }
 
             override fun spec() {
@@ -319,30 +323,30 @@ class FilterTest {
 
         class FilterSpec: KSpec() {
             override fun configure(config: KSpecConfig) {
-                config.filter.matching(tag1)
-                config.filter.include(tag2)
-                config.filter.exclude(tag3)
+                config.filter.matching(Tag1::class)
+                config.filter.include(Tag2::class)
+                config.filter.exclude(Tag3::class)
             }
 
             override fun spec() {
                 describe("group") {
-                    it("first included example", tag1) {
+                    it("first included example", Tag1) {
                         /**
                          * not executed, has match filter but not include filter tag
                          */
                     }
 
-                    it("unmatched example", tag2) { }
+                    it("unmatched example", Tag2) { }
 
-                    context("matched context", tag1) {
-                        it("excluded example", tag3) { }
-                        it ("included example", tag2) {
+                    context("matched context", Tag1) {
+                        it("excluded example", Tag3) { }
+                        it ("included example", Tag2) {
                             /**
                              * Executed as parent has match filter and example has include tag
                              */
                         }
 
-                        describe("included group", tag2) {
+                        describe("included group", Tag2) {
                             it ("some example") {
                                 /**
                                  * Executed as parent has include filter tag
@@ -365,11 +369,5 @@ class FilterTest {
         engine.execute(result)
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
-    }
-
-    companion object {
-        val tag1 = Tag("tag1")
-        val tag2 = Tag("tag2")
-        val tag3 = Tag("tag3")
     }
 }

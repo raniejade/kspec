@@ -6,6 +6,7 @@ import io.polymorphicpanda.kspec.hook.Chain
 import io.polymorphicpanda.kspec.hook.SimpleHook
 import io.polymorphicpanda.kspec.tag.Tag
 import java.util.*
+import kotlin.reflect.KClass
 
 /**
  * @author Ranie Jade Ramiso
@@ -22,15 +23,15 @@ class KSpecConfig {
 
     val filter = FilterConfig()
 
-    fun before(vararg tags: Tag, block: (Context) -> Unit) {
+    fun before(vararg tags: KClass<out Tag<*>>, block: (Context) -> Unit) {
         _before.add(SimpleHook(block, setOf(*tags)))
     }
 
-    fun after(vararg tags: Tag, block: (Context) -> Unit) {
+    fun after(vararg tags: KClass<out Tag<*>>, block: (Context) -> Unit) {
         _after.add(SimpleHook(block, setOf(*tags)))
     }
 
-    fun around(vararg tags: Tag, block: (Context, Chain) -> Unit) {
+    fun around(vararg tags: KClass<out Tag<*>>, block: (Context, Chain) -> Unit) {
         _around.add(AroundHook(block, setOf(*tags)))
     }
 

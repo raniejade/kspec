@@ -10,13 +10,15 @@ import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
 import io.polymorphicpanda.kspec.engine.execution.ExecutionRequest
 import io.polymorphicpanda.kspec.it
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 import org.junit.Test
 
 /**
  * @author Ranie Jade Ramiso
  */
 class AfterHookTest {
+    object Tag1: SimpleTag()
+
     @Test
     fun testMatchTag() {
         val builder = StringBuilder()
@@ -24,18 +26,18 @@ class AfterHookTest {
         val notifier = ExecutionNotifier()
         val engine = KSpecEngine(notifier)
 
-        config.after(tag1) {
+        config.after(Tag1::class) {
             builder.appendln(it.description)
         }
 
         class TestSpec: KSpec() {
             override fun spec() {
                 describe("group") {
-                    context("context", tag1) {
+                    context("context", Tag1) {
                         it("example") { }
                     }
 
-                    it("another example", tag1) { }
+                    it("another example", Tag1) { }
                 }
             }
         }
@@ -43,6 +45,7 @@ class AfterHookTest {
         val result = engine.discover(DiscoveryRequest(listOf(TestSpec::class), config))
 
         val expected = """
+        it: example
         context: context
         it: another example
         """.trimIndent()
@@ -66,11 +69,11 @@ class AfterHookTest {
         class TestSpec: KSpec() {
             override fun spec() {
                 describe("group") {
-                    context("context", tag1) {
+                    context("context", Tag1) {
                         it("example") { }
                     }
 
-                    it("another example", tag1) { }
+                    it("another example", Tag1) { }
                 }
             }
         }
@@ -90,7 +93,4 @@ class AfterHookTest {
         assertThat(builder.trimEnd().toString(), equalTo(expected))
     }
 
-    companion object {
-        val tag1 = Tag("tag1")
-    }
 }

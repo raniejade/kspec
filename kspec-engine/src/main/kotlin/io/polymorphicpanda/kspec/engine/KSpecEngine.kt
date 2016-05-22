@@ -51,7 +51,6 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
     }
 
     private fun execute(config: KSpecConfig, context: Context) {
-        println(context.description)
         if (context.contains(config.filter.ignore)) {
             notifyContextIgnored(context)
         } else {
@@ -121,7 +120,7 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         }
     }
 
-    private fun applyMatchFilter(root: Context.ExampleGroup, match: Set<Tag>) {
+    private fun applyMatchFilter(root: Context.ExampleGroup, match: Set<KClass<out Tag<*>>>) {
         val predicate: (Context) -> Boolean = {
             it.contains(match)
         }
@@ -134,13 +133,13 @@ class KSpecEngine(val notifier: ExecutionNotifier) {
         }
     }
 
-    private fun applyIncludeFilter(root: Context.ExampleGroup, includes: Set<Tag>) {
+    private fun applyIncludeFilter(root: Context.ExampleGroup, includes: Set<KClass<out Tag<*>>>) {
         root.visit(FilteringVisitor({
             it.contains(includes)
         }))
     }
 
-    private fun applyExcludeFilter(root: Context.ExampleGroup, excludes: Set<Tag>) {
+    private fun applyExcludeFilter(root: Context.ExampleGroup, excludes: Set<KClass<out Tag<*>>>) {
         root.visit(FilteringVisitor({
             !it.contains(excludes)
         }))

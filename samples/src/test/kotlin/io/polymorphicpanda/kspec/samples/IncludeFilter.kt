@@ -7,7 +7,7 @@ import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
 import io.polymorphicpanda.kspec.junit.JUnitKSpecRunner
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 import org.junit.runner.RunWith
 
 /**
@@ -15,15 +15,15 @@ import org.junit.runner.RunWith
  */
 @RunWith(JUnitKSpecRunner::class)
 class IncludeFilter: KSpec() {
-    val tag = Tag("bar")
+    object Tag: SimpleTag()
 
     override fun configure(config: KSpecConfig) {
-        config.filter.include(tag)
+        config.filter.include(Tag::class)
     }
 
     override fun spec() {
         describe("a group") {
-            it("some example", tag) {
+            it("some example", Tag) {
                 assertThat(true, equalTo(true))
             }
 

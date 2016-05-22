@@ -7,7 +7,7 @@ import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.describe
 import io.polymorphicpanda.kspec.it
 import io.polymorphicpanda.kspec.junit.JUnitKSpecRunner
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 import org.junit.runner.RunWith
 
 /**
@@ -15,10 +15,10 @@ import org.junit.runner.RunWith
  */
 @RunWith(JUnitKSpecRunner::class)
 class ExcludeFilter: KSpec() {
-    val tag = Tag("bar")
+    object Tag: SimpleTag()
 
     override fun configure(config: KSpecConfig) {
-        config.filter.exclude(tag)
+        config.filter.exclude(Tag::class)
     }
 
     override fun spec() {
@@ -27,7 +27,7 @@ class ExcludeFilter: KSpec() {
                 assertThat(true, equalTo(true))
             }
 
-            it("i should be ignored", tag) {
+            it("i should be ignored", Tag) {
                 assertThat(true, equalTo(false))
             }
         }

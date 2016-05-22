@@ -2,7 +2,7 @@ package io.polymorphicpanda.kspec.samples.configuration
 
 import io.polymorphicpanda.kspec.Configuration
 import io.polymorphicpanda.kspec.config.KSpecConfig
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 
 /**
  * @author Ranie Jade Ramiso
@@ -10,10 +10,8 @@ import io.polymorphicpanda.kspec.tag.Tag
 class SharedConfiguration: Configuration {
 
     override fun apply(config: KSpecConfig) {
-        config.filter.matching(TAG)
+        config.filter.matching(Tag::class)
     }
 
-    companion object {
-        val TAG = Tag("sample")
-    }
+    object Tag: SimpleTag()
 }

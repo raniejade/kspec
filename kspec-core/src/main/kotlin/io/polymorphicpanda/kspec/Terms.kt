@@ -3,39 +3,39 @@ package io.polymorphicpanda.kspec
 import io.polymorphicpanda.kspec.tag.Tag
 import kotlin.reflect.KClass
 
-fun Spec.describe(description: String, vararg tags: Tag, action: () -> Unit) {
+fun Spec.describe(description: String, vararg tags: Tag<*>, action: () -> Unit) {
     group("describe: $description", setOf(*tags),action)
 }
 
 fun <T: Any> Spec.describe(subject: KClass<T>, description: String = "%s",
-                           vararg tags: Tag, action: SubjectSpec<T>.() -> Unit) {
+                           vararg tags: Tag<*>, action: SubjectSpec<T>.() -> Unit) {
     group(subject, "describe: $description", setOf(*tags), action)
 }
 
-fun Spec.context(description: String, vararg tags: Tag, action: () -> Unit) {
+fun Spec.context(description: String, vararg tags: Tag<*>, action: () -> Unit) {
     group("context: $description", setOf(*tags), action)
 }
 
 fun <T: Any> Spec.context(subject: KClass<T>, description: String = "%s",
-                          vararg tags: Tag, action: SubjectSpec<T>.() -> Unit) {
+                          vararg tags: Tag<*>, action: SubjectSpec<T>.() -> Unit) {
     group(subject, "context: $description", setOf(*tags), action)
 }
 
-fun Spec.fdescribe(description: String, vararg tags: Tag, action: () -> Unit) {
+fun Spec.fdescribe(description: String, vararg tags: Tag<*>, action: () -> Unit) {
     group("describe: $description", setOf(focus(), *tags),action)
 }
 
 fun <T: Any> Spec.fdescribe(subject: KClass<T>, description: String = "%s",
-                           vararg tags: Tag, action: SubjectSpec<T>.() -> Unit) {
+                           vararg tags: Tag<*>, action: SubjectSpec<T>.() -> Unit) {
     group(subject, "describe: $description", setOf(focus(), *tags), action)
 }
 
-fun Spec.fcontext(description: String, vararg tags: Tag, action: () -> Unit) {
+fun Spec.fcontext(description: String, vararg tags: Tag<*>, action: () -> Unit) {
     group("context: $description", setOf(focus(), *tags), action)
 }
 
 fun <T: Any> Spec.fcontext(subject: KClass<T>, description: String = "%s",
-                          vararg tags: Tag, action: SubjectSpec<T>.() -> Unit) {
+                          vararg tags: Tag<*>, action: SubjectSpec<T>.() -> Unit) {
     group(subject, "context: $description", setOf(focus(), *tags), action)
 }
 
@@ -57,11 +57,11 @@ fun <T: Any> Spec.xcontext(subject: KClass<T>, description: String = "%s",
     group(subject, "context: $description", setOf(pending(reason ?: "No reason provided")), action)
 }
 
-fun Spec.it(description: String, vararg tags: Tag, action: () -> Unit) {
+fun Spec.it(description: String, vararg tags: Tag<*>, action: () -> Unit) {
     example("it: $description", setOf(*tags), action)
 }
 
-fun Spec.fit(description: String, vararg tags: Tag, action: () -> Unit) {
+fun Spec.fit(description: String, vararg tags: Tag<*>, action: () -> Unit) {
     example("it: $description", setOf(focus(), *tags), action)
 }
 

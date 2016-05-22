@@ -20,7 +20,7 @@ abstract class KSpec: Spec {
 
     open fun configure(config: KSpecConfig) {}
 
-    override fun group(description: String, tags: Set<Tag>, block: () -> Unit) {
+    override fun group(description: String, tags: Set<Tag<*>>, block: () -> Unit) {
         invokeIfNotLocked {
             val context = Context.ExampleGroup(description, current, tags)
             current = context
@@ -29,7 +29,7 @@ abstract class KSpec: Spec {
         }
     }
 
-    override fun example(description: String, tags: Set<Tag>, block: () -> Unit) {
+    override fun example(description: String, tags: Set<Tag<*>>, block: () -> Unit) {
         invokeIfNotLocked {
             Context.Example(description, current, block, tags)
         }
@@ -59,7 +59,7 @@ abstract class KSpec: Spec {
         }
     }
 
-    override fun <T: Any> group(subject: KClass<T>, description: String, tags: Set<Tag>,
+    override fun <T: Any> group(subject: KClass<T>, description: String, tags: Set<Tag<*>>,
                                 block: SubjectSpec<T>.() -> Unit) {
         invokeIfNotLocked {
             val context = Context.ExampleGroup(description.format(subject), current, tags, {

@@ -4,9 +4,9 @@ import io.polymorphicpanda.kspec.tag.Tag
 import kotlin.reflect.KClass
 
 interface Spec {
-    fun group(description: String, tags: Set<Tag>, block: () -> Unit)
-    fun <T: Any> group(subject: KClass<T>, description: String = "", tags: Set<Tag>, block: SubjectSpec<T>.() -> Unit)
-    fun example(description: String, tags: Set<Tag>, block: () -> Unit)
+    fun group(description: String, tags: Set<Tag<*>>, block: () -> Unit)
+    fun <T: Any> group(subject: KClass<T>, description: String = "", tags: Set<Tag<*>>, block: SubjectSpec<T>.() -> Unit)
+    fun example(description: String, tags: Set<Tag<*>>, block: () -> Unit)
     fun before(action: () -> Unit)
     fun after(action: () -> Unit)
     fun beforeEach(action: () -> Unit)

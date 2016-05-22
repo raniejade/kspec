@@ -5,12 +5,12 @@ import io.polymorphicpanda.kspec.tag.Tag
 import io.polymorphicpanda.kspec.tag.Taggable
 import java.util.*
 
-sealed class Context(val description: String, parent: Taggable?, tags: Set<Tag>): Taggable(parent, tags) {
+sealed class Context(val description: String, tags: Set<Tag<*>>): Taggable(tags) {
     class ExampleGroup(description: String,
-                       val parent: ExampleGroup?,
-                       tags: Set<Tag> = setOf<Tag>(),
+                       override val parent: ExampleGroup?,
+                       tags: Set<Tag<*>> = setOf<Tag<*>>(),
                        var subjectFactory: () -> Any = { throw UnsupportedOperationException() })
-    : Context(description, parent, tags) {
+    : Context(description, tags) {
         val children = LinkedList<Context>()
 
         private var memoizedSubject = MemoizedHelper(subjectFactory)
@@ -71,9 +71,9 @@ sealed class Context(val description: String, parent: Taggable?, tags: Set<Tag>)
         }
     }
 
-    class Example(description: String, val parent: ExampleGroup,
-                  val action: (() -> Unit)?, tags: Set<Tag> = setOf<Tag>())
-    : Context(description, parent, tags) {
+    class Example(description: String, override val parent: ExampleGroup,
+                  val action: (() -> Unit)?, tags: Set<Tag<*>> = setOf<Tag<*>>())
+    : Context(description, tags) {
 
         init {
             parent.children.add(this)
@@ -84,5 +84,10 @@ sealed class Context(val description: String, parent: Taggable?, tags: Set<Tag>)
             action!!()
         }
     }
+
+    override fun toString(): String{
+        return description
+    }
+
 
 }

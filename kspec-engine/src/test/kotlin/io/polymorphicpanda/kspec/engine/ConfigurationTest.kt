@@ -10,7 +10,7 @@ import io.polymorphicpanda.kspec.config.KSpecConfig
 import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
 import io.polymorphicpanda.kspec.engine.execution.ExecutionRequest
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 import org.junit.Ignore
 import org.junit.Test
 import java.util.*
@@ -21,8 +21,10 @@ import java.util.*
 class ConfigurationTest {
     object Order: LinkedList<Any>()
 
+    object Match: SimpleTag()
+    object Exclude: SimpleTag()
+
     @Test
-    @Ignore
     fun testOrder() {
         val notifier = ExecutionNotifier()
         val engine = KSpecEngine(notifier)
@@ -64,10 +66,8 @@ class ConfigurationTest {
         val notifier = ExecutionNotifier()
         val engine = KSpecEngine(notifier)
         val config = KSpecConfig()
-        val match = Tag("match")
-        val exclude = Tag("exclude")
-        config.filter.matching(match)
-        config.filter.exclude(exclude)
+        config.filter.matching(Match::class)
+        config.filter.exclude(Exclude::class)
 
         class TestSpec: KSpec() {
             lateinit var config: KSpecConfig
@@ -86,7 +86,7 @@ class ConfigurationTest {
         val instance = result.instances.keys.first() as TestSpec
 
         assertThat(instance.config, !sameInstance(config))
-        assertThat(instance.config.filter.match.contains(match), equalTo(true))
-        assertThat(instance.config.filter.excludes.contains(exclude), equalTo(true))
+        assertThat(instance.config.filter.match.contains(Match::class), equalTo(true))
+        assertThat(instance.config.filter.excludes.contains(Exclude::class), equalTo(true))
     }
 }

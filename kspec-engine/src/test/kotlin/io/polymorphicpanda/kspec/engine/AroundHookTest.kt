@@ -10,13 +10,15 @@ import io.polymorphicpanda.kspec.engine.discovery.DiscoveryRequest
 import io.polymorphicpanda.kspec.engine.execution.ExecutionNotifier
 import io.polymorphicpanda.kspec.engine.execution.ExecutionRequest
 import io.polymorphicpanda.kspec.it
-import io.polymorphicpanda.kspec.tag.Tag
+import io.polymorphicpanda.kspec.tag.SimpleTag
 import org.junit.Test
 
 /**
  * @author Ranie Jade Ramiso
  */
 class AroundHookTest {
+    object Tag1: SimpleTag()
+
     @Test
     fun testMatchTag() {
         val builder = StringBuilder()
@@ -24,7 +26,7 @@ class AroundHookTest {
         val notifier = ExecutionNotifier()
         val engine = KSpecEngine(notifier)
 
-        config.around(tag1) { context, chain ->
+        config.around(Tag1::class) { context, chain ->
             builder.appendln(context.description)
             chain.next(context)
         }
@@ -32,11 +34,11 @@ class AroundHookTest {
         class TestSpec: KSpec() {
             override fun spec() {
                 describe("group") {
-                    context("context", tag1) {
+                    context("context", Tag1) {
                         it("example") { }
                     }
 
-                    it("another example", tag1) { }
+                    it("another example", Tag1) { }
                 }
             }
         }
@@ -45,6 +47,7 @@ class AroundHookTest {
 
         val expected = """
         context: context
+        it: example
         it: another example
         """.trimIndent()
 
@@ -68,11 +71,11 @@ class AroundHookTest {
         class TestSpec: KSpec() {
             override fun spec() {
                 describe("group") {
-                    context("context", AfterHookTest.tag1) {
+                    context("context", Tag1) {
                         it("example") { }
                     }
 
-                    it("another example", AfterHookTest.tag1) { }
+                    it("another example", Tag1) { }
                 }
             }
         }
@@ -90,9 +93,5 @@ class AroundHookTest {
         engine.execute(ExecutionRequest(result))
 
         assertThat(builder.trimEnd().toString(), equalTo(expected))
-    }
-
-    companion object {
-        val tag1 = Tag("tag1")
     }
 }

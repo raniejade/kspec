@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 class SharedConfigurationExample: KSpec() {
     override fun spec() {
         describe("foo") {
-            context("bar", SharedConfiguration.TAG) {
+            context("bar", SharedConfiguration.Tag) {
                 it("sample") {
                     // pass
                 }
